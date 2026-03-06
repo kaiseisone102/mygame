@@ -1,0 +1,99 @@
+/* src/renderer/screens/style/itemSelectOverLayInBattle.css */
+
+#itemSelectOverLayInBattle {
+  position: absolute;
+  right: 40px;
+  bottom: 80px;
+
+  width: 360px;
+  padding: 16px 20px;
+
+  background: rgba(10, 10, 10, 0.95);
+  border: 2px solid #e60012;
+
+  font-family: "Arial Black", "Noto Sans JP", sans-serif;
+  color: #ffffff;
+
+  box-shadow:
+    0 0 0 3px #000,
+    0 12px 30px rgba(0, 0, 0, 0.8);
+
+  transform: skewX(-6deg);
+}
+
+/* 中身は歪ませない */
+#itemSelectOverLayInBattle * {
+  transform: skewX(6deg);
+}
+
+/* ============================
+   Item List
+============================ */
+
+#itemSelectOverLayInBattle .itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ============================
+   Item Entry
+============================ */
+
+#itemSelectOverLayInBattle .itemList p {
+  position: relative;
+  margin: 0;
+  padding: 10px 14px;
+
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  background: #111;
+  border-left: 6px solid transparent;
+
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.12s ease,
+    border-color 0.15s ease;
+}
+
+/* ============================
+   Selected
+============================ */
+
+#itemSelectOverLayInBattle .itemList p.selected {
+  background: #e60012;
+  color: #000;
+
+  border-left-color: #fff;
+
+  transform: translateX(6px);
+}
+
+/* 選択中の斜めスラッシュ演出 */
+#itemSelectOverLayInBattle .itemList p.selected::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.35) 45%,
+    transparent 60%
+  );
+
+  pointer-events: none;
+}
+
+/* ============================
+   Disabled Item（exist = false を使うなら）
+============================ */
+
+#itemSelectOverLayInBattle .itemList p.disabled {
+  opacity: 0.35;
+  pointer-events: none;
+  background: #0a0a0a;
+}

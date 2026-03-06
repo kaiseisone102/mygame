@@ -1,0 +1,112 @@
+    /* =========================
+        Name Input
+    ========================= */
+
+    .name-input-container {
+        position: fixed;
+        inset: 0;
+
+        /* 背景透過（うっすら暗くする） */
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+
+        display: grid;
+        place-items: center;
+
+        font-family: "Arial Black", Impact, sans-serif;
+        color: #fff;
+
+        z-index: 10;
+    }
+
+    /* メインカード */
+    .name-input-display {
+        position: relative;
+
+        width: 70%;
+        height: 20%;
+
+        top: 20%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: #111;
+
+        border: 6px solid #e60012;
+        border-left: 8px solid #e60012;
+        border-right: 8px solid #e60012;
+
+        /* 赤アクセント */
+        box-shadow:
+            0 0 0 4px #000,
+            0 0 20px rgba(230, 0, 18, 0.6);
+
+        font-size: 42px;
+        letter-spacing: 4px;
+        text-align: center;
+        text-transform: uppercase;
+
+        transform: skewX(-8deg);
+
+        white-space: pre;
+    }
+
+    /* 斜めを戻す */
+    .name-input-display span {
+        display: inline-block;
+        transform: skewX(8deg);
+    }
+
+    .name-input-container::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 200%;
+        height: 4px;
+        background: #e60012;
+        transform: rotate(-80deg);
+        animation: slide 4s linear infinite;
+    }
+
+    @keyframes slide {
+        from {
+            transform: translateX(-100%) rotate(-80deg);
+        }
+
+        to {
+            transform: translateX(100%) rotate(-80deg);
+        }
+    }
+
+    .name-input-display {
+        font-weight: 900;
+    }
+
+    .pop {
+        animation: popAnim 0.1s ease;
+    }
+
+    @keyframes popAnim {
+        0% {
+            transform: scale(1) skewX(-8deg);
+        }
+
+        50% {
+            transform: scale(1.05) skewX(-8deg);
+        }
+
+        100% {
+            transform: scale(1) skewX(-8deg);
+        }
+    }
+
+    .cursor {
+        display: inline-block;
+        width: 14px;
+        height: 36px;
+        background: #e60012;
+        margin: 0 4px;
+        animation: blink 0.8s steps(1) infinite;
+    }

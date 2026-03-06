@@ -1,0 +1,17 @@
+/* src/renderer/styles/startMessage.css */
+#startMessage {
+    position: absolute;
+    transform: translateX(-50%);
+    top: 60%;
+    left: 50%;
+    display: none;
+    font-size: 30px;
+    color: aliceblue;
+    width: 80%;
+    height: 30%;
+    background-color: black;
+    outline: 3px solid white;   /* 枠線 */
+    outline-offset: -6px;
+    border-radius: 10px;
+    padding: 20px;
+}

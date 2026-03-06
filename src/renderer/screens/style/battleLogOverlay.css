@@ -1,0 +1,71 @@
+/* =========================
+   BattleLogOverlay 全体
+========================= */
+#battleLogOverlay {
+    position: absolute;
+    bottom: 32px;
+    left: 60%;
+    width: 480px;
+    max-height: 160px;
+
+    background: linear-gradient(135deg,
+            rgba(0, 0, 0, 0.85),
+            rgba(10, 10, 10, 0.95));
+
+    border-left: 6px solid #ff003c;
+    /* Persona赤アクセント */
+    box-shadow:
+        0 0 0 2px #ffffff,
+        0 0 20px rgba(255, 0, 60, 0.6);
+
+    padding: 12px 16px;
+    overflow-y: auto;
+    font-family: "Arial Black", "Impact", sans-serif;
+    color: white;
+
+    transform: translateX(-50%) skewX(-6deg);
+    z-index: 999;
+    overflow: hidden;
+}
+
+/* 中身は歪ませない */
+#battleLogOverlay * {
+    transform: skewX(6deg);
+}
+
+/* =========================
+   ログコンテナ
+========================= */
+#battleLogContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* =========================
+   各ログ行
+========================= */
+#battleLogContainer p {
+    margin: 0;
+    padding: 4px 6px;
+
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 4px solid transparent;
+
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    line-height: 1.3em;
+    color: #ffffff;
+
+    text-shadow: 0 0 2px black;
+    transition: all 0.15s ease-out;
+}
+
+/* 新しいログがハイライトっぽく光る */
+#battleLogContainer p:last-child {
+    background: #ff003c;
+    color: black;
+    border-left: 4px solid white;
+    box-shadow: 0 0 12px rgba(255, 0, 60, 0.8),
+        inset 0 0 0 2px black;
+}

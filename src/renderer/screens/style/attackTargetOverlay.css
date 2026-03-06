@@ -1,0 +1,94 @@
+/* =========================
+   AttackTargetOverlay 本体
+========================= */
+#attackTargetOverlay {
+    position: absolute;
+    right: 32px;
+    bottom: 120px;
+
+    width: 360px;
+    padding: 16px 20px;
+
+    background: linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.85),
+        rgba(10, 10, 10, 0.95)
+    );
+
+    border-left: 6px solid #ff003c; /* Persona 赤 */
+    box-shadow:
+        0 0 0 2px #ffffff,
+        0 0 16px rgba(255, 0, 60, 0.6);
+
+    font-family: "Arial Black", "Impact", sans-serif;
+    color: white;
+
+    transform: skewX(-6deg); /* ペルソナっぽい斜め */
+}
+
+/* 中身は歪ませない */
+#attackTargetOverlay * {
+    transform: skewX(6deg);
+}
+
+/* =========================
+   ターゲットリスト
+========================= */
+#attackTargetOverlay .targetList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* =========================
+   敵項目
+========================= */
+#attackTargetOverlay .targetList p {
+    position: relative;
+
+    padding: 8px 12px;
+    margin: 0;
+
+    font-size: 18px;
+    letter-spacing: 1px;
+
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 4px solid transparent;
+
+    cursor: pointer;
+    transition: all 0.15s ease-out;
+}
+
+/* =========================
+   非選択時
+========================= */
+#attackTargetOverlay .targetList p::before {
+    content: "▶";
+    position: absolute;
+    left: -18px;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+/* =========================
+   選択中（Persona感の核）
+========================= */
+#attackTargetOverlay .targetList p.selected {
+    background: #ff003c;
+    color: black;
+
+    border-left: 4px solid white;
+
+    box-shadow:
+        0 0 12px rgba(255, 0, 60, 0.8),
+        inset 0 0 0 2px black;
+}
+
+#attackTargetOverlay .targetList p.selected::before {
+    opacity: 1;
+}
+
+.overlay.disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}

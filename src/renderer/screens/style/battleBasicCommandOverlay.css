@@ -1,0 +1,136 @@
+/* =========================
+   BattleBasicCommandOverlay 全体
+========================= */
+#battleBasicCommandOverlay {
+    position: absolute;
+    bottom: 32px;
+    left: 32px;
+
+    width: 360px;
+    padding: 16px 20px;
+
+    background: linear-gradient(135deg,
+            rgba(0, 0, 0, 0.85),
+            rgba(10, 10, 10, 0.95));
+
+    border-left: 6px solid #ff003c;
+    /* Persona赤 */
+    box-shadow:
+        0 0 0 2px #ffffff,
+        0 0 16px rgba(255, 0, 60, 0.6);
+
+    font-family: "Arial Black", "Impact", sans-serif;
+    color: white;
+
+    transform: skewX(-6deg);
+    /* ペルソナっぽい斜め */
+}
+
+/* 中身は歪ませない */
+#battleBasicCommandOverlay * {
+    transform: skewX(6deg);
+}
+
+/* =========================
+   コマンドリスト
+========================= */
+#battleBasicCommandOverlay .command {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* =========================
+   コマンド項目
+========================= */
+#battleBasicCommandOverlay .command p {
+    position: relative;
+    padding: 8px 12px;
+    margin: 0;
+
+    font-size: 18px;
+    letter-spacing: 1px;
+
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 4px solid transparent;
+
+    cursor: pointer;
+    transition: all 0.15s ease-out;
+}
+
+/* 非選択時の矢印 */
+#battleBasicCommandOverlay .command p::before {
+    content: "▶";
+    position: absolute;
+    left: -18px;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+/* 選択中 */
+#battleBasicCommandOverlay .command p.selected {
+    background: #ff003c;
+    color: black;
+
+    border-left: 4px solid white;
+
+    box-shadow:
+        0 0 12px rgba(255, 0, 60, 0.8),
+        inset 0 0 0 2px black;
+}
+
+#battleBasicCommandOverlay .command p.selected::before {
+    opacity: 1;
+}
+
+/* ホバー（マウス対応用） */
+#battleBasicCommandOverlay .command p:hover {
+    background: rgba(255, 0, 60, 0.25);
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+/* =========================
+   NameTag（アクター名表示）
+========================= */
+#battleBasicCommandOverlay #nameTag {
+    position: absolute;
+    top: -28px;
+    left: 12px;
+
+    text-transform: uppercase;
+    
+    padding: 6px 14px;
+
+    background: #ff003c;
+    color: black;
+
+    font-size: 14px;
+    letter-spacing: 1px;
+    font-weight: bold;
+
+    border: 2px solid white;
+
+    box-shadow:
+        0 0 10px rgba(255, 0, 60, 0.8);
+
+    transform: skewX(6deg);
+}
+
+/* 三角の装飾 */
+#battleBasicCommandOverlay #nameTag::after {
+    content: "";
+    position: absolute;
+    right: -12px;
+    top: 0;
+
+    width: 0;
+    height: 0;
+
+    border-top: 14px solid transparent;
+    border-bottom: 14px solid transparent;
+    border-left: 12px solid #ff003c;
+}

@@ -1,0 +1,39 @@
+/* src/renderer/styles/slotSelect.css */
+.slotSelectScreen {
+    position: relative;/* 親が position: relative(子の基準), 子が position: absolute */
+    width: 100vw;
+    height: 100vh;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+#slotsBorder {
+    position: absolute;
+    width: 150px;
+    height: 200px;
+    top: 10%;
+    left: 20%;
+    transform: translateX(-50%);
+    background-color: black;
+    outline: 3px solid white;   /* 枠線 */
+    outline-offset: -6px;
+    border-radius: 10px;
+}
+/* 縦位置だけ変える */
+#slot1 { top: 25%; }
+#slot2 { top: 50%; }
+#slot3 { top: 75%; }
+/* スロット共通 */
+.slot {
+    color: white;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.slot.selected {
+    color: blueviolet;
+}
+.slotCursor {
+    position: absolute;
+    width: 64px;      /* 画像サイズに合わせる */
+    height: 64px;
+    pointer-events: none;
+}

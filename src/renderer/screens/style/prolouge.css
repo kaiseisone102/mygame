@@ -1,0 +1,26 @@
+/* src/renderer/styles/prolouge.css */
+body { 
+    background: #222;
+    color: #fff;
+    font-family: monospace;
+}
+#logBox { 
+    width: 600px;
+    padding: 20px;
+    margin: 50px auto; 
+    background: #333;
+    border-radius: 10px;
+    min-height: 100px;
+    letter-spacing: 2px;
+}
+#fadeLayer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: white;
+    opacity: 0;
+    transition: none;
+    z-index: 100;
+}

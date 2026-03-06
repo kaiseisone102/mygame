@@ -1,0 +1,86 @@
+{
+    "zones": {
+        "ENTRY": [
+            {
+                "pos": {
+                    "tx": 2,
+                    "ty": 3
+                },
+                "tw": 3,
+                "th": 1,
+                "block": false,
+                "image": "TOWN_ICON"
+            }
+        ],
+        "FIELD_ENEMY": [
+            {
+                "pos": {
+                    "tx": 4,
+                    "ty": 4
+                },
+                "tw": 1,
+                "th": 1,
+                "block": true,
+                "image": "ENEMY_ICON"
+            }
+        ],
+        "RANDOM_ENEMY_ENCOUNT": [],
+        "WALKABLE_ZONE": [
+            {
+                "pos": {
+                    "tx": 0,
+                    "ty": 0
+                },
+                "tw": 20,
+                "th": 20,
+                "block": false,
+                "image": "AREA_ICON"
+            }
+        ],
+        "TRIGGER": [],
+        "WARP": [],
+        "OBSTACLE": []
+    },
+    "npcs": [
+        {
+            "id": "FOREST_KEEPER_01",
+            "pos": {
+                "tx": 10,
+                "ty": 10
+            },
+            "direction": "DOWN",
+            "image": "PLAYER_STAND_LEFT",
+            "message": "FOREST_KEEPER_GO_AHEAD"
+        }
+    ],
+    "signs": [
+        {
+            "id": "SIGN_01",
+            "pos": {
+                "tx": 5,
+                "ty": 8
+            },
+            "facing": "DOWN",
+            "image": "WOODEN_SIGN",
+            "message": "WORLD_MAP_NEAR_FOREST_TEMPLE_SIGN"
+        }
+    ],
+    "items": [
+        {
+            "id": "FOREST_POTION_001",
+            "pos": {
+                "tx": 6,
+                "ty": 6
+            },
+            "tw": 1,
+            "th": 1,
+            "type": "POTION",
+            "image": "POTION_ICON"
+        }
+    ],
+    "environment": {
+        "weather": "fog",
+        "timeOfDay": "night",
+        "background": "temple_bg"
+    }
+}

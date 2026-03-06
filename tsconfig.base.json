@@ -1,0 +1,17 @@
+// tsconfig.base.json
+{
+    "compilerOptions": {
+        "baseUrl": "src",
+        "paths": {
+            "@/*": [
+                "src/*"
+            ],
+            "@/renderer/*": [
+                "src/renderer/*"
+            ],
+            "@/shared/*": [
+                "src/shared/*"
+            ],
+        }
+    }
+}
