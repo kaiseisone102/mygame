@@ -8,7 +8,6 @@ import { addObjectBlock, addObject } from "../../objects/addObjectBlock";
 import { ObjectLayer } from "../../objects/objectLayer";
 import { ObjectType } from "../../objects/objectType";
 import { fillRectTile } from "../../tiles/fillRectTile";
-import { buildZones } from "../../zone/buildZone";
 import { createMapsEvent } from "../createMapsEvent";
 import { WorldDefinition } from "./WorldDefinition";
 import { ZonePx } from "../../../../../shared/type/ZonePx";

@@ -1,5 +1,5 @@
-import { BattlerSide } from "../../../../../shared/type/battle/BattleAction";
-import { BaseStats } from "../../core/Battler";
+import { BattlerSide } from "../../type/battle/BattleAction";
+import { BaseStats } from "../../../renderer/game/battle/core/Battler";
 
 export const EnemyTemplateId = {
     SLIME: "SLIME", DRACKY: "DRACKY", GHOST: "GHOST"

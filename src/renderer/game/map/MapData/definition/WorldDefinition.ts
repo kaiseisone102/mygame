@@ -1,6 +1,6 @@
 // src/renderer/game/map/type/WorldDefinition.ts
 
-import { EnvironmentJson } from "../../../../../shared/map/MapJson";
+import { EnvironmentJson } from "../../../../../shared/Json/map/MapJson";
 import { World } from "../../../../../shared/core/world";
 import { ObjectLayer } from "../../objects/objectLayer";
 import { ItemData } from "../../talkNPC/ItemData";

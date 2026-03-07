@@ -256,7 +256,7 @@ export class BattleManager {
 
         this.battleState.order = all
             .filter(b => b.alive)
-            .sort((a, b) => b.speed - a.speed);
+            .sort((a, b) => b.baseStats.speed - a.baseStats.speed);
 
         this.battleState.currentActorId = 0;
     }

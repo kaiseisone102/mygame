@@ -1,5 +1,6 @@
 // src/shared/type/battle/BattleAction.ts
 
+import { BaseStats } from "../../../renderer/game/battle/core/Battler";
 import { SkillPreset } from "../../master/battle/type/SkillPreset";
 import { CommandActionType, TargetType } from "./TargetType";
 
@@ -55,14 +56,5 @@ export const ActionKind = {
 } as const;
 export type ActionKind = typeof ActionKind[keyof typeof ActionKind]
 
-export type GrowthRates = {
-    hp: number;
-    mp: number;
-    attack: number;
-    defense: number;
-    magic: number;
-    speed: number;
-};
-
-export type LevelGrowthTable = Record<number, GrowthRates>;
+export type LevelGrowthTable = Record<number, Partial<BaseStats>>;
 // レベルごとの成長値を保持 {1: {hp:5, mp:2, ...}, 2: {...}}

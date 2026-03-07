@@ -1,5 +1,5 @@
 import { NORM_SIZE } from "../../../../shared/data/constants";
-import { NpcJson } from "../../../../shared/map/MapJson";
+import { NpcJson } from "../../../../shared/Json/map/MapJson";
 import { NpcData, NpcTileDto } from "../talkNPC/NPCData";
 import { toAppDirection } from "./SignDtoMapper";
 import { mapImageKey } from "./ZoneDtoMapper";

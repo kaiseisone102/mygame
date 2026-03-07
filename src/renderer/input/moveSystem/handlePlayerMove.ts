@@ -4,7 +4,6 @@ import { TileEffectService } from "../../../renderer/service/tile/TileEffectServ
 import { isHitObject } from "../../../renderer/game/map/objects/isHitObject";
 import { ObjectLayer } from "../../../renderer/game/map/objects/objectLayer";
 import { SignData } from "../../../renderer/game/map/talkNPC/SignData";
-import { World } from "../../../shared/core/world";
 import { P_HIT_SIZE, NORM_SIZE } from "../../../shared/data/constants";
 import { AppDirection } from "../../../shared/type/PlayerState";
 import { TileType } from "../../../shared/type/tileType";
@@ -13,6 +12,7 @@ import { InputAxis } from "../mapping/InputMapper";
 import { movePlayer } from "./movePlayer";
 import { WorldPxPosition } from "../../../shared/type/playerPosition/posType";
 import { NpcData } from "../../../renderer/game/map/talkNPC/NPCData";
+import { TileQueryPort } from "../../../shared/port/TileQueryPort";
 
 export interface PlayerMoveResult {
     moved: boolean;
@@ -35,7 +35,7 @@ export function handlePlayerMove(
     axes: InputAxis[],
     pos: WorldPxPosition,
     moveSystem: { moved: boolean },
-    world: World,
+    world: TileQueryPort,
     objectLayer: ObjectLayer,
     zones: ZonePx[],
     npcs: NpcData[],
@@ -130,7 +130,7 @@ export function getHitboxPoints(pos: WorldPxPosition) {
 }
 
 function getBlockedTile(
-    world: World,
+    world: TileQueryPort,
     pos: WorldPxPosition,
     tileEffect: TileEffectService,
     context: any
@@ -146,7 +146,7 @@ function getBlockedTile(
         if (tx < 0 || ty < 0 || tx >= world.width || ty >= world.height) {
             return TileType.SKY; // 仮に空扱い
         }
-        const tile = world.getTile({ tx, ty });
+        const tile = world.getTileType({ tx, ty });
         const result = tileEffect.resolve(tile, context)
         if (!result.canWalk) return tile; // 通行不可のタイルを返す
     }
@@ -206,8 +206,8 @@ function isBlockedByZoneOrSign(
     return false;
 }
 
-function getFootTile(world: World, pos: WorldPxPosition): TileType {
+function getFootTile(world: TileQueryPort, pos: WorldPxPosition): TileType {
     const tx = Math.floor(pos.x / NORM_SIZE);
     const ty = Math.floor(pos.y / NORM_SIZE);
-    return world.getTile({ tx, ty });
+    return world.getTileType({ tx, ty });
 }

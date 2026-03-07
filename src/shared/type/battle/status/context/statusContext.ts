@@ -4,12 +4,13 @@
  * Battlerの最小インターフェース
  */
 export interface StatusContext {
-    hp: number;
-    maxHp: number;
+    baseStats: {
+        hp: number;
+        maxHp: number;
+        attack?: number;
+        defense?: number;
+        magic?: number;
+        speed?: number;
+    }
     alive: boolean;
-
-    attack?: number;
-    defense?: number;
-    magic?: number;
-    speed?: number;
 }

@@ -2,7 +2,11 @@
 
 import { WorldEvent } from "../../../../../renderer/router/WorldEvent";
 import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
-import { BattleScenePayload } from "../../../../../renderer/screens/battleScene/battleScene";
+import { EncounterRepository } from "../../../../../renderer/game/battle/enemy/repository/EncounterRepository";
+import { EnemyRepository } from "../../../../../renderer/game/battle/enemy/repository/EnemyRepository";
+import { EnemyTemplateId } from "../../../../../shared/Json/enemy/EnemyTemplate";
+import { BattlerFactory } from "../../../../../renderer/game/battle/enemy/factory/createEnemy";
+import { BiomeId } from "shared/type/battle/enemy/BiomeId";
 
 // BattleStartedUseCase は「画面上のワールド状態」を基準にする
 /**
@@ -12,49 +16,28 @@ import { BattleScenePayload } from "../../../../../renderer/screens/battleScene/
  */
 export class BattleStartedUseCase {
     constructor(
-        // private encounterRepo: EncounterRepository,
-        // private enemyRepo: EnemyRepository,
-        // private battlerFactory: BattlerFactory,
-        // private battleContext: BattleContext,
+        private enemyRepo: EnemyRepository,
+        private encounterRepo: EncounterRepository,
+        private battlerFactory: BattlerFactory,
         private emitWorld: (e: WorldEvent) => void,
         private emitUI: (e: AppUIEvent) => void,
     ) { }
 
-    execute() { //areaId: string
-        // // ① エリアから敵ID取得
-        // const enemyIds = this.encounterRepo.getEnemyIds(areaId);
+    execute(biomeId: BiomeId) {
+        // 1.エリアから敵ID取得
+        const enemyIds = this.encounterRepo.getEnemyIds(biomeId);
 
-        // // ② テンプレ取得
-        // const templates = enemyIds.map(id =>
-        //     this.enemyRepo.get(id)
-        // );
+        // 2.テンプレ取得
+        const templates = enemyIds.map((id: EnemyTemplateId) =>
+            this.enemyRepo.get(id)
+        );
 
-        // // ③ Battler生成
-        // const enemies = templates.map(t =>
-        //     this.battlerFactory.createEnemy(t)
-        // );
+        // 3.Battler生成
+        const enemies = templates.map(temp =>
+            this.battlerFactory.createEnemy(temp)
+        );
 
-        // // ④ 戦闘開始
-        // this.battleContext.start(enemies);
-
-        const dummyPayload: BattleScenePayload = { battleBasicCommand: { actorName: "HeroA", enemies: [{ id: 101, name: "slimeZ", alive: true }] } };
-        // // ⑤ イベント通知
-        this.emitWorld({ type: "BATTLE_STARTED", payload: dummyPayload });
+        // 4.イベント通知
+        this.emitWorld({ type: "BATTLE_STARTED", payload: { battler: enemies } });
     }
 }
-
-// createEnemy(template: EnemyTemplateJson): Battler {
-//     return new Battler({
-//         id: template.id,
-//         name: template.name,
-//         side: BattlerSide.ENEMY,
-//         level: template.level,
-//         exp: template.exp,
-//         baseStats: template.baseStats,
-//         growthTable: template.growthTable,
-//         statModifier: template.statModifier,
-//         skills: template.skills,
-//         traits: template.traits.map(t => TraitPresets[t]),
-//         aiType: AiType[template.aiType as keyof typeof AiType]
-//     });
-// }

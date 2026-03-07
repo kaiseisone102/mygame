@@ -1,6 +1,6 @@
 {
     "ATTACK": {
-        "id": "attack",
+        "id": "ATTACK",
         "name": "こうげき",
         "category": "ATTACK",
         "cost": {
@@ -18,7 +18,7 @@
         ]
     },
     "DOUBLE_ATTACK": {
-        "id": "double_attack",
+        "id": "DOUBLE_ATTACK",
         "name": "二回攻撃",
         "category": "ATTACK",
         "cost": {
@@ -37,7 +37,7 @@
         ]
     },
     "POWER_SLASH": {
-        "id": "power_slash",
+        "id": "POWER_SLASH",
         "name": "渾身斬り",
         "category": "TECHNIQUE",
         "cost": {
@@ -57,7 +57,7 @@
         ]
     },
     "WHIRL_WIND": {
-        "id": "whirlwind",
+        "id": "WHIRL_WIND",
         "name": "なぎ払い",
         "category": "TECHNIQUE",
         "cost": {
@@ -76,7 +76,7 @@
         ]
     },
     "BACK_STAB": {
-        "id": "backstab",
+        "id": "BACK_STAB",
         "name": "バックスタブ",
         "category": "TECHNIQUE",
         "cost": {
@@ -95,7 +95,7 @@
         ]
     },
     "MERA": {
-        "id": "mera",
+        "id": "MERA",
         "name": "メラ",
         "category": "MAGIC",
         "cost": {
@@ -115,7 +115,7 @@
         ]
     },
     "GIRA": {
-        "id": "gira",
+        "id": "GIRA",
         "name": "ギラ",
         "category": "MAGIC",
         "cost": {
@@ -135,7 +135,7 @@
         ]
     },
     "IO": {
-        "id": "io",
+        "id": "IO",
         "name": "イオ",
         "category": "MAGIC",
         "cost": {
@@ -155,7 +155,7 @@
         ]
     },
     "HYADO": {
-        "id": "hyado",
+        "id": "HYADO",
         "name": "ヒャド",
         "category": "MAGIC",
         "cost": {
@@ -175,7 +175,7 @@
         ]
     },
     "RAIDEIN": {
-        "id": "raidein",
+        "id": "RAIDEIN",
         "name": "ライデイン",
         "category": "MAGIC",
         "cost": {
@@ -195,7 +195,7 @@
         ]
     },
     "BAGI": {
-        "id": "bagi",
+        "id": "BAGI",
         "name": "バギ",
         "category": "MAGIC",
         "cost": {
@@ -215,7 +215,7 @@
         ]
     },
     "HEAL": {
-        "id": "heal",
+        "id": "HEAL",
         "name": "ヒール",
         "category": "MAGIC",
         "cost": {
@@ -233,7 +233,7 @@
         ]
     },
     "HEAL_ALL": {
-        "id": "heal_all",
+        "id": "HEAL_ALL",
         "name": "ヒールオール",
         "category": "MAGIC",
         "cost": {
@@ -251,7 +251,7 @@
         ]
     },
     "REVIVE": {
-        "id": "revive",
+        "id": "REVIVE",
         "name": "リザレクト",
         "category": "MAGIC",
         "cost": {
@@ -269,7 +269,7 @@
         ]
     },
     "ATK_UP_SMALL": {
-        "id": "atk_up_small",
+        "id": "ATK_UP_SMALL",
         "name": "ちからため",
         "category": "MAGIC",
         "cost": {
@@ -288,7 +288,7 @@
         ]
     },
     "ATK_UP_LARGE": {
-        "id": "atk_up_large",
+        "id": "ATK_UP_LARGE",
         "name": "バイキルト",
         "category": "MAGIC",
         "cost": {
@@ -307,7 +307,7 @@
         ]
     },
     "DEF_UP": {
-        "id": "def_up",
+        "id": "DEF_UP",
         "name": "スクルト",
         "category": "MAGIC",
         "cost": {
@@ -326,7 +326,7 @@
         ]
     },
     "HASTE": {
-        "id": "haste",
+        "id": "HASTE",
         "name": "ヘイスト",
         "category": "MAGIC",
         "cost": {
@@ -345,7 +345,7 @@
         ]
     },
     "ATK_DOWN": {
-        "id": "atk_down",
+        "id": "ATK_DOWN",
         "name": "ルカニ",
         "category": "MAGIC",
         "cost": {
@@ -364,7 +364,7 @@
         ]
     },
     "SLOW": {
-        "id": "slow",
+        "id": "SLOW",
         "name": "スロウ",
         "category": "MAGIC",
         "cost": {
@@ -383,7 +383,7 @@
         ]
     },
     "SLEEP": {
-        "id": "sleep",
+        "id": "SLEEP",
         "name": "ラリホー",
         "category": "MAGIC",
         "cost": {
@@ -401,7 +401,7 @@
         ]
     },
     "POISON": {
-        "id": "poison",
+        "id": "POISON",
         "name": "ポイズン",
         "category": "MAGIC",
         "cost": {
@@ -419,7 +419,7 @@
         ]
     },
     "PARALYZE": {
-        "id": "paralyze",
+        "id": "PARALYZE",
         "name": "パラライズ",
         "category": "MAGIC",
         "cost": {
@@ -437,7 +437,7 @@
         ]
     },
     "GUARD": {
-        "id": "guard",
+        "id": "GUARD",
         "name": "ぼうぎょ",
         "category": "TECHNIQUE",
         "cost": {
@@ -449,7 +449,7 @@
         "effects": []
     },
     "PROVOKE": {
-        "id": "provoke",
+        "id": "PROVOKE",
         "name": "挑発",
         "category": "TECHNIQUE",
         "cost": {
@@ -468,7 +468,7 @@
         ]
     },
     "ESCAPE": {
-        "id": "escape",
+        "id": "ESCAPE",
         "name": "にげる",
         "category": "TECHNIQUE",
         "cost": {
@@ -481,7 +481,7 @@
         "effects": []
     },
     "LIMIT_BREAK": {
-        "id": "limit_break",
+        "id": "LIMIT_BREAK",
         "name": "リミットブレイク",
         "category": "TECHNIQUE",
         "cost": {
@@ -500,7 +500,7 @@
         ]
     },
     "GIGADEIN": {
-        "id": "gigadein",
+        "id": "GIGADEIN",
         "name": "ギガデイン",
         "category": "MAGIC",
         "cost": {

@@ -57,7 +57,11 @@ import { MapRepository } from "./game/map/repository/MapRepository";
 import { WorldDefinitionFactory } from "./game/map/factory/WorldDefinitionFactory";
 import { BattleLogFormatter } from "./game/battle/event/BattleLogFormatter";
 import { SkillRepository } from "../shared/master/battle/SkillRepository";
-import { SkillPreset } from "../shared/master/battle/type/SkillPreset";
+import { SkillId, SkillPreset } from "../shared/master/battle/type/SkillPreset";
+import { EncounterTableJson, EnemyMasterJson } from "../shared/Json/enemy/EnemyTemplate";
+import { EncounterRepository } from "./game/battle/enemy/repository/EncounterRepository";
+import { EnemyRepository } from "./game/battle/enemy/repository/EnemyRepository";
+import { BattlerFactory } from "./game/battle/enemy/factory/createEnemy";
 
 // import enemyMasterJson from "enemies/enemyMaster.json";
 // import encounterTableJson from "./public/enemies/encounterTable.json";
@@ -71,9 +75,8 @@ await loadAssets();
 // スキル生成
 // NOTE:
 // Electron(file://) 用のため、asset は HTML 相対パスで指定する
-const skillsJson = await fetch("master/skills.json").then(r => r.json()) as Record<string, SkillPreset>;
+const skillsJson = await fetch("master/skillMaster.json").then(r => r.json()) as Record<SkillId, SkillPreset>;
 const skillRepository = new SkillRepository(skillsJson);
-console.log(skillsJson)
 
 const playerAssets = createPlayerAssets(key => ImageStore.get(key));
 
@@ -83,11 +86,12 @@ audioManager.setMasterVolume(config.masterVolume);
 audioManager.setBgmVolume(config.bgmVolume);
 audioManager.setSeVolume(config.seVolume);
 
-// const enemyMaster = enemyMasterJson as EnemyMasterJson;
-// const encounterTable = encounterTableJson as EncounterTableJson;
+const enemyMaster = await fetch("master/enemies/enemyMaster.json").then(r => r.json()) as EnemyMasterJson;
+const encounterTable = await fetch("master/enemies/encounterTable.json").then(r => r.json()) as EncounterTableJson;
 
-// const enemyRepository = new EnemyRepository(enemyMaster);
-// const encounterRepository = new EncounterRepository(encounterTable);
+const enemyRepository = new EnemyRepository(enemyMaster);
+const encounterRepository = new EncounterRepository(encounterTable);
+const battlerFactory = new BattlerFactory();
 
 const worldDefinitionFactory = new WorldDefinitionFactory();
 const mapRepository = new MapRepository();
@@ -169,6 +173,9 @@ const gameUseCases = createGameUseCases({
     battlePort: battlePort,
     tileDB: tileDB,
     skillRepository,
+    enemyRepository,
+    encounterRepository,
+    battlerFactory,
     emitWorld: (event) => worldRouter.dispatch(event),
     emitUI: (event) => uiRouter.dispatch(event)
 });

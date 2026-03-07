@@ -1,6 +1,6 @@
 // src/renderer/game/map/repository/MapRepository.ts
 
-import { MapJson } from "../../../../shared/map/MapJson";
+import { MapJson } from "../../../../shared/Json/map/MapJson";
 import { MapId } from "../../../../shared/type/MapId";
 
 export class MapRepository {

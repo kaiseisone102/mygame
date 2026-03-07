@@ -17,7 +17,7 @@ export class SkillExecutor {
         // MP消費
         if (mpCost != null) {
             const cost = TraitRunner.applyMpCost(mpCost, skill, actor.traits);
-            actor.mp = Math.max(0, actor.mp - cost);
+            actor.baseStats.mp = Math.max(0, actor.baseStats.mp - cost);
         }
 
         for (const target of targets) {
@@ -30,19 +30,19 @@ export class SkillExecutor {
                     case SkillEffectKindId.DAMAGE: {
                         const base = calcDamage(actor, target, effect);
                         const final = TraitRunner.applyDamageTraits(
-                            { source: actor, target, skill, damage: base },
-                            target.traits
+                            { source: actor, target, skill, damage: base.damage },
+                            [...actor.traits, ...target.traits]
                         );
 
-                        target.hp = Math.max(0, target.hp - final);
-                        const killed = target.hp === 0;
-                  
+                        target.baseStats.hp = Math.max(0, target.addHp(-final));
+                        const killed = !target.alive;
+
                         results.push({
                             kind: SkillEffectKindId.DAMAGE,
                             sourceId: actor.id,
                             targetId: target.id,
                             value: final,
-                            isCritical: false, // calcDamageで返してもいい
+                            isCritical: base.isCritical, // calcDamageで返してもいい
                             killed
                         });
                         break;
@@ -52,10 +52,10 @@ export class SkillExecutor {
                         const base = effect.power;
                         const final = TraitRunner.applyHealTraits(
                             { source: actor, target, skill, heal: base },
-                            target.traits
+                            [...actor.traits, ...target.traits]
                         );
 
-                        target.hp = Math.min(target.maxHp, target.hp + final);
+                        target.baseStats.hp = Math.min(target.baseStats.maxHp, target.baseStats.hp + final);
 
                         results.push({
                             kind: SkillEffectKindId.HEAL,
@@ -67,7 +67,10 @@ export class SkillExecutor {
                     }
 
                     case SkillEffectKindId.STATUS:
-                        if (Math.random() < effect.chance) {
+
+                        const chance = effect.chance ?? 1;
+
+                        if (Math.random() < chance) {
                             target.addStatus(createStatus(effect.statusId, { source: actor, skill }))
 
                             results.push({

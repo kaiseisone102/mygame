@@ -2,7 +2,8 @@
 
 import { CHUNK_TILES } from "../data/constants";
 import { TileQueryPort } from "../port/TileQueryPort";
-import { WorldPxPosition, WorldTilePosition } from "../type/playerPosition/posType";
+import { BiomeId, TileBiomeMap } from "../type/battle/enemy/BiomeId";
+import { WorldTilePosition } from "../type/playerPosition/posType";
 import { TileType } from "../type/tileType";
 import { Chunk } from "./chunk";
 
@@ -70,6 +71,10 @@ export class World implements TileQueryPort {
      */
     getTileType(pos: WorldTilePosition): TileType {
         return this.getTile(pos);
+    }
+
+    getBiomeFromTile(tile: TileType): BiomeId {
+        return TileBiomeMap[tile];
     }
 
     /**

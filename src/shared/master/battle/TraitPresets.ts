@@ -48,7 +48,7 @@ export const TraitPresets = {
         id: TraitPresetId.AUTO_REGEN,
         type: TraitType.UTILITY,
         onTurnStart: (battler: BattlerPort) => {
-            battler.hp = Math.min(battler.maxHp, battler.hp + 2);
+            battler.baseStats.hp = Math.min(battler.baseStats.maxHp, battler.baseStats.hp + 2);
         },
     },
 } as const;

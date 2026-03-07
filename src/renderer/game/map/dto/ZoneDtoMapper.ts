@@ -1,7 +1,7 @@
 // src/renderer/game/map/dto/ZoneDtoMapper.ts
 
 import { ImageKey } from "../../../../shared/type/ImageKey";
-import { ZoneJson } from "../../../../shared/map/MapJson";
+import { ZoneJson } from "../../../../shared/Json/map/MapJson";
 import { ZoneType } from "../../../../shared/type/ZoneType";
 import { ZoneTileDto } from "../../../../shared/type/ZoneTileDto";
 import { NORM_SIZE } from "../../../../shared/data/constants";

@@ -60,7 +60,7 @@ export class WorldEventRouter {
                 break;
             // 敵が出現
             case "ENCOUNTER_CONFIRMED":
-                this.gameUseCases.battleStartedUseCase.execute();
+                this.gameUseCases.battleStartedUseCase.execute(event.biomeId);
                 break;
             // 戦闘画面へ
             case "BATTLE_STARTED": {

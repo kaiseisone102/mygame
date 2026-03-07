@@ -1,10 +1,8 @@
 // src/shared/type/battle/status/StatusEffect.ts
 
 import { BattleAction } from "../BattleAction";
-import { BattlerPort } from "../port/BattlerPort";
 import { ActionRewriteContext } from "./context/ActionRewriteContext";
 import { StatusContext } from "./context/statusContext";
-import { StatusSource } from "./context/StatusSource";
 import { StackRule } from "./StackRule";
 import { StatusCategory } from "./StatusCategory";
 
@@ -12,17 +10,14 @@ import { StatusCategory } from "./StatusCategory";
   ステータス効果定義
 ===================== */
 export type StatusEffect = {
-    id: string;
+    id: StatusId;
     category: StatusCategory;
-
-    /** 効果優先度。高いほど先に処理される */
+    /** 処理順（高いほど先に処理） */
+    order?: number;
+    /** 効果優先度（強さ比較用） */
     priority: number;
-    /** 残りターン数。-1 = 永続 */
-    duration: number;
     /** 同カテゴリ重複時のルール */
     stackRule: StackRule;
-    /** crateStatus 用 */
-    context?: StatusSource;
 
     /** 適用時の処理 */
     onApply?: (ctx: StatusContext) => void;
@@ -40,3 +35,18 @@ export type StatusEffect = {
     /** 効果解除時 */
     onExpire?: (ctx: StatusContext) => void;
 };
+
+export const StatusId = {
+    CONFUSION: "CONFUSION",
+    CHARM: "CHARM",
+    PARALYSIS: "PARALYSIS",
+    SLEEP: "SLEEP",
+    STRONG_SLEEP: "STRONG_SLEEP",
+    POISON: "POISON",
+    STRONG_POISON: "STRONG_POISON",
+
+    STUN: "STUN",
+
+    DEAD: "DEAD"
+} as const;
+export type StatusId = typeof StatusId[keyof typeof StatusId];

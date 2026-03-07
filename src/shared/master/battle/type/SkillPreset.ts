@@ -23,3 +23,42 @@ export type SkillPreset = {
 
     effects: readonly SkillEffectKind[];
 };
+
+export const SkillId = {
+    ATTACK: "ATTACK",
+    DOUBLE_ATTACK: "DOUBLE_ATTACK",
+    POWER_SLASH: "POWER_SLASH",
+    WHIRL_WIND: "WHIRL_WIND",
+    BACK_STAB: "BACK_STAB",
+
+    MERA: "MERA",
+    GIRA: "GIRA",
+    IO: "IO",
+    HYADO: "HYADO",
+    RAIDEIN: "RAIDEIN",
+    BAGI: "BAGI",
+
+    HEAL: "HEAL",
+    HEAL_ALL: "HEAL_ALL",
+    REVIVE: "REVIVE",
+
+    ATK_UP_SMALL: "ATK_UP_SMALL",
+    ATK_UP_LARGE: "ATK_UP_LARGE",
+    DEF_UP: "DEF_UP",
+    HASTE: "HASTE",
+
+    ATK_DOWN: "ATK_DOWN",
+    SLOW: "SLOW",
+
+    SLEEP: "SLEEP",
+    POISON: "POISON",
+    PARALYZE: "PARALYZE",
+
+    GUARD: "GUARD",
+    PROVOKE: "PROVOKE",
+    ESCAPE: "ESCAPE",
+
+    LIMIT_BREAK: "LIMIT_BREAK",
+    GIGADEIN: "GIGADEIN"
+} as const;
+export type SkillId = typeof SkillId[keyof typeof SkillId]

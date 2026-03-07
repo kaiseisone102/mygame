@@ -6,6 +6,7 @@ import { ZonePx } from "../../shared/type/ZonePx";
 import { TileStepContext, ZoneContext } from "../../shared/type/ZoneEvent";
 import { BattleResult } from "../../shared/type/battle/TargetType";
 import { BattleScenePayload } from "../../renderer/screens/battleScene/battleScene";
+import { BiomeId } from "shared/type/battle/enemy/BiomeId";
 
 export type WorldEvent =
     // // ワールドマップ変更
@@ -19,7 +20,7 @@ export type WorldEvent =
 
 type BattleEventWorld =
     | { type: "PLAYER_MOVED", ctx: TileStepContext }
-    | { type: "ENCOUNTER_CONFIRMED", mapId: MapId }
+    | { type: "ENCOUNTER_CONFIRMED", biomeId: BiomeId }
     | { type: "BATTLE_STARTED", payload: BattleScenePayload }
     | { type: "BATTLE_RESULT", result: BattleResult }
     | { type: "BATTLE_FINISHED" }

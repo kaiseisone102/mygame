@@ -1,6 +1,6 @@
 
 import { World } from "../../../../shared/core/world";
-import { MapJson } from "../../../../shared/map/MapJson";
+import { MapJson } from "../../../../shared/Json/map/MapJson";
 import { WORLD_DEFAULT_TILE, MapCategory } from "../../../../shared/type/mapRules";
 import { ZonePx } from "../../../../shared/type/ZonePx";
 import { buildItems, toItemTile } from "../dto/ItemDtoMapper";

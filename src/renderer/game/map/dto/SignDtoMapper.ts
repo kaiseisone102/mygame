@@ -1,5 +1,5 @@
 import { AppDirection } from "../../../../shared/type/PlayerState";
-import { SignJson } from "../../../../shared/map/MapJson";
+import { SignJson } from "../../../../shared/Json/map/MapJson";
 import { SignData, SignTileDto } from "../talkNPC/SignData";
 import { mapImageKey } from "./ZoneDtoMapper";
 import { NORM_SIZE } from "../../../../shared/data/constants";

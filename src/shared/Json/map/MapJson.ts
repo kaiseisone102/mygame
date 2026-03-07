@@ -1,8 +1,8 @@
 // src/shared/map/MapJson.ts
 
-import { ImageKey } from "../type/ImageKey";
-import { WorldTilePosition } from "../type/playerPosition/posType";
-import { ZoneType } from "../type/ZoneType";
+import { ImageKey } from "../../type/ImageKey";
+import { WorldTilePosition } from "../../type/playerPosition/posType";
+import { ZoneType } from "../../type/ZoneType";
 
 export interface MapJson {
     zones: Partial<Record<keyof typeof ZoneType, ZoneJson[]>>;

@@ -3,5 +3,9 @@
         "SLIME",
         "DRACKY",
         "GHOST"
+    ],
+    "PLAIN": [
+        "SLIME",
+        "DORACKY"
     ]
 }

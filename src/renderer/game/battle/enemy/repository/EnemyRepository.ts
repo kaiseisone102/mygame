@@ -1,9 +1,9 @@
-import { EnemyMasterJson, EnemyTemplateJson } from "../type/EnemyTemplate";
+import { EnemyMasterJson, EnemyTemplateId, EnemyTemplateJson } from "../../../../../shared/Json/enemy/EnemyTemplate";
 
 export class EnemyRepository {
     constructor(private master: EnemyMasterJson) {}
 
-    get(templateId: string): EnemyTemplateJson {
+    get(templateId: EnemyTemplateId): EnemyTemplateJson {
         const enemy = this.master[templateId];
 
         if (!enemy) {

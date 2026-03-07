@@ -2,39 +2,46 @@ import { Battler } from "../../core/Battler";
 import { SkillEffect } from "../../../../../shared/type/battle/skill/Skill";
 import { MagicFormulaId, PhysicalFormulaId, SkillEffectKindId } from "../../../../../shared/type/battle/skill/skillFormula";
 
+type DamageResult = {
+    damage: number
+    isCritical: boolean
+}
+
 export function calcDamage(
     attacker: Battler,
     target: Battler,
     effect: Extract<SkillEffect, { type: typeof SkillEffectKindId.DAMAGE }>
-): number {
+): DamageResult {
 
     switch (effect.formula) {
         case PhysicalFormulaId.ATK_DEF: {
-            const atk = attacker.attack;
-            const def = target.defense;
-            return Math.max(1, atk - def);
+            const atk = attacker.baseStats.attack;
+            const def = target.baseStats.defense;
+            return { damage: Math.max(1, atk - def), isCritical: false };
         }
 
         case PhysicalFormulaId.ATK_RATE: {
             const rate = effect.rate ?? 1;
-            return Math.max(1, Math.floor(attacker.attack * rate));
+            return { damage: Math.max(1, Math.floor(attacker.baseStats.attack * rate)), isCritical: false };
         }
 
         case PhysicalFormulaId.FIXED: {
-            return Math.max(1, effect.power);
+            return { damage: Math.max(1, effect.power), isCritical: false };
         }
 
         case MagicFormulaId.MAGIC: {
             // 魔法攻撃 = 攻撃者の魔力 × rate + 固定魔法威力
-            const baseMagic = attacker.magic; // INT / 魔力ステータス
+            const baseMagic = attacker.baseStats.magic; // INT / 魔力ステータス
             const rate = effect.rate ?? 1;           // 割合が指定されていれば掛ける
             const power = effect.power ?? 0;         // 固定魔法威力
             const damage = Math.floor(baseMagic * rate + power);
 
-            return Math.max(1, damage);
+            return {
+                damage: Math.max(1, damage), isCritical: false
+            };
         }
 
         default:
-            return 0;
+            return { damage: 0, isCritical: false };
     }
 }

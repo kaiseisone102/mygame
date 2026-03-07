@@ -3,6 +3,7 @@
 import { EffectScope, ElementId, SkillCategory, TargetSide } from "../../type/battle/skill/skillFormula";
 import { BuffPower } from "../../type/battle/status/BuffPower";
 import { StatusCategory } from "../../type/battle/status/StatusCategory";
+import { StatusId } from "../../type/battle/status/StatusEffect";
 import { TargetType } from "../../type/battle/TargetType";
 import { SkillPreset } from "./type/SkillPreset";
 
@@ -369,7 +370,7 @@ export const SkillPresets = {
 
     // 状態異常
     SLEEP: {
-        id: "sleep",
+        id: "SLEEP",
         name: "ラリホー",
         category: "MAGIC",
         cost: { mp: 4 },
@@ -380,14 +381,14 @@ export const SkillPresets = {
             {
                 type: "STATUS",
                 statusId: "SLEEP",
-                status: StatusCategory.SLEEP,
+                status: StatusId.SLEEP,
                 chance: 0.6,
             },
         ],
     },
 
     POISON: {
-        id: "poison",
+        id: "POISON",
         name: "ポイズン",
         category: "MAGIC",
         cost: { mp: 3 },
@@ -399,7 +400,7 @@ export const SkillPresets = {
             {
                 type: "STATUS",
                 statusId: "POISON",
-                status: StatusCategory.POISON,
+                status: StatusId.POISON,
                 chance: 0.7,
             },
         ],

@@ -1,5 +1,5 @@
 import { NORM_SIZE } from "../../../../shared/data/constants";
-import { ItemJson } from "../../../../shared/map/MapJson";
+import { ItemJson } from "../../../../shared/Json/map/MapJson";
 import { ItemData, FieldItem, ItemTileDto } from "../talkNPC/ItemData";
 import { mapImageKey } from "./ZoneDtoMapper";
 

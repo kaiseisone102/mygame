@@ -36,6 +36,9 @@ import { EnterWorldMapUseCase } from "../world/enterWorld/EnterWorldMapUseCase";
 import { EnteredTownUseCase } from "../zone/EnteredTownUseCase";
 import { GameUseCases } from "./GameUseCases";
 import { SkillRepository } from "../../../../../shared/master/battle/SkillRepository";
+import { EnemyRepository } from "../../../../../renderer/game/battle/enemy/repository/EnemyRepository";
+import { EncounterRepository } from "../../../../../renderer/game/battle/enemy/repository/EncounterRepository";
+import { BattlerFactory } from "renderer/game/battle/enemy/factory/createEnemy";
 
 export function createGameUseCases(deps: {
     mapRepository: MapRepository,
@@ -51,13 +54,16 @@ export function createGameUseCases(deps: {
     battlePort: BattlePort,
     tileDB: Record<TileType, TileData>,
     skillRepository: SkillRepository,
+    enemyRepository: EnemyRepository,
+    encounterRepository: EncounterRepository,
+    battlerFactory: BattlerFactory,
     emitWorld: (e: WorldEvent) => void,
     emitUI: (e: AppUIEvent) => void
 }): GameUseCases {
 
     // バトルWorld
     const encounterUseCase = new EncounterUseCase(deps.gameState, deps.tileDB, deps.emitWorld);
-    const battleStartedUseCase = new BattleStartedUseCase(deps.emitWorld, deps.emitUI);
+    const battleStartedUseCase = new BattleStartedUseCase(deps.enemyRepository, deps.encounterRepository, deps.battlerFactory, deps.emitWorld, deps.emitUI);
     const battleResultUseCase = new BattleResultUseCase(deps.emitWorld);
 
     // ChangeScreen

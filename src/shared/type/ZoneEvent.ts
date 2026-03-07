@@ -1,6 +1,7 @@
 // src/shared/type/ZoneEvents.ts
 
 import { GameState } from "../data/gameState";
+import { BiomeId } from "./battle/enemy/BiomeId";
 import { MapId } from "./MapId";
 import { WorldPxPosition } from "./playerPosition/posType";
 import { PlayerState } from "./PlayerState";
@@ -30,5 +31,5 @@ export interface ZoneContext {
 export type TileStepContext = {
     mapId: MapId;
     pos: WorldPxPosition;
-    tileType: TileType;
+    biomeId: BiomeId;
 };

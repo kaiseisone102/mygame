@@ -5,7 +5,6 @@ import { eventBus } from "../../../renderer/app";
 import { InputAxis } from "../../../renderer/input/mapping/InputMapper";
 import { PlayerMoveResult, handlePlayerMove } from "../../../renderer/input/moveSystem/handlePlayerMove";
 import { ZoneBehaviors } from "../../../renderer/router/ZoneBehaviors";
-import { World } from "../../../shared/core/world";
 import { P_HIT_SIZE } from "../../../shared/data/constants";
 import { GameState } from "../../../shared/data/gameState";
 import { DEFAULT_PLAYER_HP } from "../../../shared/data/playerConstants";
@@ -21,6 +20,7 @@ import { pxPosToTilePos } from "../map/tileToPixel";
 import { RectPx } from "../map/objects/rect";
 import { NpcData } from "../map/talkNPC/NPCData";
 import { TileType } from "../../../shared/type/tileType";
+import { TileQueryPort } from "../../../shared/port/TileQueryPort";
 
 export type PlayerUpdateResult = {
     state: PlayerState;
@@ -43,7 +43,7 @@ export class PlayerController {
     private item: ItemData[] = [];
 
     constructor(
-        private world: World,
+        private world: TileQueryPort,
         private objectLayer: ObjectLayer,
         private tileEffect: TileEffectService,
         private walkContext: any,
@@ -106,7 +106,7 @@ export class PlayerController {
                 eventBus.emit("REQUEST_RANDOM_ENCOUNTER", {
                     mapId: this.mapId,
                     pos: structuredClone(pos),
-                    tileType: this.world.getTile(tilePos)
+                    biomeId: this.world.getBiomeFromTile(this.world.getTileType(tilePos))
                 });
             }
         }
@@ -188,7 +188,7 @@ export class PlayerController {
             a.pos.y + a.h > b.pos.y;
     }
 
-    setWorld(world: World, objectLayer: ObjectLayer) {
+    setWorld(world: TileQueryPort, objectLayer: ObjectLayer) {
         this.world = world;
         this.objectLayer = objectLayer;
     }

@@ -3,6 +3,7 @@
 import { BuffPresets } from "../../../master/battle/BuffPreset";
 import { StatusPresets } from "../../../master/battle/StatusPreset";
 import { StatusCategory } from "../status/StatusCategory";
+import { StatusId } from "../status/StatusEffect";
 import { Element, MagicFormulaId, PhysicalFormulaId, SkillEffectKindId } from "./skillFormula";
 
 // SkillPreset の effects で利用
@@ -14,7 +15,7 @@ export type SkillEffectKind =
     }
     | {
         type: typeof SkillEffectKindId.STATUS; // ← 状態異常専用
-        statusId: keyof typeof StatusPresets;
+        statusId: StatusId;
         status: StatusCategory
         chance: number; // 0~1
     }

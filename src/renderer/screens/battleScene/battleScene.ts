@@ -20,10 +20,11 @@ import { OverlayScreenType } from "../../../shared/type/screenType";
 import { BattleBackgroundScreen } from "./mainScreen/BattleBackgroundScreen";
 import { GetOverlayScreenType } from "../interface/overlay/OverLayScreens";
 import { BattleEvent } from "../../../renderer/game/battle/event/BattleEvent";
+import { Battler } from "../../../renderer/game/battle/core/Battler";
 
 export type BattleScenePayload = {
-    battleBasicCommand: BattleBasicCommandPayload,
-}
+    battler: Battler[]
+};
 
 /**
  * BattleScene

@@ -1,20 +1,19 @@
 // src/renderer/game/battle/logic/status/createStatus.ts
 
+import { StatusInstance } from "../../../../../shared/type/battle/status/StatusInstance";
 import { StatusPresets } from "../../../../../shared/master/battle/StatusPreset";
 import { StatusSource } from "../../../../../shared/type/battle/status/context/StatusSource";
-import { StackRuleId } from "../../../../../shared/type/battle/status/StackRule";
-import { StatusEffect } from "../../../../../shared/type/battle/status/StatusEffect";
+import { StatusId } from "../../../../../shared/type/battle/status/StatusEffect";
 
-const DEFAULT_STATUS: Pick<StatusEffect, "priority" | "duration" | "stackRule"> = {
-    priority: 0,
-    duration: -1,
-    stackRule: StackRuleId.IGNORE,
-};
+export function createStatus(statusId: StatusId, context: StatusSource): StatusInstance {
 
-export function createStatus(id: keyof typeof StatusPresets, context?: StatusSource): StatusEffect {
+    const base = StatusPresets[statusId];
+
     return {
-        ...DEFAULT_STATUS,   // システム保証
-        ...StatusPresets[id],  // 調整用
-        context,
+        ...base,
+        instanceId: crypto.randomUUID(),
+        duration: base.duration ?? 1,
+        source: context.source,
+        skill: context.skill,
     };
 }
