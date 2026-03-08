@@ -5,7 +5,7 @@ import { SkillCategory, TargetSide, EffectScope, Element } from "../../../type/b
 import { TargetType } from "../../../type/battle/TargetType";
 
 export type SkillPreset = {
-    id: string; // 識別用
+    id: SkillId; // 識別用
     name: string; // ui用
 
     category: SkillCategory;

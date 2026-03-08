@@ -1,17 +1,17 @@
 // src/shared/battle/traits/Trait.ts
 
-import { TraitPreset } from "../../../master/battle/TraitPresets";
+import { BaseStats } from "../../../../renderer/game/battle/core/Battler";
+import { TraitId } from "../../../master/battle/TraitPresets";
 import { SkillPreset } from "../../../master/battle/type/SkillPreset";
 import { BattleAction } from "../BattleAction";
 import { BattlerPort } from "../port/BattlerPort";
-import { Skill } from "../skill/Skill";
 import { TraitType, DamageContext, HealContext } from "./TraitType";
 
 /**
  * if文を書かないための「フック定義」
  */
 export type Trait = {
-    id: TraitPreset;
+    id: TraitId;
     // UI / セーブ / 判定用
     tags?: string[];
 
@@ -19,6 +19,7 @@ export type Trait = {
 
     value?: number;
 
+    modifyStat?: (stat: keyof BaseStats, value: number) => number;
     // ダメージ計算に介入
     onDamage?: (ctx: DamageContext) => number;
 

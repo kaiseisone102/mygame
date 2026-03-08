@@ -1,16 +1,16 @@
 // src/shared/master/battle/SkillRepository.ts
 
-import { SkillPreset } from "./type/SkillPreset";
+import { SkillId, SkillPreset } from "./type/SkillPreset";
 
 export class SkillRepository {
 
-    private skills: Record<string, SkillPreset>;
+    private skills: Record<SkillId, SkillPreset>;
 
-    constructor(data: Record<string, SkillPreset>) {
+    constructor(data: Record<SkillId, SkillPreset>) {
         this.skills = data;
     }
 
-    get(id: string): SkillPreset {
+    get(id: SkillId): SkillPreset {
         const skill = this.skills[id];
         if (!skill) throw new Error(`Skill not found: ${id}`);
         return skill;

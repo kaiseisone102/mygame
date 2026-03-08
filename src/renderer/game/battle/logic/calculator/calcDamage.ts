@@ -1,17 +1,13 @@
 import { Battler } from "../../core/Battler";
 import { SkillEffect } from "../../../../../shared/type/battle/skill/Skill";
 import { MagicFormulaId, PhysicalFormulaId, SkillEffectKindId } from "../../../../../shared/type/battle/skill/skillFormula";
-
-type DamageResult = {
-    damage: number
-    isCritical: boolean
-}
+import { CalcDamageResult } from "../../../../../shared/type/battle/damage/DamageResult";
 
 export function calcDamage(
     attacker: Battler,
     target: Battler,
     effect: Extract<SkillEffect, { type: typeof SkillEffectKindId.DAMAGE }>
-): DamageResult {
+): CalcDamageResult {
 
     switch (effect.formula) {
         case PhysicalFormulaId.ATK_DEF: {
@@ -41,7 +37,6 @@ export function calcDamage(
             };
         }
 
-        default:
-            return { damage: 0, isCritical: false };
+        default: return { damage: 0, isCritical: false };
     }
 }

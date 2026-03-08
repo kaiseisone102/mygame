@@ -1,20 +1,20 @@
 // src/shared/type/battle/BattleAction.ts
 
 import { BaseStats } from "../../../renderer/game/battle/core/Battler";
-import { SkillPreset } from "../../master/battle/type/SkillPreset";
+import { SkillId, SkillPreset } from "../../master/battle/type/SkillPreset";
 import { CommandActionType, TargetType } from "./TargetType";
 
 export type BattleAction =
     | {
         type: typeof CommandActionType.ATTACK;
         actorId: number;
-        skillId: string;
+        skill: SkillPreset;
         target: TargetSpecifier;
     }
     | {
         type: typeof CommandActionType.MAGIC;
         actorId: number;
-        skillId: string;
+        skill: SkillPreset;
         target: TargetSpecifier;
     }
     | {
@@ -26,13 +26,13 @@ export type BattleAction =
     | {
         type: typeof CommandActionType.DEFENCE;
         actorId: number;
-        skillId: string;
+        skill: SkillPreset;
         target: TargetSpecifier;
     }
     | {
         type: typeof CommandActionType.ESCAPE;
         actorId: number;
-        skillId: string;
+        skill: SkillPreset;
         target: TargetSpecifier;
     };
 
@@ -58,3 +58,11 @@ export type ActionKind = typeof ActionKind[keyof typeof ActionKind]
 
 export type LevelGrowthTable = Record<number, Partial<BaseStats>>;
 // レベルごとの成長値を保持 {1: {hp:5, mp:2, ...}, 2: {...}}
+
+export type StrangeAction = {
+    commandId: CommandActionType,
+    actorId: number,
+    actorName: string,
+    skillId: SkillId,
+    target?: number
+}

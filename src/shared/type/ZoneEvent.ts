@@ -26,6 +26,7 @@ export interface ZoneContext {
     player: PlayerState;
     gameState: GameState;
     mapId: MapId;
+    biomeId: BiomeId;
 }
 
 export type TileStepContext = {

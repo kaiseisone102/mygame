@@ -3,11 +3,11 @@
 import { StatusPreset } from "../../../master/battle/StatusPreset";
 import { BattlerPort } from "../port/BattlerPort";
 import { SkillPort } from "../port/skillPort";
-import { StatusSource } from "./context/StatusSource";
+import { StatusEffect } from "./StatusEffect";
 
-export type StatusInstance = StatusPreset & {
+export type StatusInstance = StatusPreset & StatusEffect & {
     instanceId: string,
     duration: number,
     source: BattlerPort,
-    skill: SkillPort
+    skill: SkillPort,
 }

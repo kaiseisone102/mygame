@@ -73,7 +73,7 @@ export function registerZoneEventBridge(
             ctx: {
                 mapId: payload.mapId,    // mapId
                 pos: payload.pos,        // WorldPosition
-                tileType: payload.tileType
+                biomeId: payload.biomeId
             }
         });
     });

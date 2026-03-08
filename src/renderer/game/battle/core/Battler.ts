@@ -9,8 +9,12 @@ import { BattlerSide, LevelGrowthTable } from "../../../../shared/type/battle/Ba
 import { Trait } from "../../../../shared/type/battle/trait/Trait";
 import { AiType } from "../../../../shared/master/battle/type/EnemyPreset ";
 import { SkillId } from "../../../../shared/master/battle/type/SkillPreset";
-import { StatusInstance } from "shared/type/battle/status/StatusInstance";
-import { StatusCategory } from "shared/type/battle/status/StatusCategory";
+import { StatusInstance } from "../../../../shared/type/battle/status/StatusInstance";
+import { StatusCategory } from "../../../../shared/type/battle/status/StatusCategory";
+import { BattleEvent } from "../../../../shared/type/battle/event/BattleEvent";
+import { EventContext } from "../../../../shared/type/battle/event/EventContext";
+import { BuffPresets } from "../../../../shared/master/battle/BuffPreset";
+import { StatusTickType } from "../../../../shared/type/battle/status/constants/statusConstant";
 
 type LevelUpResult = {
     level: number
@@ -124,7 +128,7 @@ export class Battler implements StatusContext, BattlerPort {
            ステータス操作
         ===================== */
     addHp(amount: number) {
-       return this.baseStats.hp = Math.min(this.baseStats.maxHp, this.baseStats.hp + amount);
+        return this.baseStats.hp = Math.min(this.baseStats.maxHp, this.baseStats.hp + amount);
     }
 
     addMp(amount: number) {
@@ -134,9 +138,13 @@ export class Battler implements StatusContext, BattlerPort {
     addStatus(newStatus: StatusInstance) {
 
         // 同カテゴリの既存状態
-        const sameCategory = this.statusEffects.filter(
-            s => s.category === newStatus.category
-        );
+        const sameCategory: StatusInstance[] = [];
+
+        for (const s of this.statusEffects) {
+            if (s.category === newStatus.category) {
+                sameCategory.push(s);
+            }
+        }
 
         // 同カテゴリが存在する場合
         if (sameCategory.length > 0) {
@@ -151,7 +159,9 @@ export class Battler implements StatusContext, BattlerPort {
             }
 
             // 強い状態が来た → 既存カテゴリ全削除
-            sameCategory.forEach(s => s.onExpire?.(this));
+            for (const s of sameCategory) {
+                s.onExpire?.(this);
+            }
 
             this.statusEffects = this.statusEffects.filter(
                 s => s.category !== newStatus.category
@@ -226,10 +236,16 @@ export class Battler implements StatusContext, BattlerPort {
     onTurnStart() {
         // ===== 状態異常処理 =====
         // order順で処理
-        const effects = [...this.statusEffects];
+        const effects = [...this.statusEffects].sort(
+            (a, b) => (b.order ?? 0) - (a.order ?? 0)
+        );
         // ターン開始処理（毒など）
         for (const effect of effects) {
-            effect.onTurnStart?.(this);
+
+            if (effect.tickType === StatusTickType.TURN_START) {
+                effect.onTurnTick?.(this);
+            }
+
         }
 
         // expire 処理
@@ -258,14 +274,27 @@ export class Battler implements StatusContext, BattlerPort {
         });
     }
 
+    onTurnEnd() {
+
+        const effects = [...this.statusEffects].sort(
+            (a, b) => (b.order ?? 0) - (a.order ?? 0)
+        );
+
+        for (const effect of effects) {
+
+            if (effect.tickType === StatusTickType.TURN_END) {
+                effect.onTurnTick?.(this);
+            }
+
+        }
+
+    }
 
     /* =====================
         行動可能判定
     ===================== */
     canAct(): boolean {
-        if (this.hasStatus(StatusId.STUN)) return false;
-        if (this.hasStatus(StatusId.SLEEP)) return false;
-        return true;
+        return !this.statusEffects.some(s => s.blocksAction);
     }
 
     /* =====================
@@ -347,11 +376,54 @@ export class Battler implements StatusContext, BattlerPort {
         return this.statusEffects.some(s => s.category === category);
     }
 
-    getStatus(id: StatusId): StatusEffect | undefined {
-        return this.statusEffects.find(s => s.id === id);
+    getStatus(id: StatusId): StatusInstance | undefined {
+        return this.statusEffects.find(s => s.id === id) ?? undefined;
     }
 
     hasAnyStatus(ids: StatusId[]): boolean {
         return this.statusEffects.some(s => ids.includes(s.id));
+    }
+
+    emitEvent(event: BattleEvent, ctx: EventContext) {
+
+        for (const status of this.statusEffects) {
+            status.onEvent?.(event, ctx);
+        }
+    }
+
+    getStat(stat: keyof BaseStats): number {
+
+        let value = this.baseStats[stat];
+
+        // buff
+        for (const buff of this.buffs) {
+
+            const preset = BuffPresets[buff.id];
+
+            if (!preset) continue;
+
+            if (preset.category === stat) continue;
+
+            value = preset.apply(value, buff.value);
+
+        }
+
+        // ===== Trait =====
+        for (const trait of this.traits) {
+
+            if (!trait.modifyStat) continue;
+
+            value = trait.modifyStat(stat, value);
+        }
+
+        // ===== Status =====
+        for (const status of this.statusEffects) {
+
+            if (!status.statModifier) continue;
+
+            value = status.statModifier(stat, value);
+        }
+
+        return value;
     }
 }

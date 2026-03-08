@@ -1,9 +1,9 @@
 // src/renderer/screens/battleScene/mainScreen/BattleBackgroundScreen.ts
 
-import { BattleState } from "@/renderer/game/battle/core/BattleState";
+import { BattleState } from "../../../../renderer/game/battle/core/BattleState";
 import { MainScreen } from "../../interface/screen/MainScreen";
 import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
-import { InputAxis, UIActionEvent } from "@/renderer/input/mapping/InputMapper";
+import { InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";
 
 /**
  * 背景・カメラ・揺れ

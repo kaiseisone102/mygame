@@ -58,13 +58,11 @@ import { WorldDefinitionFactory } from "./game/map/factory/WorldDefinitionFactor
 import { BattleLogFormatter } from "./game/battle/event/BattleLogFormatter";
 import { SkillRepository } from "../shared/master/battle/SkillRepository";
 import { SkillId, SkillPreset } from "../shared/master/battle/type/SkillPreset";
-import { EncounterTableJson, EnemyMasterJson } from "../shared/Json/enemy/EnemyTemplate";
+import { EnemyMasterJson } from "../shared/Json/enemy/EnemyTemplate";
 import { EncounterRepository } from "./game/battle/enemy/repository/EncounterRepository";
 import { EnemyRepository } from "./game/battle/enemy/repository/EnemyRepository";
 import { BattlerFactory } from "./game/battle/enemy/factory/createEnemy";
-
-// import enemyMasterJson from "enemies/enemyMaster.json";
-// import encounterTableJson from "./public/enemies/encounterTable.json";
+import { EncounterTableJson } from "../shared/type/battle/enemy/BiomeId";
 
 console.log("window.saveGameAPI =", window.saveGameAPI);
 
@@ -108,10 +106,8 @@ const tileEffectService = new TileEffectService(tileDB);
 const gameState = new GameState(0);
 // バトルログ変換クラス
 const battleLogFormatter = new BattleLogFormatter();
-// 戦闘用情報の生成 （仮データ）
-const initialBattleState = createInitialBattleState();
 // BattleManager を生成
-const battleManager = new BattleManager(battleLogFormatter, initialBattleState, skillRepository);
+const battleManager = new BattleManager(battleLogFormatter, skillRepository);
 
 // screens
 const overlayScreen = createOverlayScreens();
@@ -154,9 +150,6 @@ const battlePort = new BattlePortImpl(
     battleManager
 );
 battleManager.setPort(battlePort);
-// バトルシーンの初期化
-const battleScene = mainScreens[MainScreenType.BATTLE_SCENE];
-battleScene.setInitBattleState();
 
 // UseCases(サービス層？)
 const gameUseCases = createGameUseCases({

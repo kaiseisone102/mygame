@@ -4,27 +4,31 @@ import { WorldTilePosition } from "../../../shared/type/playerPosition/posType";
 import { TileQueryPort } from "../../../shared/port/TileQueryPort";
 import { TileType } from "../../../shared/type/tileType";
 import { WorldDefinition } from "./MapData/definition/WorldDefinition";
+import { BiomeId, TileBiomeMap } from "../../../shared/type/battle/enemy/BiomeId";
 
 export class WorldManager implements TileQueryPort {
 
-    private current!: WorldDefinition;
+    private currentDef!: WorldDefinition;
 
-    // ScreenController に通知するコールバック
-    private emitChange?: () => void;
-    onChange(callback: () => void) {
-        this.emitChange = callback;
+    getWorldSize(): { width: number; height: number; } {
+        if (!this.currentDef) throw new Error("WorldManager hadnt WorldDef")
+        return { width: this.currentDef.world.width, height: this.currentDef.world.height }
     }
 
     getTileType(pos: WorldTilePosition): TileType {
-        return this.current.world.getTileType(pos);
+        return this.currentDef.world.getTileType(pos);
     }
 
     setWorld(def: WorldDefinition) {
-        this.current = def;
+        this.currentDef = def;
     }
 
     get(): WorldDefinition {
-        if (!this.current) throw new Error("World not initialized");
-        return this.current;
+        if (!this.currentDef) throw new Error("World not initialized");
+        return this.currentDef;
+    }
+
+    getBiomeFromTile(tile: TileType): BiomeId {
+        return TileBiomeMap[tile];
     }
 }

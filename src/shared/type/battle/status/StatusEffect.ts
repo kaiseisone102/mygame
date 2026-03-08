@@ -1,6 +1,6 @@
 // src/shared/type/battle/status/StatusEffect.ts
 
-import { BattleAction } from "../BattleAction";
+import { BattleAction, StrangeAction } from "../BattleAction";
 import { ActionRewriteContext } from "./context/ActionRewriteContext";
 import { StatusContext } from "./context/statusContext";
 import { StackRule } from "./StackRule";
@@ -29,7 +29,7 @@ export type StatusEffect = {
     onRewriteAction?: (
         action: BattleAction,
         ctx: ActionRewriteContext
-    ) => BattleAction;
+    ) => StrangeAction | undefined;
     /** ターン開始時に解除されるか判定 */
     shouldExpire?: () => boolean;
     /** 効果解除時 */
@@ -44,9 +44,10 @@ export const StatusId = {
     STRONG_SLEEP: "STRONG_SLEEP",
     POISON: "POISON",
     STRONG_POISON: "STRONG_POISON",
-
+    FREEZE: "FREEZE",
+    DRAIN: "DRAIN",
     STUN: "STUN",
-
-    DEAD: "DEAD"
+    REGEN: "REGEN",
+    DEAD: "DEAD",
 } as const;
 export type StatusId = typeof StatusId[keyof typeof StatusId];

@@ -1,11 +1,11 @@
 // src/shared/master/battle/poisonLogic.ts
 
-import { StatusEffect } from "../StatusEffect";
+import { StatusLogic } from "../../../../master/battle/StatusPreset";
 
 // ☠ poisonLogic
-export function poisonLogic(rate: number): Pick<StatusEffect, "onTurnStart"> {
+export function poisonLogic(rate: number): StatusLogic {
     return {
         // ターン開始時の処理
-        onTurnStart: ctx => { ctx.baseStats.hp -= Math.floor(ctx.baseStats.maxHp * rate) },
+        onTurnTick: ctx => { ctx.baseStats.hp -= Math.floor(ctx.baseStats.maxHp * rate) },
     };
 }

@@ -1,23 +1,21 @@
 // src/renderer/game/battle/core/BattleManager.ts
 
-import { SkillPreset } from "../../../../shared/master/battle/type/SkillPreset";
 import { BattleInput } from "../../../../renderer/router/useCase/gameUseCase/battle/BattleInputUseCase";
 import { delay } from "../../../../renderer/utils/delay";
-import { SkillPresetsById } from "../../../../shared/master/battle/SkillPresets";
-import { BattleAction, BattlerSide, TargetSpecifier } from "../../../../shared/type/battle/BattleAction";
+import { BattleCommandId } from "../../../../shared/domain/battleCommandId";
+import { SkillRepository } from "../../../../shared/master/battle/SkillRepository";
+import { SkillPreset } from "../../../../shared/master/battle/type/SkillPreset";
+import { BattleAction, BattlerSide, StrangeAction, TargetSpecifier } from "../../../../shared/type/battle/BattleAction";
 import { SkillResult } from "../../../../shared/type/battle/result/SkillResult";
-import { BattleResult, CommandActionType, TargetType } from "../../../../shared/type/battle/TargetType";
+import { BattleResult, TargetType } from "../../../../shared/type/battle/TargetType";
 import { AIActionResolver } from "../enemy/ai/AIActionResolver";
 import { BattleLogFormatter } from "../event/BattleLogFormatter";
 import { SkillExecutor } from "../logic/skills/SkillExecutor";
 import { TraitRunner } from "../logic/traits/TraitRunner";
 import { BattlePort } from "../port/BattlePort";
 import { Battler } from "./Battler";
-import { BattleState } from "./BattleState";
+import { BattleState, initialBattleState } from "./BattleState";
 import { canBattlerAct } from "./canBattlerAct";
-import { BattleCommandId } from "../../../../shared/domain/battleCommandId";
-import { BattleScenePayload } from "../../../../renderer/screens/battleScene/battleScene";
-import { SkillRepository } from "../../../../shared/master/battle/SkillRepository";
 
 /**
  * 2026/02/09
@@ -26,16 +24,15 @@ import { SkillRepository } from "../../../../shared/master/battle/SkillRepositor
  * [責務]
  */
 export class BattleManager {
-    private battleState: BattleState;
+    private battleState!: BattleState;
     private battlePort!: BattlePort;
+    private skillData: SkillPreset[];
 
     constructor(
         private battleLogFormatter: BattleLogFormatter,
-        private initialState: BattleState,
         private skillRepository: SkillRepository
     ) {
-        this.battleState = this.initialState;
-        this.buildTurnOrder();
+        this.skillData = this.skillRepository.getAll();
     }
 
     /* =====================
@@ -54,9 +51,21 @@ export class BattleManager {
         return this.battleState;
     }
 
+    setState(state: BattleState) {
+        this.battleState = state;
+        this.buildTurnOrder();
+    }
+
     get currentActor(): Battler {
-        const actor = this.battleState.order[this.battleState.currentActorId];
-        if (!actor) throw new Error("Current actor not found");
+        const actorId = this.battleState.order[this.battleState.currentActorId];
+
+        const actor = this.findBattler(actorId);
+        if (!actor) {
+            console.error("order:", this.battleState.order);
+            console.error("allies:", this.battleState.allies);
+            console.error("enemies:", this.battleState.enemies);
+            throw new Error("Current actor not found");
+        }
         return actor;
     }
 
@@ -69,8 +78,8 @@ export class BattleManager {
         ) {
             return null;
         }
-
-        return state.order[state.currentActorId];
+        const actorId = state.order[state.currentActorId];
+        return this.findBattler(actorId) ?? null;
     }
 
     isPlayer(actorId: number): boolean {
@@ -81,7 +90,7 @@ export class BattleManager {
         メインループ用
     ===================== */
 
-    async nextStep(payload: BattleScenePayload): Promise<SkillResult[]> {
+    async nextStep(): Promise<SkillResult[]> {
         if (this.battleState.finished) return [];
 
         const actor = this.currentActor;
@@ -102,13 +111,13 @@ export class BattleManager {
                 // usecase からUI入力を受け取る => action 生成
                 const input = await this.battlePort.requestCommand(actor.id, actor.name, this.battleState.enemies);// 敵は battleScene から 後に
 
-                action = this.convertInputToAction(actor.id, input);
+                action = this.convertInputToAction(input);
 
                 console.log("⚔Ally Action「", actor.name, "」=>", action)
                 break;
             case BattlerSide.ENEMY:
                 await delay(300); // 思考演出
-                action = AIActionResolver.decideAction(actor, this.battleState);
+                action = this.convertInputToAction(this.convertStrangeActToInput(AIActionResolver.decideAction(actor, this.battleState, this.skillData)));
                 console.log("💀Enemy Action「", actor.name, "」=> ", action)
                 break;
         }
@@ -139,7 +148,7 @@ export class BattleManager {
         // 敵なら即AI決定
         if (actor.side === BattlerSide.ENEMY) {
             await delay(300); // 思考演出
-            return AIActionResolver.decideAction(actor, this.battleState);
+            return this.convertInputToAction(this.convertStrangeActToInput(AIActionResolver.decideAction(actor, this.battleState, this.skillData)));
         }
 
         // プレイヤーならUI待ち
@@ -170,23 +179,20 @@ export class BattleManager {
 
         // 状態異常による行動書き換え
         for (const status of actor.statusEffects) {
-            action = status.onRewriteAction?.(action, rewriteCtx) ?? action;
+            const reWrite = status.onRewriteAction?.(action, rewriteCtx);
+            if (!reWrite) continue;
+            action = this.convertInputToAction(this.convertStrangeActToInput(reWrite)) ?? action;
         }
 
         // Traitによる行動書き換え
         action = TraitRunner.beforeAction(actor, action);
 
         if (action.type !== BattleCommandId.ITEM) {
-            // スキルを取得（攻撃、魔法、アイテムなど）
-            const skillId = this.getSkillIdFromAction(action);
-            if (!skillId) return [];
 
-            const skill = SkillPresetsById[skillId];
-            if (!skill) return [];
+            const skill = action.skill;
+            if (!skill) throw new Error("BattleManager executeAction cant found action.skill");
 
-            this.battlePort.addBattleLog(
-                `${actor.name}は${skill.name}を使った！`
-            );
+            this.battlePort.addBattleLog(`${actor.name}は${skill.name}を使った！`);
 
             // 対象を解決
             const targets = this.resolveTargets(action.target ?? { type: TargetType.SELF });
@@ -198,21 +204,6 @@ export class BattleManager {
         );
         const targets = this.resolveTargets(action.target ?? { type: TargetType.SELF });
         return SkillExecutor.execute(actor, action.skill, targets);
-    }
-
-    /** 行動からスキルIDを決定 */
-    private getSkillIdFromAction(action: BattleAction): string | undefined {
-        switch (action.type) {
-            case CommandActionType.ATTACK:
-            case CommandActionType.MAGIC:
-                return action.skillId;
-            case CommandActionType.ITEM:
-                return action.skill.id;
-            case CommandActionType.DEFENCE:
-            case CommandActionType.ESCAPE:
-            default:
-                return undefined;
-        }
     }
 
     /** 行動から対象の Battler 配列を返す */
@@ -256,7 +247,8 @@ export class BattleManager {
 
         this.battleState.order = all
             .filter(b => b.alive)
-            .sort((a, b) => b.baseStats.speed - a.baseStats.speed);
+            .sort((a, b) => b.baseStats.speed - a.baseStats.speed)
+            .map(b => b.id);
 
         this.battleState.currentActorId = 0;
     }
@@ -301,33 +293,17 @@ export class BattleManager {
     }
 
     private convertInputToAction(
-        actorId: number,
         input: BattleInput
     ): BattleAction {
-        if (input.commandId !== CommandActionType.ITEM) {
-            const skillId = input.skillId;
+        const skill = this.skillRepository.get(input.skillId);
 
-            if (!skillId) {
-                throw new Error("SkillId not provided");
-            }
-
-            const skill = SkillPresetsById[skillId];
-            if (!skill) {
-                throw new Error(`Skill not found: ${skillId}`);
-            }
-            return {
-                type: input.commandId,
-                actorId,
-                skillId,
-                target: this.buildTarget(input, skill),
-            };
-        }
+        if (!skill) throw new Error(`Skill not found}`);
 
         return {
             type: input.commandId,
-            actorId,
-            skill: input.skill,
-            target: this.buildTarget(input, input.skill),
+            actorId: input.actorId,
+            skill,
+            target: this.buildTarget(input, skill),
         };
     }
 
@@ -377,9 +353,10 @@ export class BattleManager {
     }
 
     reset(): void {
-        this.battleState.finished = false;
-        this.battleState.turn = 1;
+        this.battleState = initialBattleState;
         this.buildTurnOrder();
     }
-
+    private convertStrangeActToInput(action: StrangeAction): BattleInput {
+        return { commandId: action.commandId, actorId: action.actorId, actorName: action.actorName, skillId: action.skillId, enemy: [], targetId: this.currentActor.id }
+    }
 }

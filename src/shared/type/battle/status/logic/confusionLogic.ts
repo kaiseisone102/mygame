@@ -1,27 +1,27 @@
 // src/shared/battle/status/logic/confusionLogic.ts
 
+import { SkillId } from "../../../../master/battle/type/SkillPreset";
+import { BattleAction } from "../../BattleAction";
 import { CommandActionType, TargetType } from "../../TargetType";
+import { ActionRewriteContext } from "../context/ActionRewriteContext";
 import { StatusEffect } from "../StatusEffect";
 
 // 🤪 confusionLogic
 export function confusionLogic(params: { failRate: number; recoverRate: number; }): Pick<StatusEffect, "onRewriteAction" | "shouldExpire"> {
     return {
-        onRewriteAction: (action, ctx) => {
+        onRewriteAction: (action: BattleAction, ctx: ActionRewriteContext) => {
             if (Math.random() >= params.failRate) {
-                return action;
+                return undefined;
             }
 
             const candidates = ctx.allies;
             const target = candidates[Math.floor(Math.random() * candidates.length)];
 
             return {
-                type: CommandActionType.ATTACK,
+                commandId: CommandActionType.ATTACK,
                 actorId: ctx.self.id,
-                skillId: "attack",
-                target: {
-                    type: TargetType.SINGLE_ALLY,
-                    actorId: target.id,
-                },
+                actorName: ctx.self.name,
+                skillId: SkillId.ATTACK
             };
         },
 

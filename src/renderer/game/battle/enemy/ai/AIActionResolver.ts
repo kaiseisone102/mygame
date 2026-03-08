@@ -1,8 +1,8 @@
 // src/renderer/game/battle/enemy/ai/AIActionResolver.ts
 
-import { SkillPresetsById } from "../../../../../shared/master/battle/SkillPresets";
-import { BattleAction } from "../../../../../shared/type/battle/BattleAction";
-import { CommandActionType, TargetType } from "../../../../../shared/type/battle/TargetType";
+import { SkillId, SkillPreset } from "../../../../../shared/master/battle/type/SkillPreset";
+import { StrangeAction } from "../../../../../shared/type/battle/BattleAction";
+import { CommandActionType } from "../../../../../shared/type/battle/TargetType";
 import { Battler } from "../../core/Battler";
 import { BattleState } from "../../core/BattleState";
 import { AIActionEvaluator } from "./AIActionEvaluator";
@@ -13,7 +13,7 @@ import { AIActionEvaluator } from "./AIActionEvaluator";
  */
 export class AIActionResolver {
 
-    static decideAction(actor: Battler, state: BattleState): BattleAction {
+    static decideAction(actor: Battler, state: BattleState, skillData: SkillPreset[]): StrangeAction {
 
         // 生きている敵（＝プレイヤー側）
         const targets = state.allies.filter(a => a.alive);
@@ -22,43 +22,39 @@ export class AIActionResolver {
         }
 
         let bestScore = -Infinity;
-        let bestAction: BattleAction | null = null;
+        let bestAction: StrangeAction | null = null;
 
-        for (const skillId of actor.skills) {
-            const skill = SkillPresetsById[skillId];
-            if (!skill) continue;
-
+        for (const skill of skillData) {
             for (const target of targets) {
-                const targets = [target];
 
                 const score = AIActionEvaluator.evaluateSkill(
                     actor,
                     skill,
-                    targets,
+                    [target],
                     state
                 );
 
                 if (score > bestScore) {
                     bestScore = score;
+
                     bestAction = {
-                        type: CommandActionType.ATTACK,
+                        commandId: CommandActionType.ATTACK,
                         actorId: actor.id,
-                        skillId,
-                        target: {
-                            type: TargetType.SINGLE_ENEMY,
-                            enemyId: target.id,
-                        },
-                    };
-                }
+                        actorName: actor.name,
+                        skillId: skill.id,
+                        target: target.id
+                    }
+                };
             }
         }
-
         // 何も選べなかったら防御
         return bestAction ?? {
-            type: CommandActionType.DEFENCE,
+            commandId: CommandActionType.DEFENCE,
             actorId: actor.id,
-            skillId: "guard",
-            target: { type: TargetType.SELF }
+            actorName: actor.name,
+            skillId: SkillId.GUARD,
+            target: actor.id
         };
+
     }
 }

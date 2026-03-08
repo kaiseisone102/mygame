@@ -27,6 +27,7 @@ export class BattlePortImpl implements BattlePort {
                 this.emitUI({
                     type: "REQUEST_COMMAND",
                     payload: {
+                        actorId,
                         actorName,
                         enemies
                     }

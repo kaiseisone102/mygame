@@ -10,7 +10,7 @@ import { BattleEvent } from "../game/battle/event/BattleEvent";
 import { BattleInput } from "./useCase/gameUseCase/battle/BattleInputUseCase";
 import { WorldPxPosition } from "../../shared/type/playerPosition/posType";
 import { OverlayPayloadMap } from "../../renderer/screens/interface/overlay/overlayPayloadMap";
-import { BattleBasicCommandPayload, BattleCommandSelectedPayload } from "../../renderer/screens/battleScene/overlayScreen/BattleBasicCommandOverlay";
+import { BasicCommandPayload, CommandSelectedPayload } from "../../renderer/screens/battleScene/overlayScreen/BattleBasicCommandOverlay";
 
 export type AppUIEvent =
     | { type: "OPEN_YES_NO"; message: string; onYes: () => void; onNo: () => void; }
@@ -54,8 +54,8 @@ export type AppUIEvent =
 
 type BattleEventGroup =
     // ===== UI段階 =====
-    | { type: "REQUEST_COMMAND", payload: BattleBasicCommandPayload }
-    | { type: "BATTLE_COMMAND_SELECTED", payload: BattleCommandSelectedPayload }// UI操作
+    | { type: "REQUEST_COMMAND", payload: BasicCommandPayload }
+    | { type: "BATTLE_COMMAND_SELECTED", payload: CommandSelectedPayload }// UI操作
     | { type: "ITEM_SELECTED", itemId: string }
     | { type: "PLAYER_COMMAND_SELECTED", input: BattleInput }
     | { type: "BATTLE_ITEM_SELECTED"; itemId: string }
@@ -73,7 +73,7 @@ type UIOverlayEvent =
     | { type: "POP_ALL_OVERLAY" }
 
 type BattleVisualEvent =
-    | { type: "BATTLE_EVENT"; event: BattleEvent }
+    | { type: "BATTLE_EVENT_QUEUE"; event: BattleEvent }
     | { type: "ADD_BATTLE_LOG"; message: string };
 
 type PushOverlayEvent = {

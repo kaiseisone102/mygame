@@ -134,4 +134,8 @@ export class World implements TileQueryPort {
         const chunk = this.getChunk(cx, cy);
         return chunk ? chunk.get(chunkTileX, chunkTileY) : this.defaultTile;
     }
+
+    getWorldSize(): { width: number, height: number } {
+        return { width: this.width, height: this.height }
+    }
 }

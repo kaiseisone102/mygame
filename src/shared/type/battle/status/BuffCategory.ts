@@ -5,11 +5,11 @@
 ===================== */
 
 export const BuffCategory = {
-  DEF: "DEF",
-  ATK: "ATK",
-  INT: "INT",
-  SPD: "SPD",
-  AGGRO: "AGGRO"
+    ATTACK: "attack",
+    DEFENSE: "defense",
+    MAGIC: "magic",
+    SPEED: "speed",
+    AGGRO: "aggro"
 } as const;
 
 export type BuffCategory = typeof BuffCategory[keyof typeof BuffCategory];

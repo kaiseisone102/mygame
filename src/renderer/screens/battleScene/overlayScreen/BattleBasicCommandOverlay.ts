@@ -11,13 +11,14 @@ import { BattleEnemy } from "./AttackTargetOverlay";
 import { OverlayScreen } from "../../interface/overlay/OverLayScreens";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
 
-export type BattleBasicCommandPayload = {
+export type BasicCommandPayload = {
+    actorId: number;
     actorName: string,
     enemies: BattleEnemy[],
 }
 
-export type BattleCommandSelectedPayload = {
-    battleBasicCommand: BattleBasicCommandPayload,
+export type CommandSelectedPayload = {
+    phaseBase: BasicCommandPayload,
     commandId: CommandActionType
 }
 
@@ -34,7 +35,7 @@ export type BattleCommandSelectedPayload = {
  * - 管理phase 
  * - 判定勝敗判断
  */
-export class BattleBasicCommandOverlay implements OverlayScreen<BattleBasicCommandPayload> {
+export class BattleBasicCommandOverlay implements OverlayScreen<BasicCommandPayload> {
     readonly overlayId: string = OverlayScreenType.BATTLE_BASIC_COMMAND_OVERLAY;
 
     readonly capturesInput: true = true;
@@ -48,7 +49,7 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BattleBasicComma
     private enemies: BattleEnemy[] = [];
     private enabled = true;
 
-    private payload!: BattleBasicCommandPayload;
+    private payload!: BasicCommandPayload;
 
     private emitWorld!: (event: WorldEvent) => void;
     private emitUI!: (event: AppUIEvent) => void;
@@ -96,7 +97,7 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BattleBasicComma
         this.hide();
     }
 
-    show(payload: BattleBasicCommandPayload) {
+    show(payload: BasicCommandPayload) {
         this.payload = payload;
         this.actorName = payload.actorName;
         this.nameTag.textContent = `Actor: ${this.actorName ?? ""}`;
@@ -154,7 +155,7 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BattleBasicComma
                     audioManager.playSE("assets/se/decide.mp3");
 
                     const commandId = COMMANDS[this.selectedIndex].id;
-                    const battleCommandSelectedPayload: BattleCommandSelectedPayload = { battleBasicCommand: this.payload, commandId }
+                    const battleCommandSelectedPayload: CommandSelectedPayload = { phaseBase: this.payload, commandId }
 
                     switch (commandId) {
                         case CommandActionType.ATTACK: {

@@ -8,8 +8,8 @@ import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { AttackTargetOverlayScreen } from "../../interface/overlay/OverLayScreens";
 import { CommandActionType } from "../../../../shared/type/battle/TargetType";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
-import { SkillPreset } from "../../../../shared/master/battle/type/SkillPreset";
-import { BattleBasicCommandPayload } from "./BattleBasicCommandOverlay";
+import { SkillId, SkillPreset } from "../../../../shared/master/battle/type/SkillPreset";
+import { CommandSelectedPayload } from "./BattleBasicCommandOverlay";
 
 export type BattleEnemy = {
     id: number;
@@ -18,8 +18,8 @@ export type BattleEnemy = {
 };
 
 export type AttackTargetPayload = {
-    battleBasicCommand: BattleBasicCommandPayload
-    skill?: SkillPreset;
+    phaseSecond: CommandSelectedPayload
+    skill?: SkillId;
 };
 
 /**
@@ -39,9 +39,11 @@ export class AttackTargetOverlay implements AttackTargetOverlayScreen {
     private target!: HTMLElement;
     private commandItems: HTMLParagraphElement[] = [];
     private selectedIndex = 0;
+    private actorName: string = "";
     private enemies: BattleEnemy[] = [];
+    private commandId!: CommandActionType;
 
-    private skill?: SkillPreset;
+    private skill?: SkillId;
     private targetType?: string;
 
     private emitWorld!: (event: WorldEvent) => void;
@@ -78,7 +80,9 @@ export class AttackTargetOverlay implements AttackTargetOverlayScreen {
     show(payload: AttackTargetPayload) {
         this.selectedIndex = 0;
         this.screen.style.display = "block";
-        this.setEnemies(payload.battleBasicCommand.enemies); // 敵リスト描画
+        this.commandId = payload.phaseSecond.commandId;
+        this.actorName = payload.phaseSecond.phaseBase.actorName;
+        this.setEnemies(payload.phaseSecond.phaseBase.enemies); // 敵リスト描画
         this.skill = payload.skill;
     }
 
@@ -151,26 +155,17 @@ export class AttackTargetOverlay implements AttackTargetOverlayScreen {
 
                     if (enemyId === undefined || isNaN(enemyId)) throw new Error("AttackTargetOverlay require targetEnemyId")
 
-                    if (!this.skill) {
-                        this.emitUI({
-                            type: "PLAYER_COMMAND_SELECTED",
-                            input: {
-                                commandId: CommandActionType.ATTACK,
-                                skillId: "attack",
-                                targetId: enemyId
-                            }
-                        });
-                        return true;
-                    }
                     this.emitUI({
                         type: "PLAYER_COMMAND_SELECTED",
                         input: {
-                            commandId: CommandActionType.ITEM,
-                            skill: this.skill,
+                            commandId: this.commandId,
+                            actorName: this.actorName,
+                            enemy: this.enemies,
+                            skillId: this.skill ?? SkillId.ATTACK,
                             targetId: enemyId
                         }
                     });
-                    return true;
+
                 }
                 case "CANCEL":
                     this.emitUI?.({ type: "POP_OVERLAY" });

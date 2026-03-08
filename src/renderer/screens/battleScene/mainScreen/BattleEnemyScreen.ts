@@ -93,7 +93,7 @@ export class BattleEnemyScreen implements MainScreen {
     setBattleState(state: BattleState) {
         this.battleState = state;
         this.syncEnemies();
-        this.syncAllies(); 
+        this.syncAllies();
     }
 
     private syncEnemies() {
@@ -129,7 +129,7 @@ export class BattleEnemyScreen implements MainScreen {
 
     // 演出イベントだけ処理
     handleUIEvent(event: AppUIEvent) {
-        if (event.type !== "BATTLE_EVENT") return;
+        if (event.type !== "BATTLE_EVENT_QUEUE") return;
 
         const e = event.event;
 

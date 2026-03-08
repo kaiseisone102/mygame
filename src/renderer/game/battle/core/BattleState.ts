@@ -19,7 +19,7 @@ export type BattleState = {
     enemies: Battler[];
 
     currentActorId: number; // ← 誰の番か
-    order: Battler[];          // ← 行動順リスト
+    order: number[];          // ← 行動順リスト
 
     actionQueue: BattleAction[];
 
@@ -29,24 +29,28 @@ export type BattleState = {
     mode: CommandMode
 };
 
-const initialBattleState: BattleState = {
-    turn: 0,
+export const initialBattleState: BattleState = {
+    turn: 1,
     allies: [],
     enemies: [],
+
     currentActorId: 0,
     order: [],
+
     actionQueue: [],
+
     result: BattleResult.NULL,
     finished: false,
-    mode: CommandMode.ATTACK,
+
+    mode: CommandMode.NULL,
 };
 
-function createDummyAllies(): Battler[] {
+export function createDummyAllies(): Battler[] {
     const allyData: BattlerParams[] = [
         {
             id: 1,
             name: "Hero",
-            exp:0,
+            exp: 0,
             side: BattlerSide.ALLY,
             baseStats: { hp: 20, attack: 6, defense: 4, speed: 20 },
             growthTable: {},
@@ -55,7 +59,7 @@ function createDummyAllies(): Battler[] {
         {
             id: 2,
             name: "Mage",
-            exp:0,
+            exp: 0,
             side: BattlerSide.ALLY,
             baseStats: { hp: 12, attack: 4, defense: 2, magic: 6, speed: 10 },
             growthTable: {},
@@ -74,7 +78,7 @@ function createDummyEnemies(): Battler[] {
         {
             id: 101,
             name: "Slime うんこ",
-            exp:0,
+            exp: 0,
             side: BattlerSide.ENEMY,
             baseStats: { hp: 10, attack: 3, defense: 1, speed: 15 },
             growthTable: {},
@@ -83,7 +87,7 @@ function createDummyEnemies(): Battler[] {
         {
             id: 102,
             name: "Slime B",
-            exp:0,
+            exp: 0,
             side: BattlerSide.ENEMY,
             baseStats: { hp: 12, attack: 4, defense: 2, speed: 8 },
             growthTable: {},
@@ -92,7 +96,7 @@ function createDummyEnemies(): Battler[] {
         {
             id: 103,
             name: "Slime C",
-            exp:0,
+            exp: 0,
             side: BattlerSide.ENEMY,
             baseStats: { hp: 8, attack: 2, defense: 1, speed: 5 },
             growthTable: {},
@@ -113,14 +117,14 @@ export function createInitialBattleState(): BattleState {
     const allBattlers = [...allies, ...enemies];
 
     // 仮でID順で行動順を決める
-    const order =  [...allBattlers].sort((a, b) => a.id - b.id);
+    const order = [...allBattlers].sort((a, b) => a.id - b.id).map(b => b.id);;
 
     return {
         ...initialBattleState,
         allies,
         enemies,
         turn: 1,
-        currentActorId: order[0].id,
+        currentActorId: order[0],
         order,
     };
 }

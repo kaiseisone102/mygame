@@ -8,6 +8,7 @@ import { createBuff } from "../status/createBuff";
 import { SkillResult } from "../../../../../shared/type/battle/result/SkillResult";
 import { SkillEffectKindId } from "../../../../../shared/type/battle/skill/skillFormula";
 import { SkillPreset } from "../../../../../shared/master/battle/type/SkillPreset";
+import { BattleEvent } from "../../../../../shared/type/battle/event/BattleEvent";
 
 export class SkillExecutor {
     static execute(actor: Battler, skill: SkillPreset, targets: Battler[]): SkillResult[] {
@@ -28,14 +29,25 @@ export class SkillExecutor {
 
                 switch (effect.type) {
                     case SkillEffectKindId.DAMAGE: {
+                        actor.emitEvent(BattleEvent.ATTACK, {
+                            source: actor,
+                            target
+                        });
+
                         const base = calcDamage(actor, target, effect);
                         const final = TraitRunner.applyDamageTraits(
                             { source: actor, target, skill, damage: base.damage },
-                            [...actor.traits, ...target.traits]
+                            target.traits
                         );
 
                         target.baseStats.hp = Math.max(0, target.addHp(-final));
                         const killed = !target.alive;
+
+                        target.emitEvent(BattleEvent.DAMAGE, {
+                            source: actor,
+                            target,
+                            value: final
+                        });
 
                         results.push({
                             kind: SkillEffectKindId.DAMAGE,
@@ -93,10 +105,6 @@ export class SkillExecutor {
                             targetId: target.id,
                             buffId: effect.buffId
                         });
-                        break;
-
-                    case "SPECIAL":// SPECIAL: 最低限のユニーク処理用（基本は使わない）
-                        effect.handler(actor, target);
                         break;
                 }
             }

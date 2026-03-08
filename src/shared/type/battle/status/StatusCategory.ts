@@ -4,11 +4,19 @@
   ステータス効果カテゴリ
 ===================== */
 export const StatusCategory = {
-  SLEEP: "SLEEP",
-  CONFUSION: "CONFUSION",
-  PARALYSIS: "PARALYSIS",
-  POISON: "POISON",
-  OTHER: "OTHER",
+    ACTION_LOCK: "ACTION_LOCK",
+
+    POISON: "POISON",
+    BURN: "BURN",
+
+    ATK_DOWN: "ATK_DOWN",
+    DEF_DOWN: "DEF_DOWN",
+    INT_DOWN: "INT_DOWN",
+    SPD_DOWN: "SPD_DOWN",
+
+    SHIELD: "SHIELD",
+    REGEN: "REGEN",
+    SPECIAL: "SPECIAL",
 } as const;
 
 export type StatusCategory = typeof StatusCategory[keyof typeof StatusCategory]

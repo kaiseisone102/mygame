@@ -6,7 +6,7 @@ import { UIEventPort } from "../../renderer/port/UIEventPort";
 import { ScreenPort } from "../port/ScreenPort";
 import { AppUIEvent } from "./AppUIEvents";
 import { CommandActionType } from "../../shared/type/battle/TargetType";
-import { COMMAND_ACTION_SKILL_ID_ESCAPE, COMMAND_ACTION_SKILL_ID_GUARD } from "../../shared/data/commandActionConstats";
+import { SkillId } from "../../shared/master/battle/type/SkillPreset";
 
 export class UIEventRouter implements UIEventPort {
     emit(event: AppUIEvent) {
@@ -27,7 +27,7 @@ export class UIEventRouter implements UIEventPort {
                 this.screens.lockInput(event.lock);
                 break;
 
-            case "CHANGE_MAIN_SCREEN": this.screens.changeMain(event.screen); break;
+            case "CHANGE_MAIN_SCREEN": this.screens.changeMain(event.screen, undefined); break;
 
             case "EXIT_TO_TITLE": this.gameUseCases.changeMainScreenUseCase.execute(MainScreenType.TITLE); break;
 
@@ -69,11 +69,11 @@ export class UIEventRouter implements UIEventPort {
             case "BATTLE_COMMAND_SELECTED": {  // UI操作
                 switch (event.payload.commandId) {
                     case CommandActionType.ATTACK: // 攻撃対象選択用オーバーレイを表示
-                        this.screens.pushOverlay(OverlayScreenType.ATTACK_TARGET_OVERLAY, { battleBasicCommand: event.payload.battleBasicCommand });
+                        this.screens.pushOverlay(OverlayScreenType.ATTACK_TARGET_OVERLAY, { phaseSecond: event.payload });
                         break;
 
                     case CommandActionType.MAGIC:   // 魔法選択オーバーレイをプッシュ ↓は仮で攻撃コマンド
-                        this.screens.pushOverlay(OverlayScreenType.ATTACK_TARGET_OVERLAY, { battleBasicCommand: event.payload.battleBasicCommand });
+                        this.screens.pushOverlay(OverlayScreenType.ATTACK_TARGET_OVERLAY, { phaseSecond: event.payload });
                         break;
 
                     case CommandActionType.ITEM:
@@ -81,19 +81,19 @@ export class UIEventRouter implements UIEventPort {
                         break;
 
                     case CommandActionType.DEFENCE:
-                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, skillId: COMMAND_ACTION_SKILL_ID_GUARD, targetId: 0 });
+                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorId: event.payload.phaseBase.actorId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: SkillId.GUARD, targetId: event.payload.phaseBase.actorId });
                         break;
 
                     case CommandActionType.ESCAPE:// すぐにコマンド処理を実行
-                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, skillId: COMMAND_ACTION_SKILL_ID_ESCAPE, targetId: 0 });
+                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorId: event.payload.phaseBase.actorId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: SkillId.ESCAPE, targetId: event.payload.phaseBase.actorId });
                         break;
                 }
                 break;
             }
 
-            case "ITEM_SELECTED":
-                this.gameUseCases.battleInputUseCase.onItemSelected(event.itemId);
-                break;
+            // case "ITEM_SELECTED":
+            //     this.gameUseCases.battleInputUseCase.onItemSelected(event.itemId);
+            //     break;
 
             case "PLAYER_COMMAND_SELECTED": {
                 this.gameUseCases.battleInputUseCase.execute(event.input);

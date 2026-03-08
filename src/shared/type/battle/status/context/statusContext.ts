@@ -12,5 +12,4 @@ export interface StatusContext {
         magic?: number;
         speed?: number;
     }
-    alive: boolean;
 }

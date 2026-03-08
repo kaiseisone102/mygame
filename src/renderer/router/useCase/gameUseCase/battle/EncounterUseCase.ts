@@ -21,7 +21,8 @@ export class EncounterUseCase {
     onPlayerEnteredZone(event: { zone: ZonePx; ctx: ZoneContext }) {
         switch (event.zone.type) {
             case ZoneType.FIELD_ENEMY:
-                this.emitWorld({ type: "ENCOUNTER_CONFIRMED", mapId: event.ctx.mapId });
+                this.emitWorld({ type: "ENCOUNTER_CONFIRMED", biomeId: event.ctx.biomeId
+                 });
                 break;
         }
     }
@@ -33,19 +34,10 @@ export class EncounterUseCase {
             return;
         }
 
-        const tileData = this.tileDB[ctx.tileType];
-
-        if (!tileData) {
-            console.error("Unknown tileType:", ctx.tileType);
-            return;
-        }
-
-        const tileModifier = tileData.encounterRateModifier ?? 1;
-
         // 最低確立を保証
         this.encounterChance = Math.max(rule.baseEncounterRate, this.encounterChance);
         // 確率を増やす
-        this.encounterChance = Math.min(this.encounterChance + rule.stepIncrease * tileModifier, rule.maxChance);
+        this.encounterChance = Math.min(this.encounterChance + rule.stepIncrease, rule.maxChance);
 
         console.log("encounterChance",this.encounterChance);
 
@@ -53,7 +45,7 @@ export class EncounterUseCase {
         if (Math.random() < this.encounterChance) {
             this.encounterChance = 0; // リセット
             this.gameState.battleReturn = { mapId: ctx.mapId, pos: ctx.pos };
-            this.emitWorld({ type: "ENCOUNTER_CONFIRMED", mapId: ctx.mapId });
+            this.emitWorld({ type: "ENCOUNTER_CONFIRMED", biomeId: ctx.biomeId });
         }
     }
 

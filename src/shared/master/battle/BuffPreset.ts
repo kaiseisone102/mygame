@@ -1,53 +1,47 @@
 // src/shared/master/battle/BuffPresets.ts
 
-import { StackRuleId } from "../../type/battle/status/StackRule";
-import { BuffPreset, BuffPresetId, BuffPresetName } from "./type/BuffPreset ";
+import { BuffCategory } from "../../type/battle/status/BuffCategory";
+import { StackRule } from "../../type/battle/status/StackRule";
+import { BuffPreset, BuffId, BuffName } from "./type/BuffPreset ";
 
 export const BuffPresets: Record<string, BuffPreset> = {
     ATK: {
-        id: BuffPresetId.ATK,
-        category: BuffPresetId.ATK,
-        name: BuffPresetName.ATK,
-        stackRule: StackRuleId.EXTEND,
+        id: BuffId.ATK,
+        category: BuffCategory.ATTACK,
+        name: BuffName.ATK,
+        stackRule: StackRule.EXTEND,
         apply: (base: number, value: number) => base * (1 + value),
     },
 
     DEF: {
-        id: BuffPresetId.DEF,
-        category: BuffPresetId.DEF,
-        name: BuffPresetName.DEF,
-        stackRule: StackRuleId.EXTEND,
+        id: BuffId.DEF,
+        category: BuffCategory.DEFENSE,
+        name: BuffName.DEF,
+        stackRule: StackRule.EXTEND,
         apply: (base: number, value: number) => base * (1 + value),
     },
 
     INT: {
-        id: BuffPresetId.INT,
-        category: BuffPresetId.INT,
-        name: BuffPresetName.INT,
-        stackRule: StackRuleId.EXTEND,
+        id: BuffId.INT,
+        category: BuffCategory.MAGIC,
+        name: BuffName.INT,
+        stackRule: StackRule.EXTEND,
         apply: (base: number, value: number) => base * (1 + value),
     },
 
     SPD: {
-        id: BuffPresetId.SPD,
-        category: BuffPresetId.SPD,
-        name: BuffPresetName.SPD,
-        stackRule: StackRuleId.EXTEND,
+        id: BuffId.SPD,
+        category: BuffCategory.SPEED,
+        name: BuffName.SPD,
+        stackRule: StackRule.EXTEND,
         apply: (base: number, value: number) => base * (1 + value),
     },
 
     AGGRO: {
-        id: BuffPresetId.AGGRO,
-        category: BuffPresetId.AGGRO,
-        name: BuffPresetName.AGGRO,
-        stackRule: StackRuleId.REPLACE,
+        id: BuffId.AGGRO,
+        category: BuffCategory.AGGRO,
+        name: BuffName.AGGRO,
+        stackRule: StackRule.REPLACE,
         apply: (_: number, value: number) => value,  // _ は使わないよ
     },
 } as const;
-
-// export const StackRule = {
-//     STACK: "STACK",
-//     REPLACE: "REPLACE",
-//     EXTEND: "EXTEND",
-//     IGNORE: "IGNORE",
-// } as const;

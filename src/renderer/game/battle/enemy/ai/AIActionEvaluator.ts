@@ -1,15 +1,15 @@
 // src/renderer/game/battle/enemy/ai/AIActionEvaluator.ts
 
-import { Skill } from "../../../../../shared/type/battle/skill/Skill";
 import { Battler } from "../../core/Battler";
 import { BattleState } from "../../core/BattleState";
 import { SkillEffectKindId } from "../../../../../shared/type/battle/skill/skillFormula";
+import { SkillPreset } from "shared/master/battle/type/SkillPreset";
 
 export class AIActionEvaluator {
 
     static evaluateSkill(
         actor: Battler,
-        skill: Skill,
+        skill: SkillPreset,
         targets: Battler[],
         state: BattleState
     ): number {
@@ -39,7 +39,7 @@ export class AIActionEvaluator {
         if (!skill.cost?.mp) throw new Error("AIActionEvaluator not found skill.cost.mp");
 
         // MPが足りないなら無効
-        if (actor.mp < skill.cost.mp) {
+        if (actor.baseStats.mp < skill.cost.mp) {
             return -Infinity;
         }
 
@@ -49,18 +49,18 @@ export class AIActionEvaluator {
     private static evaluateDamage(
         actor: Battler,
         targets: Battler[],
-        skill: Skill
+        skill: SkillPreset
     ): number {
         let score = 0;
 
         for (const target of targets) {
-            const hpRate = target.hp / target.maxHp;
+            const hpRate = target.baseStats.hp / target.baseStats.maxHp;
 
             // 瀕死ほど評価高い
             score += (1 - hpRate) * 100;
 
             // 倒せそうなら超高評価
-            if (target.hp < actor.attack * 2) {
+            if (target.baseStats.hp < actor.baseStats.attack * 2) {
                 score += 200;
             }
         }
@@ -80,7 +80,7 @@ export class AIActionEvaluator {
         let score = 0;
 
         for (const target of targets) {
-            const missingHp = target.maxHp - target.hp;
+            const missingHp = target.baseStats.maxHp - target.baseStats.hp;
             score += Math.min(missingHp, power);
         }
 

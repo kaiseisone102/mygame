@@ -1,13 +1,13 @@
 import { BattleInput } from "../../../../renderer/router/useCase/gameUseCase/battle/BattleInputUseCase";
 import { BattleState } from "../core/BattleState";
 import { CommandActionType } from "../../../../shared/type/battle/TargetType";
-import { SkillPreset } from "../../../../shared/master/battle/type/SkillPreset";
+import { SkillId, SkillPreset } from "../../../../shared/master/battle/type/SkillPreset";
 import { BattleEnemy } from "../../../../renderer/screens/battleScene/overlayScreen/AttackTargetOverlay";
 
 export interface BattlePort {
 
     requestCommand(actorId: number, actorName: string, enemies: BattleEnemy[]): Promise<BattleInput>;
-    resolvePlayerInput(input: BattleInput): void;
+    resolvePlayerInput(inputResult: BattleInput): void;
     isPlayer(actorId: number): boolean;
     addBattleLog(message: string): void;
     getSkillFromItem(itemId: string): SkillPreset | undefined;
@@ -25,7 +25,10 @@ export class SimpleAI implements BattleAI {
 
         return {
             commandId: CommandActionType.ATTACK,
-            skillId: "attack",
+            actorId: actorId,
+            actorName: `${actorId}`,
+            enemy: [],
+            skillId: SkillId.ATTACK,
             targetId: enemy.id
         };
     }

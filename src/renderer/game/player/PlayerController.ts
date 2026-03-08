@@ -96,6 +96,7 @@ export class PlayerController {
         if (moveResult.moved) {
 
             const tilePos = pxPosToTilePos(pos)
+            if (!tilePos) throw new Error("tilePos missing in PlayerController");
             if (tilePos.tx !== this.lastTileX || tilePos.ty !== this.lastTileY) {
 
                 this.lastTileX = tilePos.tx;
@@ -103,10 +104,16 @@ export class PlayerController {
 
                 this.gameState.battleReturn = { mapId: this.mapId, pos: structuredClone(pos) };
 
+                const tileType = this.world.getTileType(tilePos);
+                const biome = this.world.getBiomeFromTile(tileType);
+
+                if (!tileType) throw new Error("tileType missing in PlayerController");
+                if (!biome) throw new Error("biome missing in PlayerController");
+
                 eventBus.emit("REQUEST_RANDOM_ENCOUNTER", {
                     mapId: this.mapId,
                     pos: structuredClone(pos),
-                    biomeId: this.world.getBiomeFromTile(this.world.getTileType(tilePos))
+                    biomeId: biome
                 });
             }
         }
@@ -133,31 +140,40 @@ export class PlayerController {
             if (!behavior) continue;
 
             if (entered) {
+                const tilePos = pxPosToTilePos(pos);
+
                 zone.isPlayerInside = true;
                 behavior?.onEnter?.(zone, {
                     pos,
                     player: this.state,
                     gameState: this.gameState,
                     mapId: this.mapId,
+                    biomeId: this.world.getBiomeFromTile(this.world.getTileType(tilePos))
                 });
             }
 
             if (left) {
+                const tilePos = pxPosToTilePos(pos);
+
                 zone.isPlayerInside = false;
                 behavior?.onLeave?.(zone, {
                     pos,
                     player: this.state,
                     gameState: this.gameState,
                     mapId: this.mapId,
+                    biomeId: this.world.getBiomeFromTile(this.world.getTileType(tilePos))
                 });
             }
 
             if (isInside) {
+                const tilePos = pxPosToTilePos(pos);
+
                 behavior?.update?.(zone, {
                     pos,
                     player: this.state,
                     gameState: this.gameState,
                     mapId: this.mapId,
+                    biomeId: this.world.getBiomeFromTile(this.world.getTileType(tilePos))
                 }, delta);
             }
         }

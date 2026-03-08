@@ -9,7 +9,7 @@ export class BattleEventQueue {
     private cancelled = false;
 
     constructor(
-        private emitBattle: (e: { type: "BATTLE_EVENT"; event: BattleEvent }) => void
+        private emitBattle: (e: { type: "BATTLE_EVENT_QUEUE"; event: BattleEvent }) => void
     ) { }
 
     async play(events: BattleEvent[]): Promise<void> {
@@ -23,7 +23,7 @@ export class BattleEventQueue {
 
         while (this.queue.length > 0 && !this.cancelled) {
             const event = this.queue.shift()!;
-            this.emitBattle({ type: "BATTLE_EVENT", event });
+            this.emitBattle({ type: "BATTLE_EVENT_QUEUE", event });
             await delay(this.getDuration(event));
         }
 

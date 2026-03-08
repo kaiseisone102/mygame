@@ -4,19 +4,19 @@ import { BuffCategory } from "../../../type/battle/status/BuffCategory";
 import { StackRule } from "../../../type/battle/status/StackRule";
 
 export type BuffPreset = {
-    id: string;
+    id: BuffId;
     category: BuffCategory,
-    name: string;
+    name: BuffName;
     stackRule: StackRule;
     apply: (base: number, value: number) => number;
 };
 
-export const BuffPresetId = {
+export const BuffId = {
     ATK: "ATK", DEF: "DEF", INT: "INT", SPD: "SPD", AGGRO: "AGGRO",
 } as const;
-export type BuffPresetId = typeof BuffPresetId[keyof typeof BuffPresetId]
+export type BuffId = typeof BuffId[keyof typeof BuffId]
 
-export const BuffPresetName = {
+export const BuffName = {
     ATK: "攻撃力", DEF: "防御力", INT: "賢さ", SPD: "素早さ", AGGRO: "狙われやすさ",
 } as const;
-export type BuffPresetName = typeof BuffPresetName[keyof typeof BuffPresetName]
+export type BuffName = typeof BuffName[keyof typeof BuffName]
