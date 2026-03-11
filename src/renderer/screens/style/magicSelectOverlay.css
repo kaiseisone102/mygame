@@ -1,0 +1,113 @@
+/* ===============================
+   Magic Select Overlay (Persona風)
+================================ */
+
+#magic-select-overlay {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+
+    width: 50%;
+    padding: 16px;
+
+    background: #000;
+    color: #fff;
+
+    border: 4px solid #fff;
+
+    font-family: "Segoe UI", sans-serif;
+    font-weight: bold;
+
+    display: none;
+    z-index: 10;
+    transform: skewX(-5deg);
+}
+
+/* ===============================
+   魔法リスト
+================================ */
+
+.magic-list {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(6, 1fr);
+
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.magic-item {
+    padding: 4px 8px;
+
+    background: #111;
+
+    border-left: 4px solid transparent;
+
+    transition: 0.15s;
+}
+
+.magic-item:hover {
+    border-left: 4px solid #ff003c;
+    background: #1a1a1a;
+}
+
+/* ===============================
+   説明欄
+================================ */
+
+.magic-description {
+    margin-top: 8px;
+
+    padding: 8px;
+
+    background: #111;
+
+    border-left: 4px solid #fff;
+
+    font-size: 14px;
+}
+
+/* ===============================
+   MP表示
+================================ */
+
+.magic-mp {
+    margin-top: 6px;
+
+    text-align: right;
+
+    font-size: 14px;
+
+    color: #ff003c;
+}
+
+.magic-item.selected {
+    background: #ff003c;
+    color: #000;
+}
+
+#magic-select-overlay {
+    animation: uiPop 0.15s ease-out;
+}
+
+@keyframes uiPop {
+    from {
+        transform: skewX(-10deg) scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: skewX(-5deg) scale(1);
+        opacity: 1;
+    }
+}
+
+#magic-select-overlay {
+    clip-path: polygon(0% 0%,
+            95% 0%,
+            100% 20%,
+            100% 100%,
+            5% 100%,
+            0% 80%);
+}

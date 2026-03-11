@@ -1,6 +1,6 @@
 // src/renderer/screens/mainScreens/screen/worldMapScreen.ts
 
-import { WorldDefinition } from "../../../../renderer/game/map/MapData/definition/WorldDefinition";
+import { WorldDefinition } from "../../../game/map/builder/interface/definition/WorldDefinition";
 import { WorldManager } from "../../../../renderer/game/map/WorldManager";
 import { InputFrame } from "../../../../renderer/input/frame/InputFrame";
 import { GameActionEvent, InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";

@@ -1,24 +1,29 @@
 // src/renderer/screens/interface/overlay/OverlayPayloadMap.ts
 
-import { MessageLogEvent } from "../../../../renderer/screens/overlayScreen/screen/MessageLogOverlay";
+import { AlliesStatusPayload } from "../../../../renderer/screens/battleScene/overlayScreen/AlliesStatusOverlay";
 import { AttackTargetPayload } from "../../../../renderer/screens/battleScene/overlayScreen/AttackTargetOverlay";
+import { BasicCommandPayload, CommandSelectedPayload } from "../../../../renderer/screens/battleScene/overlayScreen/BattleBasicCommandOverlay";
+import { BattleTurnPayload } from "../../../../renderer/screens/battleScene/overlayScreen/BattleTurnDisplayOverlay";
+import { LevelUpPayload } from "../../../../renderer/screens/battleScene/overlayScreen/LevelUpOverlay";
+import { MessageLogEvent } from "../../../../renderer/screens/overlayScreen/screen/MessageLogOverlay";
 import { YesNoEvent } from "../../../../shared/events/ui/YesNoEvent";
-import { SkillPreset } from "../../../../shared/master/battle/type/SkillPreset";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
 import { OverlayScreen } from "./OverLayScreens";
-import { BattleBasicCommandPayload } from "../../../../renderer/screens/battleScene/overlayScreen/BattleBasicCommandOverlay";
 
 export type OverlayPayloadMap = {
     [OverlayScreenType.ATTACK_TARGET_OVERLAY]: AttackTargetPayload;
     [OverlayScreenType.YES_NO_OVERLAY]: YesNoEvent;
-    [OverlayScreenType.MAGIC_TARGET_OVERLAY]: SkillPreset;
+    [OverlayScreenType.MAGIC_SELECT_OVERLAY]: CommandSelectedPayload;
     [OverlayScreenType.MESSAGE_LOG]: MessageLogEvent;
     [OverlayScreenType.OPTIONS]: undefined;
-    [OverlayScreenType.BATTLE_BASIC_COMMAND_OVERLAY]: BattleBasicCommandPayload;
+    [OverlayScreenType.BATTLE_BASIC_COMMAND_OVERLAY]: BasicCommandPayload;
     [OverlayScreenType.BATTLE_LOG]: undefined;
     [OverlayScreenType.INPUT_NAME_OVERLAY]: undefined;
     [OverlayScreenType.ITEM_SELECT_OVERLAY_IN_BATTLE]: undefined;
     [OverlayScreenType.INVENTORY]: undefined;
+    [OverlayScreenType.ALLIES_STATUS_OVERLAY]: AlliesStatusPayload;
+    [OverlayScreenType.BATTLE_TURN_DISPLAY]: BattleTurnPayload;
+    [OverlayScreenType.LEVEL_UP_OVERLAY]: LevelUpPayload;
 };
 
 // export type OverlayInstanceMap = {

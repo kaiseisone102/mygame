@@ -1,6 +1,6 @@
 // src/shared/master/battle/TraitPresets.ts
 
-import { BaseStats } from "../../../renderer/game/battle/core/Battler";
+import { BaseStats } from "../../data/playerConstants";
 import { BattlerPort } from "../../type/battle/port/BattlerPort";
 import { ElementId, SkillCategory } from "../../type/battle/skill/skillFormula";
 import { resistCategoryLogic } from "../../type/battle/trait/logic/resistCategoryLogic";

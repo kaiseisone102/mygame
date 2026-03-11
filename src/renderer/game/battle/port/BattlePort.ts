@@ -1,3 +1,5 @@
+// src/renderer/game/battle/port/BattlePort.ts
+
 import { BattleInput } from "../../../../renderer/router/useCase/gameUseCase/battle/BattleInputUseCase";
 import { BattleState } from "../core/BattleState";
 import { CommandActionType } from "../../../../shared/type/battle/TargetType";
@@ -6,7 +8,7 @@ import { BattleEnemy } from "../../../../renderer/screens/battleScene/overlayScr
 
 export interface BattlePort {
 
-    requestCommand(actorId: number, actorName: string, enemies: BattleEnemy[]): Promise<BattleInput>;
+    requestCommand(actorTemplateId: number, actorInstanceId: number, actorName: string, enemies: BattleEnemy[]): Promise<BattleInput>;
     resolvePlayerInput(inputResult: BattleInput): void;
     isPlayer(actorId: number): boolean;
     addBattleLog(message: string): void;
@@ -14,22 +16,23 @@ export interface BattlePort {
 }
 
 export interface BattleAI {
-    decide(actorId: number, state: BattleState): Promise<BattleInput>;
+    decide(actorTemplateId: number, actorInstanceId: number, state: BattleState): Promise<BattleInput>;
 }
 
 export class SimpleAI implements BattleAI {
 
-    async decide(actorId: number, state: BattleState): Promise<BattleInput> {
+    async decide(actorTemplateId: number, actorInstanceId: number, state: BattleState): Promise<BattleInput> {
 
         const enemy = state.enemies.find(e => e.alive)!;
 
         return {
             commandId: CommandActionType.ATTACK,
-            actorId: actorId,
-            actorName: `${actorId}`,
+            actorTemplateId: actorTemplateId,
+            actorInstanceId: actorInstanceId,
+            actorName: `${actorTemplateId}`,
             enemy: [],
             skillId: SkillId.ATTACK,
-            targetId: enemy.id
+            targetId: enemy.instanceId
         };
     }
 }

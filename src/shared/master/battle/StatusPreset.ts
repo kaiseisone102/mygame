@@ -10,8 +10,9 @@ import { StatusContext } from "../../type/battle/status/context/statusContext";
 import { BattleEvent } from "../../type/battle/event/BattleEvent";
 import { EventContext } from "../../type/battle/event/EventContext";
 import { drainLogic } from "../../type/battle/status/logic/drainLogic";
-import { BaseStats, Battler } from "../../../renderer/game/battle/core/Battler";
+import { Battler } from "../../../renderer/game/battle/core/Battler";
 import { LARGE_PRIORITY, MID_PRIORITY, ORDER_ACTION_LOCK, ORDER_CONTROL, ORDER_DAMAGE, StatusTickType, VERY_LARGE_PRIORITY } from "../../type/battle/status/constants/statusConstant";
+import { BaseStats } from "../../data/playerConstants";
 
 export type StatusLogic = {
     /** 行動前判定。falseなら行動不可 */

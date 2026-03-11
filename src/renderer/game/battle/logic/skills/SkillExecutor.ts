@@ -51,8 +51,8 @@ export class SkillExecutor {
 
                         results.push({
                             kind: SkillEffectKindId.DAMAGE,
-                            sourceId: actor.id,
-                            targetId: target.id,
+                            sourceId: actor.instanceId,
+                            targetId: target.instanceId,
                             value: final,
                             isCritical: base.isCritical, // calcDamageで返してもいい
                             killed
@@ -71,8 +71,8 @@ export class SkillExecutor {
 
                         results.push({
                             kind: SkillEffectKindId.HEAL,
-                            sourceId: actor.id,
-                            targetId: target.id,
+                            sourceId: actor.instanceId,
+                            targetId: target.instanceId,
                             value: final
                         });
                         break;
@@ -87,8 +87,8 @@ export class SkillExecutor {
 
                             results.push({
                                 kind: SkillEffectKindId.STATUS,
-                                sourceId: actor.id,
-                                targetId: target.id,
+                                sourceId: actor.instanceId,
+                                targetId: target.instanceId,
                                 statusId: effect.statusId
                             });
                         }
@@ -101,8 +101,8 @@ export class SkillExecutor {
 
                         results.push({
                             kind: SkillEffectKindId.BUFF,
-                            sourceId: actor.id,
-                            targetId: target.id,
+                            sourceId: actor.instanceId,
+                            targetId: target.instanceId,
                             buffId: effect.buffId
                         });
                         break;

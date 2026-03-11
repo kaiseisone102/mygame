@@ -1,4 +1,4 @@
-// src/renderer/screens/battleScreens/overlayScreen/ItemSelectOverLayInBattle.ts
+// src/renderer/screens/battleScene/overlayScreen/ItemSelectOverLayInBattle.ts
 
 import { audioManager } from "../../../../renderer/asset/audio/audioManager";
 import { InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";

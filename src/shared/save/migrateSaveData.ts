@@ -1,5 +1,5 @@
 // src/shared/save/migrateSaveData.ts
-import { DEFAULT_START_POSITION_BY_WORLD } from "../data/playerConstants";
+import { DEFAULT_PLAYER_ATTACK, DEFAULT_PLAYER_AVOID, DEFAULT_PLAYER_CRTICAL, DEFAULT_PLAYER_DEFENCE, DEFAULT_PLAYER_LUCK, DEFAULT_PLAYER_MAGIC, DEFAULT_PLAYER_MAX_HP, DEFAULT_PLAYER_MAX_MP, DEFAULT_PLAYER_SPEED, DEFAULT_START_POSITION_BY_WORLD } from "../data/playerConstants";
 import { SaveDataV1 } from "./interface/SaveDataV1";
 import { SaveDataV2 } from "./interface/SaveDataV2";
 import { SaveData } from "./SaveData";
@@ -32,15 +32,19 @@ function migrateV1toV2(v1: SaveDataV1): SaveDataV2 {
         exp: 0,
         gold: 0,
 
-        hp: v1.hp,
-        mp: v1.mp,
-        pow: 5,
-        int: 5,
-        def: 5,
-        spd: 5,
-        luc: 5,
-        avo: 0,
-        crt: 0,
+        baseStats: {
+            hp: v1.hp,
+            maxHp: DEFAULT_PLAYER_MAX_HP,
+            mp: v1.mp,
+            maxMp: DEFAULT_PLAYER_MAX_MP,
+            attack: DEFAULT_PLAYER_ATTACK,
+            magic: DEFAULT_PLAYER_MAGIC,
+            defense: DEFAULT_PLAYER_DEFENCE,
+            speed: DEFAULT_PLAYER_SPEED,
+            luck: DEFAULT_PLAYER_LUCK,
+            avoid: DEFAULT_PLAYER_AVOID,
+            crtical: DEFAULT_PLAYER_CRTICAL
+        },
 
         statusEffects: [],
         skills: [],
@@ -59,5 +63,7 @@ function migrateV1toV2(v1: SaveDataV1): SaveDataV2 {
         playerPos: structuredClone(DEFAULT_START_POSITION_BY_WORLD),
 
         battleReturn: undefined,
+
+        party: []
     };
 }

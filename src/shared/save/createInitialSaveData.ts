@@ -1,10 +1,6 @@
 // src/shared/save/createInitialSaveData.ts
 
-import {
-    DEFAULT_COLLECTED_ITEMS, DEFAULT_EVENTFLAG, DEFAULT_PLAYER_AVO, DEFAULT_PLAYER_CRT, DEFAULT_PLAYER_DEF, DEFAULT_PLAYER_EXP, DEFAULT_PLAYER_GOLD,
-    DEFAULT_PLAYER_HP, DEFAULT_PLAYER_INT, DEFAULT_PLAYER_LEVEL, DEFAULT_PLAYER_LUC, DEFAULT_PLAYER_MP, DEFAULT_PLAYER_NAME, DEFAULT_PLAYER_POW,
-    DEFAULT_PLAYER_SPD, DEFAULT_START_MAP_ID, DEFAULT_START_POSITION_BY_WORLD, SAVE_VERSION
-} from "../data/playerConstants";
+import { DEFAULT_COLLECTED_ITEMS, DEFAULT_EVENTFLAG, DEFAULT_PLAYER_BASE_STATS, DEFAULT_PLAYER_EXP, DEFAULT_PLAYER_GOLD, DEFAULT_PLAYER_LEVEL, DEFAULT_PLAYER_NAME, DEFAULT_START_MAP_ID, DEFAULT_START_POSITION_BY_WORLD, SAVE_VERSION } from "../data/playerConstants";
 import { SaveData } from "./SaveData";
 
 export function createInitialSaveData(playerName?: string): SaveData {
@@ -17,15 +13,7 @@ export function createInitialSaveData(playerName?: string): SaveData {
         exp: DEFAULT_PLAYER_EXP,
         gold: DEFAULT_PLAYER_GOLD,
 
-        hp: DEFAULT_PLAYER_HP,
-        mp: DEFAULT_PLAYER_MP,
-        pow: DEFAULT_PLAYER_POW,
-        int: DEFAULT_PLAYER_INT,
-        def: DEFAULT_PLAYER_DEF,
-        spd: DEFAULT_PLAYER_SPD,
-        luc: DEFAULT_PLAYER_LUC,
-        avo: DEFAULT_PLAYER_AVO,
-        crt: DEFAULT_PLAYER_CRT,
+        baseStats: DEFAULT_PLAYER_BASE_STATS,
 
         statusEffects: [],
         skills: [],
@@ -43,5 +31,7 @@ export function createInitialSaveData(playerName?: string): SaveData {
         playerPos: structuredClone(DEFAULT_START_POSITION_BY_WORLD),
 
         battleReturn: undefined,
+
+        party: []
     };
 }

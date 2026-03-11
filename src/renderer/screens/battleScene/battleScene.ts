@@ -1,28 +1,35 @@
 // src/renderer/screens/battleScene/BattleScene.ts
 
-import { BattleManager } from "../../../renderer/game/battle/core/BattleManager";
-import { BattleBasicCommandOverlay } from "./overlayScreen/BattleBasicCommandOverlay";
-import { BattleEnemyScreen } from "./mainScreen/BattleEnemyScreen";
-import { MainScreen } from "../interface/screen/MainScreen";
-import { ScreenInitContext } from "../interface/context/ScreenInitContext";
-import { InputFrame } from "../../../renderer/input/frame/InputFrame";
-import { InputAxis, UIActionEvent } from "../../../renderer/input/mapping/InputMapper";
-import { AppUIEvent } from "../../../renderer/router/AppUIEvents";
-import { WorldEvent } from "../../../renderer/router/WorldEvent";
-import { convertSkillResultToBattleEvents } from "../../../renderer/game/battle/event/convertSkillResultToBattleEvents";
-import { BattleEventQueue } from "../../../renderer/game/battle/event/BattleEventQueue";
-import { AttackTargetOverlay } from "./overlayScreen/AttackTargetOverlay";
-import { BattleLogOverlay } from "./overlayScreen/BattleLogOverlay";
-import { ItemSelectOverLayInBattle } from "./overlayScreen/ItemSelectOverLayInBattle";
-import { MagicTargetOverlay } from "./overlayScreen/MagicTargetOverlay";
+import { GameState } from "../../../shared/data/gameState";
+import { GrowTableJson } from "../../../shared/Json/growTable/growTableJson";
+import { BiomeId } from "../../../shared/type/battle/enemy/BiomeId";
+import { BattleResult, CommandMode } from "../../../shared/type/battle/TargetType";
 import { OverlayScreenType } from "../../../shared/type/screenType";
-import { BattleBackgroundScreen } from "./mainScreen/BattleBackgroundScreen";
+import { BattleManager } from "../../game/battle/core/BattleManager";
+import { Battler } from "../../game/battle/core/Battler";
+import { BattleState } from "../../game/battle/core/BattleState";
+import { BattleEvent } from "../../game/battle/event/BattleEvent";
+import { BattleEventQueue } from "../../game/battle/event/BattleEventQueue";
+import { convertSkillResultToBattleEvents } from "../../game/battle/event/convertSkillResultToBattleEvents";
+import { BattleResultService } from "../../game/battle/service/BattleResultService";
+import { InputFrame } from "../../input/frame/InputFrame";
+import { InputAxis, UIActionEvent } from "../../input/mapping/InputMapper";
+import { AppUIEvent } from "../../router/AppUIEvents";
+import { WorldEvent } from "../../router/WorldEvent";
+import { ScreenInitContext } from "../interface/context/ScreenInitContext";
 import { GetOverlayScreenType } from "../interface/overlay/OverLayScreens";
-import { BattleEvent } from "../../../renderer/game/battle/event/BattleEvent";
-import { BattleState } from "../../../renderer/game/battle/core/BattleState";
+import { MainScreen } from "../interface/screen/MainScreen";
+import { BattleBackgroundScreen } from "./mainScreen/BattleBackgroundScreen";
+import { BattleEnemyScreen } from "./mainScreen/BattleEnemyScreen";
+import { BattleBasicCommandOverlay } from "./overlayScreen/BattleBasicCommandOverlay";
+import { BattleLogOverlay } from "./overlayScreen/BattleLogOverlay";
+import { BattleTurnDisplayOverlay } from "./overlayScreen/BattleTurnDisplayOverlay";
+import { LevelUpOverlay } from "./overlayScreen/LevelUpOverlay";
 
 export type BattleScenePayload = {
-    battleState: BattleState
+    allies: Battler[];
+    enemies: Battler[];
+    biomeId: BiomeId;
 };
 
 /**
@@ -36,15 +43,18 @@ export type BattleScenePayload = {
  * - 勝敗時に WorldEvent を投げる
  */
 export class BattleScene implements MainScreen<BattleScenePayload> {
+    private processing!: boolean;
+    private resultProcessing!: boolean;
+
     private initialState!: BattleState;
     private eventQueue!: BattleEventQueue;
 
     private emitWorld!: (event: WorldEvent) => void;
     private emitUI!: (event: AppUIEvent) => void;
     private emitBattle!: (e: { type: "BATTLE_EVENT_QUEUE"; event: BattleEvent }) => void;
-    private battleState!: BattleState;
 
     private manager!: BattleManager;
+    private resultService!: BattleResultService;
 
     private enemyScreen!: BattleEnemyScreen;
     private backgroundScreen!: BattleBackgroundScreen;
@@ -52,17 +62,13 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
     private screens!: (BattleEnemyScreen | BattleBackgroundScreen)[];
 
     private basicCommandOverlay!: BattleBasicCommandOverlay;
-    private attackTargetOverlay!: AttackTargetOverlay;
-    private magicTargetOverlay!: MagicTargetOverlay;
-    private itemOverlay!: ItemSelectOverLayInBattle;
     private battleLog!: BattleLogOverlay;
-
-    private battleOverlay!: (BattleBasicCommandOverlay | AttackTargetOverlay | MagicTargetOverlay | ItemSelectOverLayInBattle | BattleLogOverlay)[];
-
-    private currentTurn!: number;
-    private targetId!: number;
+    private battleTurnDisplay!: BattleTurnDisplayOverlay;
+    private levelUpOverlay!: LevelUpOverlay;
 
     constructor(
+        private gameState: GameState,
+        private allyGrowTable: GrowTableJson,
         private initManager: BattleManager,
         private initEnemyScreen: BattleEnemyScreen,
         private initBackgroundScreen: BattleBackgroundScreen,
@@ -83,59 +89,106 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
         this.screens = [this.enemyScreen, this.backgroundScreen];
 
         this.basicCommandOverlay = this.overlays[OverlayScreenType.BATTLE_BASIC_COMMAND_OVERLAY];
-        this.attackTargetOverlay = this.overlays[OverlayScreenType.ATTACK_TARGET_OVERLAY];
-        this.magicTargetOverlay = this.overlays[OverlayScreenType.MAGIC_TARGET_OVERLAY];
-        this.itemOverlay = this.overlays[OverlayScreenType.ITEM_SELECT_OVERLAY_IN_BATTLE];
         this.battleLog = this.overlays[OverlayScreenType.BATTLE_LOG];
-
-        this.battleOverlay = [this.battleLog, this.basicCommandOverlay, this.attackTargetOverlay, this.magicTargetOverlay, this.itemOverlay]
-
-        this.getBattleState();
+        this.battleTurnDisplay = this.overlays[OverlayScreenType.BATTLE_TURN_DISPLAY];
+        this.levelUpOverlay = this.overlays[OverlayScreenType.LEVEL_UP_OVERLAY];
     }
 
+    // ----- ----- ----- ----- //
+    // initialize display      //
+    // ----- ----- ----- ----- //
     async show(payload: BattleScenePayload): Promise<void> {
 
-        this.battleState = payload.battleState;
-        this.currentTurn = payload.battleState.turn;
+        this.processing = false;
+        this.resultProcessing = false;
+
+        this.manager.init({ turn: 1, allies: payload.allies, enemies: payload.enemies, currentActorId: 999, order: [], actionQueue: [], result: BattleResult.NULL, finished: false, mode: CommandMode.NULL, });
+
+        this.manager.startBattle();
+
+        this.resultService = new BattleResultService(
+            this.gameState,
+            this.allyGrowTable,
+            this.manager
+        );
 
         this.battleLog.show();
-        this.screens.forEach(s => s.show());
+        this.battleLog.addLog(`A group of monsters appered!`);
+        this.battleTurnDisplay.show({ currentTurn: 1 });
+        this.enemyScreen.show();
+        this.backgroundScreen.show(payload.biomeId);
+
         this.syncState();
-        // ゲームループ
-        while (!this.manager.getState().finished) {
-            console.log(this.currentTurn, "巡目");
-
-            const results = await this.manager.nextStep();
-            this.emitUI({ type: "POP_ALL_OVERLAY" })
-
-            if (results) {
-                console.log("results", results)
-
-                this.syncState();
-
-                const events = await convertSkillResultToBattleEvents(results);
-
-                this.emitUI({ type: "INPUT_CONTROLL", lock: true })
-                await this.eventQueue.play(events);
-                this.emitUI({ type: "INPUT_CONTROLL", lock: false })
-
-            }
-            this.currentTurn++;
-        }
-        // 画面遷移の前にクリーンアップ
-        this.cleanup()
-
-        this.emitWorld({
-            type: "BATTLE_RESULT",
-            result: this.manager.getState().result
-        });
     }
 
     hide(): void {
         this.screens.forEach(s => s.hide());
     }
 
-    update(delta: number, frame: InputFrame) { }
+    // be called every frame from screenManager 
+    async update(delta: number, frame: InputFrame) {
+
+        // ignore that, in processing
+        if (this.processing || this.resultProcessing) return;
+
+        // ----- ----- //
+        // combat loop //
+        // ----- ----- //
+        if (!this.manager.getState().finished) {
+
+            this.processing = true;
+
+            try {
+                const results = await this.manager.nextStep();
+                this.emitUI({ type: "POP_ALL_OVERLAY" })
+
+                if (results) {
+                    console.log("results", results)
+
+                    const events = await convertSkillResultToBattleEvents(results);
+
+                    this.emitUI({ type: "INPUT_CONTROLL", lock: true })
+                    try {
+                        await this.eventQueue.play(events);
+                    } finally {
+                        this.emitUI({ type: "INPUT_CONTROLL", lock: false })
+                    }
+
+                    this.syncState();
+                }
+            } finally {
+                this.processing = false;
+            }
+        }
+
+        // ----- ----- //
+        // end loop    //
+        // ----- ----- //
+        else {
+            this.resultProcessing = true;
+
+            const battleResult = await this.manager.checkBattleEndAfterStep();
+
+            if (battleResult !== BattleResult.NULL) {
+
+                if (battleResult === BattleResult.WIN) {
+
+                    // Distribute EXP to ally, check for level-ups
+                    const resultData = this.resultService.process(battleResult);
+
+                    await this.battleLog.playExpLogs(resultData.expLogs);
+                    await this.levelUpOverlay.playLevelUps(resultData.levelUps);
+
+                }
+                // Note its position
+                this.cleanup();
+
+                this.emitWorld({ type: "BATTLE_RESULT", result: battleResult });
+
+                throw new Error("Battle result was null");
+            }
+        }
+    }
 
     handleUIAxes(axes: InputAxis[]): boolean {
         this.basicCommandOverlay.handleUIAxes(axes);
@@ -148,25 +201,22 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
     }
 
     private syncState() {
-        this.manager.setState(this.battleState);
-        this.screens.forEach(s => s.setBattleState(this.battleState));
-        //  this.battleOverlay.forEach(o => o.setBattleState(state)); overlay には payload で渡す
+        const state = this.manager.getState();
+        this.screens.forEach(s => s.setBattleState(state));
+        this.battleTurnDisplay.update(state.turn);
+        console.log("[BattleScene]syncState:", state);
     }
 
     getBattleState(): BattleState {
         return this.manager.getState();
     }
 
-    setTargetId(targetId: number) {
-        this.targetId = targetId
-    }
-
     private cleanup() {
         this.screens.forEach(s => s.hide());
-        this.emitUI({ type: "POP_ALL_OVERLAY" });
         this.battleLog.hide();
+        this.emitUI({ type: "POP_ALL_OVERLAY" });
+        this.battleTurnDisplay.hide();
         this.eventQueue.clear();
-        this.currentTurn = 0;
         this.manager.reset();
     }
 }

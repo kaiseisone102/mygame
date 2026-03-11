@@ -15,6 +15,8 @@ import { BattleEvent } from "../../../../shared/type/battle/event/BattleEvent";
 import { EventContext } from "../../../../shared/type/battle/event/EventContext";
 import { BuffPresets } from "../../../../shared/master/battle/BuffPreset";
 import { StatusTickType } from "../../../../shared/type/battle/status/constants/statusConstant";
+import { ImageKey } from "../../../../shared/type/ImageKey";
+import { BaseStats } from "../../../../shared/data/playerConstants";
 
 type LevelUpResult = {
     level: number
@@ -44,7 +46,8 @@ export type BattlerMethods = {
 };
 
 export interface BattlerParams {
-    id: number;
+    templateId: number;// 種族ID
+    instanceId: number;// 個体ID
     name: string;
     side: BattlerSide;
     level?: number;
@@ -54,46 +57,26 @@ export interface BattlerParams {
     statModifier?: number; // キャラ固有補正
     skills?: SkillId[];
     traits?: Trait[];
-    aiType?: AiType
+    aiType?: AiType;
+    imageKey?: ImageKey;
 }
 
-export interface BaseStats {
-    hp: number;
-    maxHp: number;
-    mp: number;
-    maxMp: number;
-    attack: number;
-    defense: number;
-    magic: number;
-    speed: number;
-}
 /**
  * Battler
  */
 export class Battler implements StatusContext, BattlerPort {
-    id: number;
+    templateId: number;
+    instanceId: number;
     name: string;
     side: BattlerSide;
 
     level: number;
     exp: number;
 
-    baseStats!: {
-        hp: number;
-        maxHp: number;
-        mp: number;
-        maxMp: number;
-
-        attack: number;
-        defense: number;
-        magic: number;
-        speed: number;
-    };
+    baseStats!: BaseStats;
 
     // alive は状態ではなく、計算結果 死亡条件は && で追加できる
-    get alive() {
-        return this.baseStats.hp > 0 && !this.hasStatus(StatusId.DEAD);
-    }
+    get alive() { return this.baseStats.hp > 0 && !this.hasStatus(StatusId.DEAD) };
 
     // 習得スキル
     skills: SkillId[];     // skillId 配列
@@ -107,8 +90,11 @@ export class Battler implements StatusContext, BattlerPort {
 
     aiType?: AiType;
 
+    imageKey?: ImageKey;
+
     constructor(params: BattlerParams) {
-        this.id = params.id;
+        this.templateId = params.templateId;
+        this.instanceId = params.instanceId;
         this.name = params.name;
         this.side = params.side;
 
@@ -122,6 +108,7 @@ export class Battler implements StatusContext, BattlerPort {
         this.growthTable = params.growthTable;
         this.statModifier = params.statModifier ?? 1;
         this.aiType = params.aiType ?? AiType.AGGRESSIVE;
+        this.imageKey = params.imageKey ?? undefined;
     }
 
     /* =====================
@@ -364,7 +351,10 @@ export class Battler implements StatusContext, BattlerPort {
             attack: base.attack ?? 5,
             defense: base.defense ?? 3,
             magic: base.magic ?? 5,
-            speed: base.speed ?? 5
+            speed: base.speed ?? 5,
+            luck: base.luck ?? 5,
+            avoid: base.avoid ?? 5,
+            crtical: base.crtical ?? 5,
         };
     }
 

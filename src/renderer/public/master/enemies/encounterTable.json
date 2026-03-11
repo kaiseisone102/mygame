@@ -7,5 +7,10 @@
     "PLAIN": [
         "SLIME",
         "DRACKY"
+    ],
+    "CAVE": [
+        "GHOST",
+        "GHOST",
+        "DRAGON"
     ]
 }

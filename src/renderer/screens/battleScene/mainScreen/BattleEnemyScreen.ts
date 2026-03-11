@@ -92,35 +92,48 @@ export class BattleEnemyScreen implements MainScreen {
     // 描画は state の結果に従うだけにする
     setBattleState(state: BattleState) {
         this.battleState = state;
+
+        this.resetViews();
+
         this.syncEnemies();
         this.syncAllies();
     }
 
     private syncEnemies() {
+        const aliveIds = new Set(this.battleState.enemies.map(e => e.instanceId));
+
+        // 古いview削除
+        for (const [id, view] of this.enemyViews) {
+            if (!aliveIds.has(id)) {
+                view.element.remove();
+                this.enemyViews.delete(id);
+            }
+        }
+
         for (const enemy of this.battleState.enemies) {
 
-            let view = this.enemyViews.get(enemy.id);
+            let view = this.enemyViews.get(enemy.instanceId);
 
             // まだ表示していない敵は生成
             if (!view) {
-                view = new EnemyView(enemy.id, enemy.name, this.enemyContainer);
-                this.enemyViews.set(enemy.id, view);
+                view = new EnemyView(enemy.instanceId, enemy.name, enemy.imageKey, this.enemyContainer);
+                this.enemyViews.set(enemy.instanceId, view);
             }
 
             // 生死同期
             enemy.alive ? view.show() : view.fadeOut();
-            this.layoutEnemies();
         }
+        this.layoutEnemies();
     }
 
     private syncAllies() {
         for (const ally of this.battleState.allies) {
 
-            let view = this.allyViews.get(ally.id);
+            let view = this.allyViews.get(ally.instanceId);
 
             if (!view) {
-                view = new AllyView(ally.id, ally.name, this.allyContainer);
-                this.allyViews.set(ally.id, view);
+                view = new AllyView(ally.instanceId, ally.name, this.allyContainer);
+                this.allyViews.set(ally.instanceId, view);
             }
 
             ally.alive ? view.show() : view.fadeOut();
@@ -180,4 +193,12 @@ export class BattleEnemyScreen implements MainScreen {
         });
     }
 
+    private resetViews() {
+
+        this.enemyViews.forEach(v => v.element.remove());
+        this.enemyViews.clear();
+
+        this.allyViews.forEach(v => v.element.remove());
+        this.allyViews.clear();
+    }
 }

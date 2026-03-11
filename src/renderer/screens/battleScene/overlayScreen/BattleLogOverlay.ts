@@ -1,12 +1,13 @@
-// src/renderer/screens/battleScreens/overlayScreen/BattleLogOverlay.ts
+// src/renderer/screens/battleScreen/overlayScreen//BattleLogOverlay.ts
 
+import { BattleState } from "../../../../renderer/game/battle/core/BattleState";
+import { ExpLog } from "../../../../renderer/game/battle/service/BattleResultService";
 import { InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";
+import { OverlayScreenType } from "../../../../shared/type/screenType";
 import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { OverlayScreen } from "../../interface/overlay/OverLayScreens";
-import { BattleLogOverlayController } from "./controller/BattleLogOverlayController";
-import { BattleState } from "../../../../renderer/game/battle/core/BattleState";
 import { BattleEnemy } from "./AttackTargetOverlay";
-import { OverlayScreenType } from "../../../../shared/type/screenType";
+import { BattleLogOverlayController } from "./controller/BattleLogOverlayController";
 
 /**
  * BattleLogOverlay
@@ -43,6 +44,7 @@ export class BattleLogOverlay implements OverlayScreen {
     }
 
     hide(): void {
+        console.log("BattleLogOverlay hide");
         this.controller.hide();
     }
 
@@ -68,6 +70,10 @@ export class BattleLogOverlay implements OverlayScreen {
         this.controller.addLog(message)
     }
 
+    /** addLog (with EXP) */
+    playExpLogs(expLogs: ExpLog[]) {
+        this.controller.playExpLogs(expLogs);
+    }
     setEnemies(enemies: BattleEnemy[]) {
     }
 }

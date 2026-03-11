@@ -6,44 +6,30 @@ import { Battler } from "../core/Battler";
 
 export class BattleLogFormatter {
 
-    static fromResult(
-        result: SkillResult,
-        source: Battler,
-        target: Battler
-    ): string[] {
+    static fromResult(result: SkillResult, source: Battler, target: Battler): string[] {
 
         const logs: string[] = [];
 
         switch (result.kind) {
 
             case SkillEffectKindId.DAMAGE:
-                logs.push(
-                    `${target.name}に${result.value}のダメージ！`
-                );
+                logs.push(`${source.name}が${target.name}に${result.value}のダメージ！`);
 
                 if (result.killed) {
-                    logs.push(
-                        `${target.name}は倒れた！`
-                    );
+                    logs.push(`${target.name}は倒れた！`);
                 }
                 break;
 
             case SkillEffectKindId.HEAL:
-                logs.push(
-                    `${target.name}のHPが${result.value}回復した！`
-                );
+                logs.push(`${source.name}が${target.name}のHPを${result.value}回復！`);
                 break;
 
             case SkillEffectKindId.STATUS:
-                logs.push(
-                    `${target.name}は${result.statusId}状態になった！`
-                );
+                logs.push(`${source.name}が${target.name}を${result.statusId}状態にした！`);
                 break;
 
             case SkillEffectKindId.BUFF:
-                logs.push(
-                    `${target.name}の${result.buffId}が上がった！`
-                );
+                logs.push(`${source.name}が${target.name}の${result.buffId}が上げた！`);
                 break;
         }
 

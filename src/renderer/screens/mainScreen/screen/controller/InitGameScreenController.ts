@@ -1,7 +1,7 @@
 // src/renderer/screens/mainScreens/screen/controller/InitGameScreenController.ts
 
-import { ScreenInitContext } from "@/renderer/screens/interface/context/ScreenInitContext";
-import { MainScreenType } from "@/shared/type/screenType";
+import { ScreenInitContext } from "../../../../../renderer/screens/interface/context/ScreenInitContext";
+import { MainScreenType } from "../../../../../shared/type/screenType";
 
 export class InitGameScreenController {
     private started = false;

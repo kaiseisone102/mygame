@@ -1,14 +1,13 @@
 // src/renderer/screens/router/useCase/world/BattleStartedUseCase.ts
 
-import { WorldEvent } from "../../../../../renderer/router/WorldEvent";
-import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
+import { createDummyAllies } from "../../../../../renderer/game/battle/core/BattleState";
+import { BattlerFactory } from "../../../../../renderer/game/battle/enemy/factory/createEnemy";
 import { EncounterRepository } from "../../../../../renderer/game/battle/enemy/repository/EncounterRepository";
 import { EnemyRepository } from "../../../../../renderer/game/battle/enemy/repository/EnemyRepository";
-import { EnemyTemplateId } from "../../../../../shared/Json/enemy/EnemyTemplate";
-import { BattlerFactory } from "../../../../../renderer/game/battle/enemy/factory/createEnemy";
+import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
+import { WorldEvent } from "../../../../../renderer/router/WorldEvent";
+import { EnemyKey } from "../../../../../shared/Json/enemy/EnemyTemplateJson";
 import { BiomeId } from "../../../../../shared/type/battle/enemy/BiomeId";
-import { BattleResult, CommandMode } from "../../../../../shared/type/battle/TargetType";
-import { createDummyAllies } from "../../../../../renderer/game/battle/core/BattleState";
 
 // BattleStartedUseCase は「画面上のワールド状態」を基準にする
 /**
@@ -30,7 +29,7 @@ export class BattleStartedUseCase {
         const enemyIds = this.encounterRepo.getEnemyIds(biomeId);
         console.log("enemyIds", enemyIds);
         // 2.テンプレ取得
-        const templates = enemyIds.map((id: EnemyTemplateId) =>
+        const templates = enemyIds.map((id: EnemyKey) =>
             this.enemyRepo.get(id)
         );
         console.log("biomeId", biomeId);
@@ -44,17 +43,9 @@ export class BattleStartedUseCase {
         // 4.イベント通知
         this.emitWorld({
             type: "BATTLE_STARTED", payload: {
-                battleState: {
-                    turn: 1,
-                    allies,
-                    enemies: enemies,
-                    currentActorId: 999,
-                    order: [],
-                    actionQueue: [],
-                    result: BattleResult.NULL,
-                    finished: false,
-                    mode: CommandMode.NULL
-                }
+                allies,
+                enemies,
+                biomeId
             }
         });
     }

@@ -1,14 +1,12 @@
 // src/shared/data/gameState.ts
 
-import { SaveData } from "../save/SaveData";
 import { BattleState, createInitialBattleState } from "../../renderer/game/battle/core/BattleState";
+import { SkillId } from "../master/battle/type/SkillPreset";
+import { SaveData } from "../save/SaveData";
 import { MapId } from "../type/MapId";
-import {
-    DEFAULT_COLLECTED_ITEMS, DEFAULT_EVENTFLAG, DEFAULT_PLAYER_AVO, DEFAULT_PLAYER_CRT, DEFAULT_PLAYER_DEF, DEFAULT_PLAYER_EXP, DEFAULT_PLAYER_GOLD,
-    DEFAULT_PLAYER_HP, DEFAULT_PLAYER_INT, DEFAULT_PLAYER_LEVEL, DEFAULT_PLAYER_LUC, DEFAULT_PLAYER_MP, DEFAULT_PLAYER_NAME, DEFAULT_PLAYER_POW,
-    DEFAULT_PLAYER_SPD, DEFAULT_START_POSITION_BY_WORLD, DEFAULT_START_MAP_ID, SAVE_VERSION
-} from "./playerConstants";
-import { PlayerPxPosition, PlayerTilePosition, WorldPxPosition, WorldTilePosition } from "../type/playerPosition/posType";
+import { PlayerPxPosition, WorldPxPosition } from "../type/playerPosition/posType";
+import { BattlerSaveData } from "./BattlerSaveData";
+import { BaseStats, DEFAULT_COLLECTED_ITEMS, DEFAULT_EVENTFLAG, DEFAULT_PLAYER_BASE_STATS, DEFAULT_PLAYER_EXP, DEFAULT_PLAYER_GOLD, DEFAULT_PLAYER_LEVEL, DEFAULT_PLAYER_NAME, DEFAULT_START_MAP_ID, DEFAULT_START_POSITION_BY_WORLD, SAVE_VERSION } from "./playerConstants";
 
 /**
  * GameState
@@ -33,19 +31,11 @@ export class GameState {
     gold: number = DEFAULT_PLAYER_GOLD;
 
     // 戦闘用ステータス
-    hp: number = DEFAULT_PLAYER_HP;
-    mp: number = DEFAULT_PLAYER_MP;
-    pow: number = DEFAULT_PLAYER_POW;
-    int: number = DEFAULT_PLAYER_INT;
-    def: number = DEFAULT_PLAYER_DEF;
-    spd: number = DEFAULT_PLAYER_SPD;
-    luc: number = DEFAULT_PLAYER_LUC;
-    avo: number = DEFAULT_PLAYER_AVO;
-    crt: number = DEFAULT_PLAYER_CRT;
+    baseStats: BaseStats = DEFAULT_PLAYER_BASE_STATS;
 
     // 戦闘システム拡張用（オプション）
     statusEffects: string[] = []; // 状態異常やバフ/デバフ
-    skills: string[] = [];        // 覚えているスキル
+    skills: SkillId[] = [];        // 覚えているスキル
 
     // 装備やアイテム
     equipment: Record<string, boolean> = {};
@@ -66,7 +56,23 @@ export class GameState {
     currentBattleState?: BattleState;
     battleReturn?: { mapId: MapId, pos: WorldPxPosition };
 
+    party: BattlerSaveData[] = [];
+
     constructor(public saveFileId: number) { }
+
+    // 戦闘後の味方データを反映
+    applyBattleResult(allies: BattlerSaveData[]) {
+        this.party = allies;
+
+        // メインプレイヤーのHP/MP/EXP はパーティの先頭を使う
+        if (allies.length > 0) {
+            const main = allies[0];
+            this.baseStats.hp = main.baseStats.hp;
+            this.baseStats.mp = main.baseStats.mp;
+            this.level = main.level;
+            this.exp = main.exp;
+        }
+    }
 
     /**
      * 部分更新用ユーティリティ
@@ -93,15 +99,7 @@ export class GameState {
             gold: this.gold,
 
             // 戦闘用ステータス
-            hp: this.hp,
-            mp: this.mp,
-            pow: this.pow,
-            int: this.int,
-            def: this.def,
-            spd: this.spd,
-            luc: this.luc,
-            avo: this.avo,
-            crt: this.crt,
+            baseStats: this.baseStats,
 
             // 戦闘システム拡張用（オプション）
             statusEffects: this.statusEffects,
@@ -122,7 +120,8 @@ export class GameState {
             playerPos: this.playerPos,
 
             currentBattleState: this.currentBattleState,
-            battleReturn: this.battleReturn
+            battleReturn: this.battleReturn,
+            party: this.party,
         };
     }
 
@@ -141,15 +140,7 @@ export class GameState {
         this.exp = save.exp;
         this.gold = save.gold;
 
-        this.hp = save.hp;
-        this.mp = save.mp;
-        this.pow = save.pow;
-        this.int = save.int;
-        this.def = save.def;
-        this.spd = save.spd;
-        this.luc = save.luc;
-        this.avo = save.avo;
-        this.crt = save.crt;
+        this.baseStats = save.baseStats;
 
         this.statusEffects = save.statusEffects ?? [];
         this.skills = save.skills ?? [];
@@ -171,6 +162,7 @@ export class GameState {
 
         this.currentBattleState = save.currentBattleState;
         this.battleReturn = save.battleReturn;
+        this.party = this.party;
     }
 
     /**
@@ -255,15 +247,7 @@ export class GameState {
         this.exp = DEFAULT_PLAYER_EXP;
         this.gold = DEFAULT_PLAYER_GOLD;
 
-        this.hp = DEFAULT_PLAYER_HP;
-        this.mp = DEFAULT_PLAYER_MP;
-        this.pow = DEFAULT_PLAYER_POW;
-        this.int = DEFAULT_PLAYER_INT;
-        this.def = DEFAULT_PLAYER_DEF;
-        this.spd = DEFAULT_PLAYER_SPD;
-        this.luc = DEFAULT_PLAYER_LUC;
-        this.avo = DEFAULT_PLAYER_AVO;
-        this.crt = DEFAULT_PLAYER_CRT;
+        this.baseStats = DEFAULT_PLAYER_BASE_STATS;
 
         this.statusEffects = [];
         this.skills = [];

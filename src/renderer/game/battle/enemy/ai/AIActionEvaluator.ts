@@ -1,9 +1,9 @@
 // src/renderer/game/battle/enemy/ai/AIActionEvaluator.ts
 
+import { SkillPreset } from "../../../../../shared/master/battle/type/SkillPreset";
+import { SkillEffectKindId } from "../../../../../shared/type/battle/skill/skillFormula";
 import { Battler } from "../../core/Battler";
 import { BattleState } from "../../core/BattleState";
-import { SkillEffectKindId } from "../../../../../shared/type/battle/skill/skillFormula";
-import { SkillPreset } from "shared/master/battle/type/SkillPreset";
 
 export class AIActionEvaluator {
 
@@ -13,6 +13,8 @@ export class AIActionEvaluator {
         targets: Battler[],
         state: BattleState
     ): number {
+        const mpCost = skill.cost?.mp;
+
         let score = 0;
 
         for (const effect of skill.effects) {
@@ -36,10 +38,10 @@ export class AIActionEvaluator {
             }
         }
 
-        if (!skill.cost?.mp) throw new Error("AIActionEvaluator not found skill.cost.mp");
+        if (mpCost === undefined) throw new Error("AIActionEvaluator not found skill.cost.mp");
 
         // MPが足りないなら無効
-        if (actor.baseStats.mp < skill.cost.mp) {
+        if (actor.baseStats.mp < mpCost) {
             return -Infinity;
         }
 

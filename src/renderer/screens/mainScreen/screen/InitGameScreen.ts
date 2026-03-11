@@ -1,7 +1,7 @@
 // src/renderer/screens/mainScreens/screen/InitGameScreen.ts
 
-import { InputAxis, UIActionEvent } from "@/renderer/input/mapping/InputMapper";
-import { WorldEvent } from "@/renderer/router/WorldEvent";
+import { InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";
+import { WorldEvent } from "../../../../renderer/router/WorldEvent";
 import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { UseUIActionScreen } from "../../interface/screen/UseUIActionScreen";
 import { InitGameScreenController } from "./controller/InitGameScreenController";

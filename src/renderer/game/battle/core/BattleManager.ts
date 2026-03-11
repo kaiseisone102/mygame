@@ -1,13 +1,14 @@
 // src/renderer/game/battle/core/BattleManager.ts
 
+import { AlliesStatusOverlay } from "../../../../renderer/screens/battleScene/overlayScreen/AlliesStatusOverlay";
 import { BattleInput } from "../../../../renderer/router/useCase/gameUseCase/battle/BattleInputUseCase";
 import { delay } from "../../../../renderer/utils/delay";
 import { BattleCommandId } from "../../../../shared/domain/battleCommandId";
 import { SkillRepository } from "../../../../shared/master/battle/SkillRepository";
-import { SkillPreset } from "../../../../shared/master/battle/type/SkillPreset";
+import { SkillId, SkillPreset } from "../../../../shared/master/battle/type/SkillPreset";
 import { BattleAction, BattlerSide, StrangeAction, TargetSpecifier } from "../../../../shared/type/battle/BattleAction";
 import { SkillResult } from "../../../../shared/type/battle/result/SkillResult";
-import { BattleResult, TargetType } from "../../../../shared/type/battle/TargetType";
+import { BattleResult, CommandActionType, TargetType } from "../../../../shared/type/battle/TargetType";
 import { AIActionResolver } from "../enemy/ai/AIActionResolver";
 import { BattleLogFormatter } from "../event/BattleLogFormatter";
 import { SkillExecutor } from "../logic/skills/SkillExecutor";
@@ -16,6 +17,9 @@ import { BattlePort } from "../port/BattlePort";
 import { Battler } from "./Battler";
 import { BattleState, initialBattleState } from "./BattleState";
 import { canBattlerAct } from "./canBattlerAct";
+import { GetOverlayScreenType } from "../../../../renderer/screens/interface/overlay/OverLayScreens";
+import { BattleTurnDisplayOverlay } from "../../../../renderer/screens/battleScene/overlayScreen/BattleTurnDisplayOverlay";
+import { OverlayScreenType } from "../../../../shared/type/screenType";
 
 /**
  * 2026/02/09
@@ -28,11 +32,19 @@ export class BattleManager {
     private battlePort!: BattlePort;
     private skillData: SkillPreset[];
 
+    private alliesStatusOverlay: AlliesStatusOverlay;
+
     constructor(
         private battleLogFormatter: BattleLogFormatter,
-        private skillRepository: SkillRepository
+        private skillRepository: SkillRepository,
+        private overlay: GetOverlayScreenType
     ) {
         this.skillData = this.skillRepository.getAll();
+        this.alliesStatusOverlay = this.overlay[OverlayScreenType.ALLIES_STATUS_OVERLAY];
+    }
+
+    init(state: BattleState) {
+        this.battleState = state;
     }
 
     /* =====================
@@ -53,7 +65,6 @@ export class BattleManager {
 
     setState(state: BattleState) {
         this.battleState = state;
-        this.buildTurnOrder();
     }
 
     get currentActor(): Battler {
@@ -82,8 +93,9 @@ export class BattleManager {
         return this.findBattler(actorId) ?? null;
     }
 
-    isPlayer(actorId: number): boolean {
-        return true;
+    isPlayer(actorInstanceId: number): boolean {
+        const battler = this.findBattler(actorInstanceId);
+        return battler?.side === BattlerSide.ALLY;
     }
 
     /* =====================
@@ -109,25 +121,32 @@ export class BattleManager {
         switch (actor.side) {
             case BattlerSide.ALLY:
                 // usecase からUI入力を受け取る => action 生成
-                const input = await this.battlePort.requestCommand(actor.id, actor.name, this.battleState.enemies);// 敵は battleScene から 後に
+                const input = await this.battlePort.requestCommand(actor.templateId, actor.instanceId, actor.name, this.battleState.enemies);
 
                 action = this.convertInputToAction(input);
 
                 console.log("⚔Ally Action「", actor.name, "」=>", action)
                 break;
             case BattlerSide.ENEMY:
-                await delay(300); // 思考演出
-                action = this.convertInputToAction(this.convertStrangeActToInput(AIActionResolver.decideAction(actor, this.battleState, this.skillData)));
+                // 思考演出
+                await delay(600);
+                // 最適行動を目指す！ 
+                const AIBestAction = AIActionResolver.decideAction(actor, this.battleState, this.convertSkillIdToSkillPreset(actor.skills));// actor.skillをskillPresetに変換
+                console.log("AIBestAction:", AIBestAction);
+
+                const AIBattleInput = this.convertStrangeActToInput(AIBestAction);
+                console.log("AIBattleInput:", AIBattleInput);
+
+                action = this.convertInputToAction(AIBattleInput);
                 console.log("💀Enemy Action「", actor.name, "」=> ", action)
                 break;
         }
 
         // 実行
         const results = await this.executeAction(action);
-        // ログ生成
-        this.logResults(results);
 
-        TraitRunner.onTurnEnd(actor);
+        // 行動後に味方のHP/MP更新
+        this.alliesStatusOverlay.update(0);
 
         this.checkBattleEnd();
 
@@ -135,31 +154,13 @@ export class BattleManager {
             this.advanceTurn();
         }
 
+        // ログ生成
+        this.logResults(results);
+
+        TraitRunner.onTurnEnd(actor);
+
         return results;
     }
-
-    /* =====================
-        コマンド取得
-    ===================== */
-
-    async requestCommand(): Promise<BattleAction> {
-        const actor = this.currentActor;
-
-        // 敵なら即AI決定
-        if (actor.side === BattlerSide.ENEMY) {
-            await delay(300); // 思考演出
-            return this.convertInputToAction(this.convertStrangeActToInput(AIActionResolver.decideAction(actor, this.battleState, this.skillData)));
-        }
-
-        // プレイヤーならUI待ち
-        return new Promise<BattleAction>((resolve) => {
-            if (!this.onCommandRequested) throw new Error("onCommandRequested not set");
-            this.onCommandRequested?.(actor, resolve);
-        });
-    }
-
-    // これは UI 側から注入するコールバック。(battleScene が持っている)
-    onCommandRequested?: (actor: Battler, resolve: (action: BattleAction) => void) => void;
 
     /* =====================
         行動実行
@@ -167,7 +168,7 @@ export class BattleManager {
 
     private async executeAction(action: BattleAction): Promise<SkillResult[]> {
 
-        const actor = this.findBattler(action.actorId);
+        const actor = this.findBattler(action.actorInstanceId);
         if (!actor || !actor.alive) return [];
 
         // 状態異常による行動書き換え
@@ -184,10 +185,26 @@ export class BattleManager {
             action = this.convertInputToAction(this.convertStrangeActToInput(reWrite)) ?? action;
         }
 
+        // 逃げる
+        if (action.type === CommandActionType.ESCAPE) {
+
+            const success = Math.random() < 0.7;
+
+            if (success) {
+                this.battlePort.addBattleLog(`${actor.name}は逃げ出した！`);
+                await delay(1000);
+                this.finish(BattleResult.ESCAPE);
+            } else {
+                this.battlePort.addBattleLog(`${actor.name}は逃げられなかった！`);
+                await delay(600);
+            }
+            return [];
+        }
+
         // Traitによる行動書き換え
         action = TraitRunner.beforeAction(actor, action);
 
-        if (action.type !== BattleCommandId.ITEM) {
+        if (action.type !== CommandActionType.ITEM) {
 
             const skill = action.skill;
             if (!skill) throw new Error("BattleManager executeAction cant found action.skill");
@@ -210,28 +227,36 @@ export class BattleManager {
     private resolveTargets(spec: TargetSpecifier): Battler[] {
         switch (spec.type) {
             case TargetType.SINGLE_ENEMY:
-                return spec.enemyId
-                    ? [this.findBattler(spec.enemyId)!].filter(b => b.alive)
+                return spec.enemyInstanceId
+                    ? [this.findBattler(spec.enemyInstanceId)!].filter(b => b.alive)
                     : [];
 
             case TargetType.GROUP_ENEMY:
                 return spec.ids.map(id => this.findBattler(id)).filter((b): b is Battler => !!b && b.alive);
 
             case TargetType.ALL_ENEMIES:
-                return this.battleState.enemies.filter(b => b.alive);
+                const actor = this.findBattler(spec.actorInstanceId ?? this.currentActor.instanceId);
+                if (!actor) return [];
+                return actor.side === BattlerSide.ALLY
+                    ? this.battleState.enemies.filter(b => b.alive)
+                    : this.battleState.allies.filter(b => b.alive);
 
             case TargetType.SINGLE_ALLY:
-                return spec.actorId
-                    ? [this.findBattler(spec.actorId)!].filter(b => b.alive)
+                return spec.actorInstanceId
+                    ? [this.findBattler(spec.actorInstanceId)!].filter(b => b.alive)
                     : [];
 
             case TargetType.SELF_AND_SINGLE_ALLY:
                 const self = this.currentActor;
-                const ally = spec.actorId ? this.findBattler(spec.actorId) : undefined;
+                const ally = spec.actorInstanceId ? this.findBattler(spec.actorInstanceId) : undefined;
                 return [self, ally].filter((b): b is Battler => !!b && b.alive);
 
             case TargetType.ALL_ALLIES:
-                return this.battleState.allies.filter(b => b.alive);
+                const actor2 = this.findBattler(spec.actorInstanceId ?? this.currentActor.instanceId);
+                if (!actor2) return [];
+                return actor2.side === BattlerSide.ALLY
+                    ? this.battleState.allies.filter(b => b.alive)
+                    : this.battleState.enemies.filter(b => b.alive);
 
             case TargetType.SELF:
                 return [this.currentActor];
@@ -247,8 +272,9 @@ export class BattleManager {
 
         this.battleState.order = all
             .filter(b => b.alive)
-            .sort((a, b) => b.baseStats.speed - a.baseStats.speed)
-            .map(b => b.id);
+            .sort((a, b) => (b.baseStats.speed + Math.random())
+                - (a.baseStats.speed + Math.random()))
+            .map(b => b.instanceId);
 
         this.battleState.currentActorId = 0;
     }
@@ -262,6 +288,12 @@ export class BattleManager {
             this.battleState.turn++;
             this.buildTurnOrder();
         }
+    }
+
+    startBattle() {
+        this.buildTurnOrder();
+        // 初期表示用
+        if (this.alliesStatusOverlay) this.alliesStatusOverlay.show({ allies: this.battleState.allies });
     }
 
     /* =====================
@@ -288,23 +320,26 @@ export class BattleManager {
         Utility
     ===================== */
 
-    private findBattler(id: number): Battler | undefined {
-        return [...this.battleState.allies, ...this.battleState.enemies].find(b => b.id === id);
+    private findBattler(instanceId: number): Battler | undefined {
+        return [...this.battleState.allies, ...this.battleState.enemies].find(b => b.instanceId === instanceId);
     }
 
-    private convertInputToAction(
-        input: BattleInput
-    ): BattleAction {
+    private convertInputToAction(input: BattleInput): BattleAction {
         const skill = this.skillRepository.get(input.skillId);
 
         if (!skill) throw new Error(`Skill not found}`);
 
         return {
             type: input.commandId,
-            actorId: input.actorId,
+            actorTemplateId: input.actorTemplateId,
+            actorInstanceId: input.actorInstanceId,
             skill,
             target: this.buildTarget(input, skill),
         };
+    }
+
+    private convertSkillIdToSkillPreset(skillIds: SkillId[]): SkillPreset[] {
+        return skillIds.map(id => this.skillRepository.get(id));
     }
 
     private buildTarget(
@@ -316,20 +351,20 @@ export class BattleManager {
             case TargetType.SINGLE_ENEMY:
                 return {
                     type: TargetType.SINGLE_ENEMY,
-                    enemyId: input.targetId,
+                    enemyInstanceId: input.targetId,
                 };
 
             case TargetType.SINGLE_ALLY:
                 return {
                     type: TargetType.SINGLE_ALLY,
-                    actorId: input.targetId,
+                    actorInstanceId: input.targetId,
                 };
 
             case TargetType.ALL_ALLIES:
-                return { type: TargetType.ALL_ALLIES };
+                return { type: TargetType.ALL_ALLIES, actorInstanceId: input.actorInstanceId };
 
             case TargetType.ALL_ENEMIES:
-                return { type: TargetType.ALL_ENEMIES };
+                return { type: TargetType.ALL_ENEMIES, actorInstanceId: input.actorInstanceId };
 
             case TargetType.SELF:
             default:
@@ -353,10 +388,59 @@ export class BattleManager {
     }
 
     reset(): void {
-        this.battleState = initialBattleState;
+        this.battleState = structuredClone(initialBattleState);
         this.buildTurnOrder();
+        this.alliesStatusOverlay.hide();
     }
+
     private convertStrangeActToInput(action: StrangeAction): BattleInput {
-        return { commandId: action.commandId, actorId: action.actorId, actorName: action.actorName, skillId: action.skillId, enemy: [], targetId: this.currentActor.id }
+        return {
+            commandId: action.commandId,
+            actorTemplateId: action.actorTemplateId,
+            actorInstanceId: action.actorInstanceId,
+            actorName: action.actorName,
+            skillId: action.skillId,
+            enemy: [],
+            targetId: action.target ?? this.currentActor.instanceId
+        }
+    }
+
+    /** process at finished combat */
+    async checkBattleEndAfterStep(): Promise<BattleResult> {
+        switch (this.battleState.result) {
+
+            case BattleResult.WIN:
+                this.battlePort.addBattleLog("敵を全滅させた！");
+                await delay(1000);
+                return BattleResult.WIN;
+
+            case BattleResult.LOSE:
+                this.battlePort.addBattleLog("味方が全滅した…");
+                await delay(1000);
+                return BattleResult.LOSE;
+
+            case BattleResult.ESCAPE:
+                return BattleResult.ESCAPE;
+
+            default: return BattleResult.NULL;
+        }
+    }
+
+    // 敵の合計経験値を計算
+    public calculateExpGained(): number {
+        return this.battleState.enemies.reduce((sum, enemy) => sum + (enemy.exp ?? 0), 0);
+    }
+
+    // 味方ごとに経験値を分配
+    public calculateExpForAllies(): { instanceId: number, gainedExp: number }[] {
+        const totalExp = this.calculateExpGained();
+        const allies = this.battleState.allies;
+        const perAlly = Math.floor(totalExp / allies.length);
+        console.log("allies:", this.battleState.allies);
+        console.log("enemies:", this.battleState.enemies);
+        return allies.map(a => ({
+            instanceId: a.instanceId,
+            gainedExp: perAlly
+        }));
     }
 }

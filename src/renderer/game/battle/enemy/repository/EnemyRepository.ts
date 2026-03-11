@@ -1,13 +1,15 @@
-import { EnemyMasterJson, EnemyTemplateId, EnemyTemplateJson } from "../../../../../shared/Json/enemy/EnemyTemplate";
+// src/renderer/game/battle/enemy/repositoy/EnemyRepository.ts
+
+import { EnemyMasterJson, EnemyKey, EnemyTemplateJson } from "../../../../../shared/Json/enemy/EnemyTemplateJson";
 
 export class EnemyRepository {
-    constructor(private master: EnemyMasterJson) {}
+    constructor(private master: EnemyMasterJson) { }
 
-    get(templateId: EnemyTemplateId): EnemyTemplateJson {
-        const enemy = this.master[templateId];
+    get(enemyKey: EnemyKey): EnemyTemplateJson {
+        const enemy = this.master[enemyKey];
 
         if (!enemy) {
-            throw new Error(`Enemy not found: ${templateId}`);
+            throw new Error(`Enemy not found: ${enemyKey}`);
         }
 
         return enemy;

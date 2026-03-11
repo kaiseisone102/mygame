@@ -22,7 +22,7 @@ export const CommandMode = {
 export type CommandMode = typeof CommandMode[keyof typeof CommandMode];
 
 export const CommandActionType = {
-    ATTACK: "ATTACK", MAGIC: "MAGIC", DEFENCE: "DEFENCE", ITEM: "ITEM", ESCAPE: "ESCAPE",
+    ATTACK: "ATTACK", MAGIC: "MAGIC", TECHNIQUE: "TECNIQUE", DEFENCE: "DEFENCE", ITEM: "ITEM", ESCAPE: "ESCAPE",
 } as const;
 export type CommandActionType = typeof CommandActionType[keyof typeof CommandActionType];
 

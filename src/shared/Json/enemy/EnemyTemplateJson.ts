@@ -1,13 +1,15 @@
-import { BattlerSide } from "../../type/battle/BattleAction";
-import { BaseStats } from "../../../renderer/game/battle/core/Battler";
+// src/shared/json/enemy/EnemyTemplateJson.ts
 
-export const EnemyTemplateId = {
-    SLIME: "SLIME", DRACKY: "DRACKY", GHOST: "GHOST"
+import { BaseStats } from "../../data/playerConstants";
+import { BattlerSide } from "../../type/battle/BattleAction";
+
+export const EnemyKey = {
+    SLIME: "SLIME", DRACKY: "DRACKY", GHOST: "GHOST", DRAGON: "DRAGON"
 } as const;
-export type EnemyTemplateId = typeof EnemyTemplateId[keyof typeof EnemyTemplateId];
+export type EnemyKey = typeof EnemyKey[keyof typeof EnemyKey];
 
 export interface EnemyTemplateJson {
-    id: number;
+    templateId: number;
     name: string;
     side: BattlerSide;
 
@@ -29,9 +31,10 @@ export interface EnemyTemplateJson {
     skills?: string[];
     traits?: string[];
     aiType?: string;
+    imageKey?: string;
 }
 
 export type EnemyMasterJson = Record<
-    EnemyTemplateId,
+    EnemyKey,
     EnemyTemplateJson
 >;

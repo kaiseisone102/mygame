@@ -1,4 +1,4 @@
-// src/shared/map/MapJson.ts
+// src/shared/json/map/MapJson.ts
 
 import { ImageKey } from "../../type/ImageKey";
 import { WorldTilePosition } from "../../type/playerPosition/posType";

@@ -1,4 +1,7 @@
 
+import { BattlerSaveData } from "../../data/BattlerSaveData";
+import { BaseStats } from "../../data/playerConstants";
+import { SkillId } from "../../master/battle/type/SkillPreset";
 import { MapId } from "../../type/MapId";
 import { PlayerPxPosition, WorldPxPosition } from "../../type/playerPosition/posType";
 import { SaveDataBase } from "./SaveDataBase";
@@ -14,18 +17,10 @@ export interface SaveDataV2 extends SaveDataBase {
     exp: number;
     gold: number;
 
-    hp: number;
-    mp: number;
-    pow: number;
-    int: number;
-    def: number;
-    spd: number;
-    luc: number;
-    avo: number;
-    crt: number;
+    baseStats: BaseStats;
 
     statusEffects: string[];
-    skills: string[];
+    skills: SkillId[];
 
     equipment: Record<string, boolean>;
     items: Record<string, number>;
@@ -41,4 +36,6 @@ export interface SaveDataV2 extends SaveDataBase {
     playerPos: PlayerPxPosition;
 
     battleReturn?: { mapId: MapId, pos: WorldPxPosition };
+
+    party: BattlerSaveData[];
 }

@@ -1,4 +1,4 @@
-// src/renderer/screens/mainScreen/screen/AttackTargetOverlay.ts
+// src/renderer/screens/battleScene/overlayScreen/AttackTargetOverlay.ts
 
 import { audioManager } from "../../../../renderer/asset/audio/audioManager";
 import { InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";
@@ -12,7 +12,8 @@ import { SkillId, SkillPreset } from "../../../../shared/master/battle/type/Skil
 import { CommandSelectedPayload } from "./BattleBasicCommandOverlay";
 
 export type BattleEnemy = {
-    id: number;
+    templateId: number;
+    instanceId: number;
     name: string;
     alive: boolean;
 };
@@ -39,6 +40,8 @@ export class AttackTargetOverlay implements AttackTargetOverlayScreen {
     private target!: HTMLElement;
     private commandItems: HTMLParagraphElement[] = [];
     private selectedIndex = 0;
+    private actorTemplateId: number = 0;
+    private actorInstanceId: number = 0;
     private actorName: string = "";
     private enemies: BattleEnemy[] = [];
     private commandId!: CommandActionType;
@@ -81,9 +84,12 @@ export class AttackTargetOverlay implements AttackTargetOverlayScreen {
         this.selectedIndex = 0;
         this.screen.style.display = "block";
         this.commandId = payload.phaseSecond.commandId;
+        this.actorTemplateId = payload.phaseSecond.phaseBase.actorTemplateId;
+        this.actorInstanceId = payload.phaseSecond.phaseBase.actorInstanceId;
         this.actorName = payload.phaseSecond.phaseBase.actorName;
         this.setEnemies(payload.phaseSecond.phaseBase.enemies); // 敵リスト描画
         this.skill = payload.skill;
+        this.updateCommandTargetUI();
     }
 
     hide() {
@@ -159,13 +165,15 @@ export class AttackTargetOverlay implements AttackTargetOverlayScreen {
                         type: "PLAYER_COMMAND_SELECTED",
                         input: {
                             commandId: this.commandId,
+                            actorTemplateId: this.actorTemplateId,
+                            actorInstanceId: this.actorInstanceId,
                             actorName: this.actorName,
                             enemy: this.enemies,
                             skillId: this.skill ?? SkillId.ATTACK,
                             targetId: enemyId
                         }
                     });
-
+                    break;
                 }
                 case "CANCEL":
                     this.emitUI?.({ type: "POP_OVERLAY" });
@@ -184,7 +192,7 @@ export class AttackTargetOverlay implements AttackTargetOverlayScreen {
         aliveEnemies.forEach(enemy => {
             const p = document.createElement("p");
             p.textContent = enemy.name;
-            p.dataset.enemyId = String(enemy.id);
+            p.dataset.enemyId = String(enemy.instanceId);
 
             this.target.appendChild(p);
             this.commandItems.push(p);

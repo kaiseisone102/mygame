@@ -1,6 +1,6 @@
 // src/renderer/screens/mainScreens/screen/ForestTempleScreen.ts
 
-import { WorldDefinition } from "../../../../renderer/game/map/MapData/definition/WorldDefinition";
+import { WorldDefinition } from "../../../game/map/builder/interface/definition/WorldDefinition";
 import { WorldManager } from "../../../../renderer/game/map/WorldManager";
 import { InputFrame } from "../../../../renderer/input/frame/InputFrame";
 import { GameActionEvent, InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";
@@ -10,9 +10,10 @@ import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { MainScreen } from "../../interface/screen/MainScreen";
 import { UseGameInputScreen } from "../../interface/screen/UseGameInputScreen";
 import { ForestTempleScreenController } from "./controller/ForestTempleScreenController";
+import { BaseWorldScreenController } from "../../../../renderer/screens/worldScene/BaseWorldScreenController";
 
 export class ForestTempleScreen implements MainScreen, UseGameInputScreen {
-    private controller!: ForestTempleScreenController;
+    private controller!: BaseWorldScreenController;
 
     constructor(
         private gameState: GameState,

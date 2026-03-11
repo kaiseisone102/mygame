@@ -73,7 +73,7 @@ export class UIEventRouter implements UIEventPort {
                         break;
 
                     case CommandActionType.MAGIC:   // 魔法選択オーバーレイをプッシュ ↓は仮で攻撃コマンド
-                        this.screens.pushOverlay(OverlayScreenType.ATTACK_TARGET_OVERLAY, { phaseSecond: event.payload });
+                        this.screens.pushOverlay(OverlayScreenType.MAGIC_SELECT_OVERLAY, { phaseBase: event.payload.phaseBase, commandId: event.payload.commandId });
                         break;
 
                     case CommandActionType.ITEM:
@@ -81,15 +81,17 @@ export class UIEventRouter implements UIEventPort {
                         break;
 
                     case CommandActionType.DEFENCE:
-                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorId: event.payload.phaseBase.actorId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: SkillId.GUARD, targetId: event.payload.phaseBase.actorId });
+                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorTemplateId: event.payload.phaseBase.actorTemplateId, actorInstanceId: event.payload.phaseBase.actorInstanceId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: SkillId.GUARD, targetId: event.payload.phaseBase.actorInstanceId });
                         break;
 
                     case CommandActionType.ESCAPE:// すぐにコマンド処理を実行
-                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorId: event.payload.phaseBase.actorId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: SkillId.ESCAPE, targetId: event.payload.phaseBase.actorId });
+                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorTemplateId: event.payload.phaseBase.actorTemplateId, actorInstanceId: event.payload.phaseBase.actorInstanceId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: SkillId.ESCAPE, targetId: event.payload.phaseBase.actorInstanceId });
                         break;
                 }
                 break;
             }
+
+            case "MAGIC_SELECTED": this.screens.pushOverlay(OverlayScreenType.ATTACK_TARGET_OVERLAY, { phaseSecond: event.payload.phaseBase, skill: event.payload.skillId }); break;
 
             // case "ITEM_SELECTED":
             //     this.gameUseCases.battleInputUseCase.onItemSelected(event.itemId);

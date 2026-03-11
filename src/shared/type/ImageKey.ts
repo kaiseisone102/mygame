@@ -33,7 +33,18 @@ export const ImageKey = {
     AREA_ICON: "AREA_ICON",
     WOODEN_SIGN: "WOODEN_SIGN",
     GOLD_ICON: "GOLD_ICON",
-    POTION_ICON: "POTION_ICON"
+    POTION_ICON: "POTION_ICON",
+    // 背景
+    BATTLE_BG_PLAIN: "BATTLE_BG_PLAIN",
+    BATTLE_BG_FOREST: "BATTLE_BG_FOREST",
+    BATTLE_BG_CAVE: "BATTLE_BG_CAVE",
+    BATTLE_BG_DEEPER_CAVE: "BATTLE_BG_DEEPER_CAVE",
+    BATTLE_BG_WATER: "BATTLE_BG_WATER",
+    // 敵画像
+    ENEMY1: "ENEMY1",
+    ENEMY2: "ENEMY2",
+    ENEMY3: "ENEMY3",
+    ENEMY4: "ENEMY4",
 
 } as const;
 export type ImageKey = typeof ImageKey[keyof typeof ImageKey];

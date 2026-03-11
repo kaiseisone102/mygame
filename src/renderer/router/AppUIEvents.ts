@@ -11,6 +11,7 @@ import { BattleInput } from "./useCase/gameUseCase/battle/BattleInputUseCase";
 import { WorldPxPosition } from "../../shared/type/playerPosition/posType";
 import { OverlayPayloadMap } from "../../renderer/screens/interface/overlay/overlayPayloadMap";
 import { BasicCommandPayload, CommandSelectedPayload } from "../../renderer/screens/battleScene/overlayScreen/BattleBasicCommandOverlay";
+import { SelectedMagicPayload } from "../../renderer/screens/battleScene/overlayScreen/MagicSelectOverlay";
 
 export type AppUIEvent =
     | { type: "OPEN_YES_NO"; message: string; onYes: () => void; onNo: () => void; }
@@ -56,6 +57,7 @@ type BattleEventGroup =
     // ===== UI段階 =====
     | { type: "REQUEST_COMMAND", payload: BasicCommandPayload }
     | { type: "BATTLE_COMMAND_SELECTED", payload: CommandSelectedPayload }// UI操作
+    | { type: "MAGIC_SELECTED", payload: SelectedMagicPayload }
     | { type: "ITEM_SELECTED", itemId: string }
     | { type: "PLAYER_COMMAND_SELECTED", input: BattleInput }
     | { type: "BATTLE_ITEM_SELECTED"; itemId: string }

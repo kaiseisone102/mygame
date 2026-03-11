@@ -1,11 +1,14 @@
 // src/renderer/screens/mainScreens/screen/controller/StartMessageScreenController.ts
 
-import { audioManager } from "@/renderer/asset/audio/audioManager";
-import { UIActionEvent } from "@/renderer/input/mapping/InputMapper";
-import { ScreenInitContext } from "@/renderer/screens/interface/context/ScreenInitContext";
-import { MainScreenController } from "@/renderer/screens/interface/controller/MainScreenController";
+import { MainScreenType, OverlayScreenType } from "../../../../../shared/type/screenType";
+import { audioManager } from "../../../../../renderer/asset/audio/audioManager";
+import { UIActionEvent } from "../../../../../renderer/input/mapping/InputMapper";
+import { ScreenInitContext } from "../../../../../renderer/screens/interface/context/ScreenInitContext";
+import { MainScreenController } from "../../../../../renderer/screens/interface/controller/MainScreenController";
 
 export class StartMessageScreenController implements MainScreenController {
+    protected screenId: string = MainScreenType.START_MESSAGE
+
     private ctx!: ScreenInitContext;
     private el: HTMLElement | null = null;
 
@@ -48,7 +51,7 @@ export class StartMessageScreenController implements MainScreenController {
                         });
                     } else {
                         // 名前入力画面へ
-                        this.ctx.emitUI?.({ type: "SHOW_INPUT_NAME" });
+                        this.ctx.emitUI?.({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.INPUT_NAME_OVERLAY, payload: undefined });
                     }
                     break;
                 case "CANCEL":

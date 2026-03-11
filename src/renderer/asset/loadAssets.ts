@@ -48,5 +48,18 @@ export async function loadAssets() {
         ImageStore.load(ImageKey.GOLD_ICON, "assets/images/items/goldIcon.png"),
         ImageStore.load(ImageKey.POTION_ICON, "assets/images/items/potionIcon.png"),
 
+        // ----- 背景 ----- //
+        ImageStore.load(ImageKey.BATTLE_BG_PLAIN, "assets/images/backGround/battle_bg_plain.png"),
+        ImageStore.load(ImageKey.BATTLE_BG_FOREST, "assets/images/backGround/battle_bg_forest.png"),
+        ImageStore.load(ImageKey.BATTLE_BG_CAVE, "assets/images/backGround/battle_bg_cave.png"),
+        ImageStore.load(ImageKey.BATTLE_BG_DEEPER_CAVE, "assets/images/backGround/battle_bg_deeperCave.png"),
+        ImageStore.load(ImageKey.BATTLE_BG_WATER, "assets/images/backGround/battle_bg_water.png"),
+
+        // ----- 敵画像 ----- //
+        ImageStore.load(ImageKey.ENEMY1, "assets/images/enemy/Enemy1.png"),
+        ImageStore.load(ImageKey.ENEMY2, "assets/images/enemy/Enemy2.png"),
+        ImageStore.load(ImageKey.ENEMY3, "assets/images/enemy/Enemy3.png"),
+        ImageStore.load(ImageKey.ENEMY4, "assets/images/enemy/Enemy4.png"),
+
     ]);
 }

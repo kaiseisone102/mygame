@@ -33,7 +33,7 @@ export class ChangeWorldUseCase {
         const mapJson = await this.mapRepository.load(mapId);
 
         // 2 新しいワールド定義作成
-        const worldDef = this.factory.create(mapJson, mapId);
+        const worldDef = this.factory.create(mapId, mapJson);
 
         // 3 WorldManager にセット（内部参照更新）
         this.worldManager.setWorld(worldDef);

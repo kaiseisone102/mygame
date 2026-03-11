@@ -1,6 +1,6 @@
 // src/renderer/screens/mainScreens/screen/StartMessageScreen.ts
 
-import { InputAxis, UIActionEvent } from "@/renderer/input/mapping/InputMapper";
+import { InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";
 import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { MainScreen } from "../../interface/screen/MainScreen";
 import { StartMessageScreenController } from "./controller/StartMessageScreenController";

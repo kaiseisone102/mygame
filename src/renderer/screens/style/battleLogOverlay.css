@@ -24,13 +24,26 @@
     color: white;
 
     transform: translateX(-50%) skewX(-6deg);
-    z-index: 999;
+    z-index: 0;
     overflow: hidden;
 }
 
 /* 中身は歪ませない */
 #battleLogOverlay * {
     transform: skewX(6deg);
+}
+
+/* =========================
+    log block
+========================= */
+.logBlock {
+    min-height: 24px;
+    margin-bottom: 4px;
+}
+
+.logBlock p {
+    margin: 0;
+    line-height: 1.2;
 }
 
 /* =========================
@@ -68,4 +81,55 @@
     border-left: 4px solid white;
     box-shadow: 0 0 12px rgba(255, 0, 60, 0.8),
         inset 0 0 0 2px black;
+}
+
+/* =========================
+   EXP bar 
+========================= */
+.expBarContainer {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 2px;
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+.expBarFill {
+    position: relative;
+    height: 100%;
+    width: 0%;
+    /* JSで更新 */
+    background: linear-gradient(90deg, #ff003c, #ff9a00, #00ff3c);
+    /* 赤→オレンジ→緑 */
+    border-radius: 6px 0 0 6px;
+    transition: width 0.5s ease-out;
+    /* 滑らかに伸びる */
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.4) inset;
+    overflow: hidden;
+}
+
+/* 少し Persona5 っぽい光のハイライトを追加 */
+.expBarFill::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -20%;
+    width: 20%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: skewX(-20deg);
+    pointer-events: none;
+    animation: shine 1s infinite linear;
+}
+
+@keyframes shine {
+    0% {
+        left: -20%;
+    }
+
+    100% {
+        left: 120%;
+    }
 }

@@ -1,0 +1,136 @@
+/* src/renderer/screens/battleScene/overlayScreen/LevelUpOverlay.css */
+
+/* 画面全体のオーバーレイ */
+.LevelUpOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.75);
+    overflow: hidden;
+    z-index: 1000;
+    pointer-events: all;
+    font-family: "Futura", "Arial Black", sans-serif;
+}
+
+/* 背景赤ラインのアニメーション */
+.LevelUpOverlay::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: repeating-linear-gradient(45deg,
+            rgba(255, 0, 0, 0.3),
+            rgba(255, 0, 0, 0.3) 20px,
+            transparent 20px,
+            transparent 40px);
+    animation: slideLines 2s linear infinite;
+    z-index: 0;
+}
+
+@keyframes slideLines {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(40px, 40px);
+    }
+}
+
+/* メッセージ */
+.LevelUpOverlayMessage {
+    position: relative;
+    z-index: 1;
+    color: #fff;
+    font-size: 36px;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 2px 2px 0 #ff0000, -2px -2px 0 #ff0000, 0 0 10px #ff0000;
+    transform: scale(0.8) rotate(-5deg);
+    animation: levelUpPop 0.6s ease-out forwards, levelUpBounce 0.6s ease-out;
+}
+
+/* 数字だけ強調 */
+.LevelUpOverlayMessage .levelNumber {
+    color: #ffeb3b;
+    text-shadow: 2px 2px 4px #ff9800;
+}
+
+/* 拡大縮小 + 回転アニメーション */
+@keyframes levelUpPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) rotate(-10deg);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.3) rotate(10deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+/* 少し跳ねるアニメーション */
+@keyframes levelUpBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    25% {
+        transform: translateY(-15px);
+    }
+
+    50% {
+        transform: translateY(5px);
+    }
+
+    75% {
+        transform: translateY(-8px);
+    }
+}
+
+/* CONFIRM メッセージ */
+.LevelUpOverlayMessage::after {
+    content: "[CONFIRM]";
+    display: block;
+    margin-top: 20px;
+    font-size: 20px;
+    color: #ff0000;
+    animation: blinkConfirm 1s step-start infinite, slideConfirm 1s ease-in-out infinite alternate;
+}
+
+@keyframes blinkConfirm {
+
+    0%,
+    50% {
+        opacity: 1;
+    }
+
+    51%,
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes slideConfirm {
+    0% {
+        transform: translateY(0px);
+    }
+
+    100% {
+        transform: translateY(-5px);
+    }
+}

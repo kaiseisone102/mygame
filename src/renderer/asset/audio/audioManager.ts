@@ -4,10 +4,10 @@ class AudioManager {
     private currentBgmSrc: string | null = null;
 
     private masterVolume = 1.0;
-    private bgmVolume = 0.4;
+    private bgmVolume = 0;
     private seVolume = 0.8;
 
-    private bgmBaseVolume = 1.0;
+    private bgmBaseVolume = 0;
 
     private bgmFadeTimer: number | null = null;
     private seCache = new Map<string, HTMLAudioElement>();

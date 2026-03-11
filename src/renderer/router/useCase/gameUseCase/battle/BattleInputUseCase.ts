@@ -1,10 +1,9 @@
 
-import { CommandActionType, TargetType } from "../../../../../shared/type/battle/TargetType";
 import { BattlePort } from "../../../../../renderer/game/battle/port/BattlePort";
 import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
+import { BattleEnemy } from "../../../../../renderer/screens/battleScene/overlayScreen/AttackTargetOverlay";
 import { SkillId } from "../../../../../shared/master/battle/type/SkillPreset";
-import { OverlayScreenType } from "../../../../../shared/type/screenType";
-import { BattleEnemy } from "renderer/screens/battleScene/overlayScreen/AttackTargetOverlay";
+import { CommandActionType } from "../../../../../shared/type/battle/TargetType";
 
 export class BattleInputUseCase {
 
@@ -47,7 +46,8 @@ export class BattleInputUseCase {
 
 export type BattleInput = {
     commandId: CommandActionType;
-    actorId: number;
+    actorTemplateId: number;
+    actorInstanceId: number;
     actorName: string;
     skillId: SkillId;
     enemy: BattleEnemy[];

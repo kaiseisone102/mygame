@@ -1,7 +1,7 @@
 import { InputFrame } from "../../../../renderer/input/frame/InputFrame";
 import { UIActionEvent, GameActionEvent } from "../../../../renderer/input/mapping/InputMapper";
 import { BaseScreenController } from "./BaseScreenController";
-import { WorldDefinition } from "../../../../renderer/game/map/MapData/definition/WorldDefinition";
+import { WorldDefinition } from "../../../game/map/builder/interface/definition/WorldDefinition";
 
 export interface MainScreenController extends BaseScreenController {
     UIActions(actions: UIActionEvent[]): void;

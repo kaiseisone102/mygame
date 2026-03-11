@@ -1,6 +1,7 @@
 // src/shared/type/battle/port/BattlerPort.ts
 export interface BattlerPort {
-    id: number;
+    templateId: number;
+    instanceId: number;
     name: string;
     baseStats: {
         hp: number;

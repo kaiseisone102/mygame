@@ -13,24 +13,48 @@ import { AIActionEvaluator } from "./AIActionEvaluator";
  */
 export class AIActionResolver {
 
-    static decideAction(actor: Battler, state: BattleState, skillData: SkillPreset[]): StrangeAction {
+    static decideAction(actor: Battler, state: BattleState, skills: SkillPreset[]): StrangeAction {
 
         // 生きている敵（＝プレイヤー側）
         const targets = state.allies.filter(a => a.alive);
+
         if (targets.length === 0) {
             throw new Error("No valid targets for AI");
+        }
+
+        // スキルがないなら攻撃
+        if (skills.length === 0) {
+            const target = targets[0];
+
+            return {
+                commandId: CommandActionType.ATTACK,
+                actorTemplateId: actor.templateId,
+                actorInstanceId: actor.instanceId,
+                actorName: actor.name,
+                skillId: SkillId.ATTACK,
+                target: target.instanceId
+            };
         }
 
         let bestScore = -Infinity;
         let bestAction: StrangeAction | null = null;
 
-        for (const skill of skillData) {
+        for (const skill of skills) {
+
+            const mpCost = skill.cost?.mp ?? 0;
+            if (actor.baseStats.mp < mpCost) continue;
+
             for (const target of targets) {
+
+                const realTargets =
+                    skill.effectScope === "GROUP" || skill.effectScope === "ALL"
+                        ? targets
+                        : [target];
 
                 const score = AIActionEvaluator.evaluateSkill(
                     actor,
                     skill,
-                    [target],
+                    realTargets,
                     state
                 );
 
@@ -39,10 +63,11 @@ export class AIActionResolver {
 
                     bestAction = {
                         commandId: CommandActionType.ATTACK,
-                        actorId: actor.id,
+                        actorTemplateId: actor.templateId,
+                        actorInstanceId: actor.instanceId,
                         actorName: actor.name,
                         skillId: skill.id,
-                        target: target.id
+                        target: target.instanceId
                     }
                 };
             }
@@ -50,10 +75,11 @@ export class AIActionResolver {
         // 何も選べなかったら防御
         return bestAction ?? {
             commandId: CommandActionType.DEFENCE,
-            actorId: actor.id,
+            actorTemplateId: actor.templateId,
+            actorInstanceId: actor.instanceId,
             actorName: actor.name,
             skillId: SkillId.GUARD,
-            target: actor.id
+            target: actor.instanceId
         };
 
     }

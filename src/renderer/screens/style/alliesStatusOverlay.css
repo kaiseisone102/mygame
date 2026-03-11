@@ -1,0 +1,116 @@
+#allies-status-overlay {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 2px;
+    /* 四角くシャープに */
+    border: 2px solid #fff;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    z-index: 1000;
+    font-family: "Arial", sans-serif;
+    color: #fff;
+    min-width: 220px;
+}
+
+.ally-status {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 8px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-left: 3px solid #00aaff;
+    /* 左ラインでペルソナ感 */
+}
+
+.ally-name {
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #00aaff;
+    /* アクセントカラー */
+    text-shadow: 0 0 3px #00aaff, 0 0 6px #aaffff;
+}
+
+/* HP/MP コンテナ */
+.ally-hp-container,
+.ally-mp-container {
+    position: relative;
+    height: 12px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 10px;
+    line-height: 12px;
+    color: #fff;
+}
+
+.ally-hp-container {
+    background-image: repeating-linear-gradient(45deg,
+            rgba(255, 255, 255, 0.05),
+            rgba(255, 255, 255, 0.05) 1px,
+            transparent 1px,
+            transparent 4px);
+}
+
+/* 内側バー */
+.ally-hp-bar,
+.ally-mp-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    transition: width 0.3s ease;
+    /* 光沢っぽいグラデーション */
+    background: linear-gradient(90deg, rgba(0, 170, 255, 0.8) 0%, rgba(0, 170, 255, 0.5) 100%);
+    overflow: hidden;
+    clip-path: polygon(0 0, 95% 0, 100% 100%, 0% 100%);
+}
+
+.ally-hp-bar {
+    background: linear-gradient(90deg, rgba(0, 170, 255, 0.8) 0%, rgba(0, 170, 255, 0.5) 100%);
+}
+
+.ally-mp-bar {
+    background: linear-gradient(90deg, rgba(162, 0, 255, 0.8) 0%, rgba(162, 0, 255, 0.5) 100%);
+}
+
+.ally-hp-bar::after,
+.ally-mp-bar::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+    animation: shine 1.2s linear infinite;
+}
+
+/* HP/MPテキスト */
+.ally-hp-text,
+.ally-mp-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    line-height: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 2px #000;
+    pointer-events: none;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}

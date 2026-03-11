@@ -1,22 +1,29 @@
 // src/renderer/app.ts
 
+import "./screens/style/alliesStatusOverlay.css";
 import "./screens/style/attackTargetOverlay.css";
-import "./screens/style/battleLogOverlay.css";
 import "./screens/style/battleBasicCommandOverlay.css";
+import "./screens/style/battleEnemyScreen.css";
+import "./screens/style/battleLogOverlay.css";
 import "./screens/style/global.css";
 import "./screens/style/initGameScreen.css";
+import "./screens/style/InputNameOverlay.css";
 import "./screens/style/itemSelectOverLayInBattle.css";
-import "./screens/style/magicTargetOverlay.css";
+import "./screens/style/levelUpOverlay.css";
+import "./screens/style/magicSelectOverlay.css";
 import "./screens/style/optionsOverlay.css";
 import "./screens/style/slotSelect.css";
 import "./screens/style/startMessage.css";
 import "./screens/style/title.css";
 import "./screens/style/viewport.css";
 import "./screens/style/YesNoOverlay.css";
-import "./screens/style/battleEnemyScreen.css";
-import "./screens/style/InputNameOverlay.css";
 
 import { GameState } from "../shared/data/gameState";
+import { EnemyMasterJson } from "../shared/Json/enemy/EnemyTemplateJson";
+import { GrowTableJson } from "../shared/Json/growTable/growTableJson";
+import { SkillRepository } from "../shared/master/battle/SkillRepository";
+import { SkillId, SkillPreset } from "../shared/master/battle/type/SkillPreset";
+import { EncounterTableJson } from "../shared/type/battle/enemy/BiomeId";
 import { MainScreenType } from "../shared/type/screenType";
 import { ZoneEventMap } from "../shared/type/ZoneEvent";
 import { audioManager } from "./asset/audio/audioManager";
@@ -24,12 +31,17 @@ import { createPlayerAssets } from "./asset/createPlayerAssets";
 import { ImageStore } from "./asset/ImageStore";
 import { loadAssets } from "./asset/loadAssets";
 import { BattleManager } from "./game/battle/core/BattleManager";
-import { createInitialBattleState } from "./game/battle/core/BattleState";
+import { BattlerFactory } from "./game/battle/enemy/factory/createEnemy";
+import { EncounterRepository } from "./game/battle/enemy/repository/EncounterRepository";
+import { EnemyRepository } from "./game/battle/enemy/repository/EnemyRepository";
+import { BattleLogFormatter } from "./game/battle/event/BattleLogFormatter";
 import { SimpleAI } from "./game/battle/port/BattlePort";
 import { BattlePortImpl } from "./game/battle/port/impl/BattlePortImpl";
+import { WorldDefinitionFactory } from "./game/map/factory/WorldDefinitionFactory";
 import { TableMessageRepository } from "./game/map/infrastructure/message/TableMessageRepository";
 import { InteractionService } from "./game/map/interaction/application/InteractionService";
 import { InteractionResolver } from "./game/map/interaction/InteractionResolver";
+import { MapRepository } from "./game/map/repository/MapRepository";
 import { createTileDatabase } from "./game/map/tiles/createTileDatabase";
 import { TileRenderer } from "./game/map/tiles/tileRenderer";
 import { WorldManager } from "./game/map/WorldManager";
@@ -53,16 +65,6 @@ import { createMainScreens } from "./screens/mainScreen/createMainScreens";
 import { createOverlayScreens } from "./screens/overlayScreen/createOverlayScreens";
 import { ScreenManager } from "./screens/ScreenManager";
 import { TileEffectService } from "./service/tile/TileEffectService ";
-import { MapRepository } from "./game/map/repository/MapRepository";
-import { WorldDefinitionFactory } from "./game/map/factory/WorldDefinitionFactory";
-import { BattleLogFormatter } from "./game/battle/event/BattleLogFormatter";
-import { SkillRepository } from "../shared/master/battle/SkillRepository";
-import { SkillId, SkillPreset } from "../shared/master/battle/type/SkillPreset";
-import { EnemyMasterJson } from "../shared/Json/enemy/EnemyTemplate";
-import { EncounterRepository } from "./game/battle/enemy/repository/EncounterRepository";
-import { EnemyRepository } from "./game/battle/enemy/repository/EnemyRepository";
-import { BattlerFactory } from "./game/battle/enemy/factory/createEnemy";
-import { EncounterTableJson } from "../shared/type/battle/enemy/BiomeId";
 
 console.log("window.saveGameAPI =", window.saveGameAPI);
 
@@ -87,6 +89,8 @@ audioManager.setSeVolume(config.seVolume);
 const enemyMaster = await fetch("master/enemies/enemyMaster.json").then(r => r.json()) as EnemyMasterJson;
 const encounterTable = await fetch("master/enemies/encounterTable.json").then(r => r.json()) as EncounterTableJson;
 
+const allyGrowTable = await fetch("master/growTable.json").then(r => r.json()) as GrowTableJson;
+
 const enemyRepository = new EnemyRepository(enemyMaster);
 const encounterRepository = new EncounterRepository(encounterTable);
 const battlerFactory = new BattlerFactory();
@@ -102,19 +106,21 @@ const tileDB = createTileDatabase();
 const tileRenderer = new TileRenderer(tileDB);
 const tileEffectService = new TileEffectService(tileDB);
 
+
+// overlayScreen
+const overlayScreen = createOverlayScreens();
 // ゲーム用情報()
 const gameState = new GameState(0);
 // バトルログ変換クラス
 const battleLogFormatter = new BattleLogFormatter();
 // BattleManager を生成
-const battleManager = new BattleManager(battleLogFormatter, skillRepository);
+const battleManager = new BattleManager(battleLogFormatter, skillRepository, overlayScreen);
 
-// screens
-const overlayScreen = createOverlayScreens();
 const interactionResolver = new InteractionResolver();
 const messageRepo = new TableMessageRepository();
 const interactionService = new InteractionService(messageRepo);
-const mainScreens = createMainScreens(gameState, tileEffectService, worldManager, battleManager, overlayScreen);
+// MainScreen
+const mainScreens = createMainScreens(gameState, allyGrowTable, tileEffectService, worldManager, battleManager, overlayScreen);
 
 const inputState = new InputState();
 

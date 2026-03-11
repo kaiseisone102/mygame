@@ -1,6 +1,6 @@
 // src/renderer/screens/ScreenPort.ts
 
-import { WorldDefinition } from "../../renderer/game/map/MapData/definition/WorldDefinition";
+import { WorldDefinition } from "../game/map/builder/interface/definition/WorldDefinition";
 import { YesNoEvent } from "../../shared/events/ui/YesNoEvent";
 import { MainScreenType, OverlayScreenType } from "../../shared/type/screenType";
 import { OverlayInstanceMap, OverlayPayloadMap } from "../../renderer/screens/interface/overlay/overlayPayloadMap";

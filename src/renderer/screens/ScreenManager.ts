@@ -1,6 +1,6 @@
 // src/renderer/screens/ScreenManager.ts
 
-import { WorldDefinition } from "../../renderer/game/map/MapData/definition/WorldDefinition";
+import { WorldDefinition } from "../game/map/builder/interface/definition/WorldDefinition";
 import type { ScreenInitContext } from "../../renderer/screens/interface/context/ScreenInitContext";
 import { defaultGameConfig, GameConfig } from "../../shared/config/GameConfig";
 import { GameState } from "../../shared/data/gameState";
@@ -231,20 +231,6 @@ export class ScreenManager implements ScreenPort, ScreenStateReader {
     // 現在のワールドに差し替える
     setWorld(screenType: MainScreenType, def: WorldDefinition) {
         this.mainScreens[screenType].setWorld?.(def);
-    }
-
-    // 戦闘画面のコマンドにおいて画面遷移を繰る
-    commandIdToOverlay(id: string): OverlayScreenType | null {
-        switch (id) {
-            case "ITEM":
-                return OverlayScreenType.INVENTORY;
-            case "ATTACK":
-                return OverlayScreenType.ATTACK_TARGET_OVERLAY;
-            case "MAGIC":
-                return OverlayScreenType.MAGIC_TARGET_OVERLAY;
-            default:
-                return null;
-        }
     }
 
     getMainScreen<K extends keyof MainScreenInstanceMap>(type: K): MainScreenInstanceMap[K] {

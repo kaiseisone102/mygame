@@ -2,7 +2,8 @@
 
 import { MainScreenType } from "../../../../shared/type/screenType"
 import { MainScreen } from "./MainScreen";
-import { BattleScenePayload } from "../../../../renderer/screens/battleScene/battleScene";
+import { BattleScenePayload } from "../../battleScene/BattleScene";
+import { BiomeId } from "../../../../shared/type/battle/enemy/BiomeId";
 
 export type MainScreenPayloadMap = {
     [MainScreenType.INIT_GAME_SCREEN]: undefined;
@@ -15,7 +16,7 @@ export type MainScreenPayloadMap = {
     [MainScreenType.GRAVE_CAVE]: undefined;
     // 戦闘用シーン
     [MainScreenType.BATTLE_ENEMY_SCREEN]: undefined;
-    [MainScreenType.BATTLE_BACKGROUND_SCREEN]: undefined;
+    [MainScreenType.BATTLE_BACKGROUND_SCREEN]: BiomeId;
     [MainScreenType.BATTLE_SCENE]: BattleScenePayload;
 };
 

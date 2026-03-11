@@ -3,7 +3,7 @@
 import { GameActionEvent, InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";
 import { InputFrame } from "../../../../renderer/input/frame/InputFrame";
 import { ScreenInitContext } from "../context/ScreenInitContext";
-import { WorldDefinition } from "../../../../renderer/game/map/MapData/definition/WorldDefinition";
+import { WorldDefinition } from "../../../game/map/builder/interface/definition/WorldDefinition";
 
 export interface MainScreen<T = void> {
     init(root: HTMLElement, ctx: ScreenInitContext): void;

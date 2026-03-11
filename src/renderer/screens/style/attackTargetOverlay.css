@@ -9,21 +9,21 @@
     width: 360px;
     padding: 16px 20px;
 
-    background: linear-gradient(
-        135deg,
-        rgba(0, 0, 0, 0.85),
-        rgba(10, 10, 10, 0.95)
-    );
+    background: linear-gradient(135deg,
+            rgba(0, 0, 0, 0.85),
+            rgba(10, 10, 10, 0.95));
 
-    border-left: 6px solid #ff003c; /* Persona 赤 */
+    border-left: 6px solid #ff003c;
+    /* Persona 赤 */
     box-shadow:
         0 0 0 2px #ffffff,
         0 0 16px rgba(255, 0, 60, 0.6);
 
     font-family: "Arial Black", "Impact", sans-serif;
     color: white;
-
-    transform: skewX(-6deg); /* ペルソナっぽい斜め */
+    z-index: 100;
+    transform: skewX(-6deg);
+    /* ペルソナっぽい斜め */
 }
 
 /* 中身は歪ませない */
@@ -89,6 +89,6 @@
 }
 
 .overlay.disabled {
-  pointer-events: none;
-  opacity: 0.6;
+    pointer-events: none;
+    opacity: 0.6;
 }

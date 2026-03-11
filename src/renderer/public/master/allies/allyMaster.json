@@ -1,7 +1,7 @@
-[
-    {
-        "id": 1,
-        "name": "Hero",
+{
+    "HERO": {
+        "templateId": 1,
+        "name": "HERO",
         "side": "ALLY",
         "baseStats": {
             "hp": 20,
@@ -19,9 +19,9 @@
         "exp": 0,
         "aiType": null
     },
-    {
-        "id": 2,
-        "name": "Mage",
+    "MAGE": {
+        "templateId": 2,
+        "name": "MAGE",
         "side": "ALLY",
         "baseStats": {
             "hp": 12,
@@ -39,4 +39,4 @@
         "exp": 0,
         "aiType": null
     }
-]
+}

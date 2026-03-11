@@ -19,7 +19,8 @@ export function confusionLogic(params: { failRate: number; recoverRate: number; 
 
             return {
                 commandId: CommandActionType.ATTACK,
-                actorId: ctx.self.id,
+                actorInstanceId: ctx.self.instanceId,
+                actorTemplateId: ctx.self.templateId,
                 actorName: ctx.self.name,
                 skillId: SkillId.ATTACK
             };

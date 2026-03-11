@@ -1,4 +1,4 @@
-// src/renderer/screens/battleScene/mainScreen/BattleBasicCommandOverlay.ts
+// src/renderer/screens/battleScreen/overlayScreen/BattleBasicCommandOverlay.ts
 
 import { audioManager } from "../../../asset/audio/audioManager";
 import { InputAxis, UIActionEvent } from "../../../input/mapping/InputMapper";
@@ -6,13 +6,14 @@ import { AppUIEvent } from "../../../router/AppUIEvents";
 import { WorldEvent } from "../../../router/WorldEvent";
 import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { BattleState } from "../../../game/battle/core/BattleState";
-import { CommandActionType } from "../../../../shared/type/battle/TargetType";
+import { BattleResult, CommandActionType } from "../../../../shared/type/battle/TargetType";
 import { BattleEnemy } from "./AttackTargetOverlay";
 import { OverlayScreen } from "../../interface/overlay/OverLayScreens";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
 
 export type BasicCommandPayload = {
-    actorId: number;
+    actorTemplateId: number;
+    actorInstanceId: number;
     actorName: string,
     enemies: BattleEnemy[],
 }
@@ -189,7 +190,7 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BasicCommandPayl
                     return true;
                 }
                 case "TEST_CHANGE_WORLD":
-                    this.emitWorld?.({ type: "BATTLE_RESULT", result: null });
+                    this.emitWorld?.({ type: "BATTLE_RESULT", result: BattleResult.ESCAPE });
                     break;
             }
         }
@@ -235,6 +236,7 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BasicCommandPayl
 
 const COMMANDS: { id: CommandActionType; label: string }[] = [
     { id: CommandActionType.ATTACK, label: "Attack" },
+    { id: CommandActionType.TECHNIQUE, label: "Technique" },
     { id: CommandActionType.MAGIC, label: "Magic Spell" },
     { id: CommandActionType.DEFENCE, label: "Defence" },
     { id: CommandActionType.ITEM, label: "Items" },

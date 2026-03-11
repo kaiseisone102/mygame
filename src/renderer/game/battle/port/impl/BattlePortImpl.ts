@@ -17,9 +17,9 @@ export class BattlePortImpl implements BattlePort {
         private manager: BattleManager
     ) { }
 
-    async requestCommand(actorId: number, actorName: string, enemies: BattleEnemy[]): Promise<BattleInput> {
+    async requestCommand(actorTemplateId: number, actorInstanceId: number, actorName: string, enemies: BattleEnemy[]): Promise<BattleInput> {
         // 🎮 プレイヤーの場合
-        if (this.isPlayer(actorId)) {
+        if (this.isPlayer(actorInstanceId)) {
             console.log(`requestCommand wait for [${actorName}] input`);
             return new Promise(resolve => {
                 this.resolver = resolve;
@@ -27,7 +27,8 @@ export class BattlePortImpl implements BattlePort {
                 this.emitUI({
                     type: "REQUEST_COMMAND",
                     payload: {
-                        actorId,
+                        actorTemplateId,
+                        actorInstanceId,
                         actorName,
                         enemies
                     }
@@ -36,7 +37,7 @@ export class BattlePortImpl implements BattlePort {
         }
 
         // 🤖 AIの場合
-        return this.ai.decide(actorId, this.getState());
+        return this.ai.decide(actorTemplateId, actorInstanceId, this.getState());
     }
     // 入力完了時に呼ばれる
     resolvePlayerInput(input: BattleInput) {
@@ -46,8 +47,8 @@ export class BattlePortImpl implements BattlePort {
         }
     }
 
-    isPlayer(actorId: number): boolean {
-        return this.manager.isPlayer(actorId);
+    isPlayer(actorInstanceId: number): boolean {
+        return this.manager.isPlayer(actorInstanceId);
     }
 
     getState() {

@@ -1,6 +1,6 @@
 // src/shared/battle/traits/Trait.ts
 
-import { BaseStats } from "../../../../renderer/game/battle/core/Battler";
+import { BaseStats } from "../../../data/playerConstants";
 import { TraitId } from "../../../master/battle/TraitPresets";
 import { SkillPreset } from "../../../master/battle/type/SkillPreset";
 import { BattleAction } from "../BattleAction";
