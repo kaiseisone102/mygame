@@ -5,11 +5,10 @@ import { BiomeId } from "./battle/enemy/BiomeId";
 import { MapId } from "./MapId";
 import { WorldPxPosition } from "./playerPosition/posType";
 import { PlayerState } from "./PlayerState";
-import { TileType } from "./tileType";
-import { ZonePx } from "./ZonePx";
+import { ZoneObject } from "./zone/ZoneObject";
 
 export type ZoneEnterEvent = {
-    zone: ZonePx,
+    zone: ZoneObject,
     ctx: ZoneContext;
 }
 

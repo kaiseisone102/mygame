@@ -9,11 +9,11 @@ export class BattleEventQueue {
     private cancelled = false;
 
     constructor(
-        private emitBattle: (e: { type: "BATTLE_EVENT_QUEUE"; event: BattleEvent }) => void
+        private emitBattle: (event: { type: "BATTLE_EVENT_QUEUE"; event: BattleEvent }) => void
     ) { }
 
     async play(events: BattleEvent[]): Promise<void> {
-     
+
         this.queue.push(...events);
 
         if (this.playing) return;
@@ -36,6 +36,11 @@ export class BattleEventQueue {
     }
 
     private getDuration(event: BattleEvent): number {
+
+        if (event.type === BattleEventKind.DELAY) {
+            return event.duration;
+        }
+
         switch (event.type) {
             case BattleEventKind.DAMAGE: return 500;
             case BattleEventKind.HEAL: return 500;

@@ -1,6 +1,6 @@
-/* src/renderer/screens/battleScene/overlayScreen/LevelUpOverlay.css */
-
-/* 画面全体のオーバーレイ */
+/* ============================= */
+/* LevelUpOverlay 基本設定       */
+/* ============================= */
 .LevelUpOverlay {
     position: absolute;
     top: 0;
@@ -8,6 +8,7 @@
     width: 100%;
     height: 100%;
     display: none;
+    /* 初期は非表示 */
     justify-content: center;
     align-items: center;
     background: rgba(0, 0, 0, 0.75);
@@ -15,9 +16,14 @@
     z-index: 1000;
     pointer-events: all;
     font-family: "Futura", "Arial Black", sans-serif;
+    color: "white";
+    font-size: "24px";
+    text-align: "center";
 }
 
-/* 背景赤ラインのアニメーション */
+/* ============================= */
+/* 背景の赤ラインアニメーション  */
+/* ============================= */
 .LevelUpOverlay::before {
     content: "";
     position: absolute;
@@ -44,7 +50,9 @@
     }
 }
 
-/* メッセージ */
+/* ============================= */
+/* レベルアップメッセージ        */
+/* ============================= */
 .LevelUpOverlayMessage {
     position: relative;
     z-index: 1;
@@ -54,16 +62,19 @@
     text-align: center;
     text-shadow: 2px 2px 0 #ff0000, -2px -2px 0 #ff0000, 0 0 10px #ff0000;
     transform: scale(0.8) rotate(-5deg);
-    animation: levelUpPop 0.6s ease-out forwards, levelUpBounce 0.6s ease-out;
+    animation: levelUpPop 0.6s ease-out forwards,
+        levelUpBounce 0.6s ease-out;
 }
 
-/* 数字だけ強調 */
+/* 数字部分を強調 */
 .LevelUpOverlayMessage .levelNumber {
     color: #ffeb3b;
     text-shadow: 2px 2px 4px #ff9800;
 }
 
-/* 拡大縮小 + 回転アニメーション */
+/* ============================= */
+/* レベルアップ拡大・回転アニメ  */
+/* ============================= */
 @keyframes levelUpPop {
     0% {
         opacity: 0;
@@ -81,7 +92,7 @@
     }
 }
 
-/* 少し跳ねるアニメーション */
+/* 跳ねるアニメーション */
 @keyframes levelUpBounce {
 
     0%,
@@ -102,35 +113,24 @@
     }
 }
 
-/* CONFIRM メッセージ */
-.LevelUpOverlayMessage::after {
-    content: "[CONFIRM]";
+/* ============================= */
+/* CONFIRM メッセージ            */
+/* ============================= */
+.confirmText {
     display: block;
     margin-top: 20px;
     font-size: 20px;
     color: #ff0000;
-    animation: blinkConfirm 1s step-start infinite, slideConfirm 1s ease-in-out infinite alternate;
+    animation: blinkConfirm 1s step-start infinite,
+               slideConfirm 1s ease-in-out infinite alternate;
 }
 
 @keyframes blinkConfirm {
-
-    0%,
-    50% {
-        opacity: 1;
-    }
-
-    51%,
-    100% {
-        opacity: 0;
-    }
+    0%, 50%   { opacity: 1; }
+    51%,100%  { opacity: 0; }
 }
 
 @keyframes slideConfirm {
-    0% {
-        transform: translateY(0px);
-    }
-
-    100% {
-        transform: translateY(-5px);
-    }
+    0%   { transform: translateY(0); }
+    100% { transform: translateY(-5px); }
 }

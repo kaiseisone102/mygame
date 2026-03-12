@@ -1,68 +1,38 @@
-// application/InteractionService.ts
+// src/renderer/game/map/interaction/application/InteractionService.ts
 
+import { OverlayScreenType } from "../../../../../shared/type/screenType";
 import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
-import { NpcData } from "../../talkNPC/NPCData";
-import { ItemData } from "../../talkNPC/ItemData";
-import { SignData } from "../../talkNPC/SignData";
 import { InteractionTarget } from "../InteractionTarget";
 import { MessageRepository } from "./message/MessageRepository";
 
 export class InteractionService {
 
-     constructor(
-        private messageRepo: MessageRepository
-    ) {}
-    
-    handle(target: InteractionTarget): AppUIEvent {
+    constructor(private messageRepo: MessageRepository) { }
 
+    toUIEvent(target: InteractionTarget): AppUIEvent {
         switch (target.type) {
-
             case "NPC":
-                return this.interactNpc(target.npc);
+                return this.npc(target.npc.messageId);
 
             case "SIGN":
-                return this.interactSign(target.sign);
+                return this.sign(target.sign.messageId);
 
             case "ITEM":
-                return this.interactItem(target.item);
+                return this.item(target.item.id);
         }
     }
 
-    private interactNpc(npc: NpcData): AppUIEvent {
-
-        const message = this.messageRepo.getMessage(npc.message);
-
-        if (!message) {
-            console.warn("Message not found:", npc.message);
-            return { type: "OPEN_MESSAGE", messages: ["..."] };
-        }
-
-        return {
-            type: "OPEN_MESSAGE",
-            messages: [message]
-        };
+    private npc(messageId: string): AppUIEvent {
+        const message = this.messageRepo.getMessage(messageId) ?? "...";
+        return { type: "PUSH_OVERLAY", overlay: OverlayScreenType.MESSAGE_LOG, payload: { messages: [message] } };
     }
 
-    private interactSign(sign: SignData): AppUIEvent {
-
-        const message = this.messageRepo.getMessage(sign.message);
-
-        if (!message) {
-            console.warn("Message not found:", sign.message);
-            return { type: "OPEN_MESSAGE", messages: ["..."] };
-        }
-
-        return {
-            type: "OPEN_MESSAGE",
-            messages: [message]
-        };
+    private sign(messageId: string): AppUIEvent {
+        const message = this.messageRepo.getMessage(messageId) ?? "...";
+        return { type: "PUSH_OVERLAY", overlay: OverlayScreenType.MESSAGE_LOG, payload: { messages: [message] } };
     }
 
-    private interactItem(item: ItemData): AppUIEvent {
-
-        return {
-            type: "COLLECT_ITEM",
-            itemId: item.id
-        };
+    private item(itemId: string): AppUIEvent {
+        return { type: "PUSH_OVERLAY", overlay: OverlayScreenType.MESSAGE_LOG, payload: { messages: [`「${itemId}」を手に入れた！`] } };
     }
 }

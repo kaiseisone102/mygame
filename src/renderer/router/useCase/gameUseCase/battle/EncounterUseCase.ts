@@ -1,16 +1,18 @@
 // src/renderer/router/useCase/gameUseCase/battle/EncounterUseCase.ts
 
+import { ZoneObject } from "../../../../../shared/type/zone/ZoneObject";
 import { TileData } from "../../../../../renderer/game/map/tiles/createTileDatabase";
 import { WorldEvent } from "../../../../../renderer/router/WorldEvent";
+import { IGNORE_STEPS } from "../../../../../shared/data/constants";
 import { GameState } from "../../../../../shared/data/gameState";
 import { mapRules } from "../../../../../shared/type/mapRules";
 import { TileType } from "../../../../../shared/type/tileType";
 import { TileStepContext, ZoneContext } from "../../../../../shared/type/ZoneEvent";
-import { ZonePx } from "../../../../../shared/type/ZonePx";
 import { ZoneType } from "../../../../../shared/type/ZoneType";
 
 export class EncounterUseCase {
-    private encounterChance = 0; // 0.0 ～ 0.3
+    private encounterChance: number = 0;
+    private stepCount: number = 0
 
     constructor(
         private gameState: GameState,
@@ -18,19 +20,29 @@ export class EncounterUseCase {
         private emitWorld: (e: WorldEvent) => void
     ) { }
 
-    onPlayerEnteredZone(event: { zone: ZonePx; ctx: ZoneContext }) {
+    onPlayerEnteredZone(event: { zone: ZoneObject; ctx: ZoneContext }) {
         switch (event.zone.type) {
             case ZoneType.FIELD_ENEMY:
-                this.emitWorld({ type: "ENCOUNTER_CONFIRMED", biomeId: event.ctx.biomeId
-                 });
+                this.emitWorld({
+                    type: "ENCOUNTER_CONFIRMED", biomeId: event.ctx.biomeId
+                });
                 break;
         }
     }
 
     onStep(ctx: TileStepContext) {
+
         const rule = mapRules[ctx.mapId];
         if (!rule.encounterEnabled) {
             console.log("ここでは敵が出ないフラグ");
+            return;
+        }
+
+        // 歩数カウント
+        this.stepCount++;
+
+        // 最初のN歩は無視
+        if (this.stepCount <= IGNORE_STEPS) {
             return;
         }
 
@@ -39,7 +51,7 @@ export class EncounterUseCase {
         // 確率を増やす
         this.encounterChance = Math.min(this.encounterChance + rule.stepIncrease, rule.maxChance);
 
-        console.log("encounterChance",this.encounterChance);
+        console.log("encounterChance", this.encounterChance);
 
         // 抽選
         if (Math.random() < this.encounterChance) {
@@ -51,5 +63,6 @@ export class EncounterUseCase {
 
     reset() {
         this.encounterChance = 0;
+        this.stepCount = 0;
     }
 }

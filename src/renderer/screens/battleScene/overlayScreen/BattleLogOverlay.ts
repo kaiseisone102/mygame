@@ -17,11 +17,11 @@ import { BattleLogOverlayController } from "./controller/BattleLogOverlayControl
  * - UIAction を受け取り UI 操作に変換する
  *
  * 入力仕様:
- * - CONFIRM / CANCEL / INVENTORY → メッセージ送り
+ * - CONFIRM / CANCEL / INVENTORY → メッセージ送りはしない
  *
  * 備考:
  * - Game入力は一切扱わない
- * - capturesInput = true により、背後の画面への入力を遮断する
+ * - capturesInput = false により、背後の画面への入力を遮断しない
  */
 export class BattleLogOverlay implements OverlayScreen {
     readonly overlayId: string = OverlayScreenType.BATTLE_LOG;
@@ -66,13 +66,14 @@ export class BattleLogOverlay implements OverlayScreen {
         this.battleState = state;
     }
 
+    /** display message */
     addLog(message: string) {
         this.controller.addLog(message)
     }
 
     /** addLog (with EXP) */
-    playExpLogs(expLogs: ExpLog[]) {
-        this.controller.playExpLogs(expLogs);
+    public async playExpLogs(expLogs: ExpLog[]) {
+        await this.controller.playExpLogs(expLogs);
     }
     setEnemies(enemies: BattleEnemy[]) {
     }

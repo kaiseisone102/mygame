@@ -13,9 +13,10 @@ import { OverlayScreen } from "./OverLayScreens";
 export type OverlayPayloadMap = {
     [OverlayScreenType.ATTACK_TARGET_OVERLAY]: AttackTargetPayload;
     [OverlayScreenType.YES_NO_OVERLAY]: YesNoEvent;
-    [OverlayScreenType.MAGIC_SELECT_OVERLAY]: CommandSelectedPayload;
+    [OverlayScreenType.SKILL_SELECT_OVERLAY]: CommandSelectedPayload;
     [OverlayScreenType.MESSAGE_LOG]: MessageLogEvent;
     [OverlayScreenType.OPTIONS]: undefined;
+    [OverlayScreenType.SANDSTORMOVERLAY]: undefined;
     [OverlayScreenType.BATTLE_BASIC_COMMAND_OVERLAY]: BasicCommandPayload;
     [OverlayScreenType.BATTLE_LOG]: undefined;
     [OverlayScreenType.INPUT_NAME_OVERLAY]: undefined;
@@ -23,7 +24,7 @@ export type OverlayPayloadMap = {
     [OverlayScreenType.INVENTORY]: undefined;
     [OverlayScreenType.ALLIES_STATUS_OVERLAY]: AlliesStatusPayload;
     [OverlayScreenType.BATTLE_TURN_DISPLAY]: BattleTurnPayload;
-    [OverlayScreenType.LEVEL_UP_OVERLAY]: LevelUpPayload;
+    [OverlayScreenType.LEVEL_UP_OVERLAY]: LevelUpPayload[];
 };
 
 // export type OverlayInstanceMap = {

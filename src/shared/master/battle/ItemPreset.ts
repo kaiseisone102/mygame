@@ -2,7 +2,7 @@
 
 import { SkillEffectKind } from "../../type/battle/skill/SkillEffect";
 import { TargetType } from "../../type/battle/TargetType";
-import { SkillId } from "./type/SkillPreset";
+import { MagicId, SkillId } from "./type/SkillPreset";
 
 export type ItemPreset = {
     id: SkillId;
@@ -10,37 +10,41 @@ export type ItemPreset = {
     consumable: boolean;
     targetType: TargetType;
     effects: readonly SkillEffectKind[];
+    description: string;
 };
 
 export const ItemPresets = {
     POTION: {
-        id: SkillId.ATK_DOWN,
+        id: MagicId.ATK_DOWN,
         name: "やくそう",
         consumable: true,
         targetType: TargetType.SINGLE_ALLY,
         effects: [
             { type: "HEAL", power: 30 }
-        ]
+        ],
+        description: ""
     },
 
     BOMB: {
-        id: SkillId.ATK_DOWN,
+        id: MagicId.ATK_DOWN,
         name: "ばくだん",
         consumable: true,
         targetType: TargetType.SINGLE_ENEMY,
         effects: [
             { type: "DAMAGE", formula: "FIXED", power: 50 }
-        ]
+        ],
+        description: ""
     },
 
     ELIXIR: {
-        id: SkillId.ATK_DOWN,
+        id: MagicId.ATK_DOWN,
         name: "エリクサー",
         consumable: true,
         targetType: TargetType.ALL_ALLIES,
         effects: [
             { type: "HEAL", power: 100 }
-        ]
+        ],
+        description: ""
     }
 
 } as const;

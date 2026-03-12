@@ -27,18 +27,30 @@ export const CODE_TO_AXIS: Record<string, InputAxis | undefined> = {
 // ----------------------------------------
 
 // 共通で使えるアクション (UI・ゲーム両方で使用可能)
-export type CommonAction = | "CONFIRM" | "CANCEL" | "INVENTORY" | "TEST_CHANGE_WORLD" | "TEST_OPEN_OPTION";
+export const CommonAction = {
+    CONFIRM: "CONFIRM", CANCEL: "CANCEL", INVENTORY: "INVENTORY", TEST_CHANGE_WORLD: "TEST_CHANGE_WORLD", TEST_OPEN_OPTION: "TEST_OPEN_OPTION", SHOW_SAND_STORM_OVERLAY: "SHOW_SAND_STORM_OVERLAY"
+} as const;
+export type CommonAction = typeof CommonAction[keyof typeof CommonAction];
 
 // ゲーム専用アクション
 // 共通アクションも含む
-export type GameAction = | CommonAction | "ATTACK" | "JUMP";
+export const GameAction = {
+    ATTACK: "ATTACK", JUMP: "JUMP"
+} as const;
+export type GameAction = | CommonAction | typeof GameAction[keyof typeof GameAction];
 
 // UI専用アクション
 // 共通アクションも含む
-export type UIAction = | CommonAction | "UI_ONLY_SOMETHING1" | "UI_ONLY_SOMETHING2"
+export const UIAction = {
+    UI_ONLY_SOMETHING1: "UI_ONLY_SOMETHING1", UI_ONLY_SOMETHING2: "UI_ONLY_SOMETHING2"
+} as const;
+export type UIAction = | CommonAction | typeof UIAction[keyof typeof UIAction];
 
 // アクションの種類 (押下/離上)
-export type ActionType = "pressed" | "released";
+export const ActionType = {
+    PRESSED: "PRESSED", RELEASED: "RELEASED"
+} as const;
+export type ActionType = typeof ActionType[keyof typeof ActionType];
 
 // ----------------------------------------
 // Game / UI 用イベント型
@@ -67,23 +79,24 @@ export type CommonActionEvent = { action: CommonAction, type: ActionType };
 
 // 共通アクション (GAME/UI両方対象)
 export const CODE_TO_COMMON_ACTION: Record<string, CommonActionEvent | undefined> = {
-    Enter: { action: "CONFIRM", type: "pressed" },
-    Escape: { action: "CANCEL", type: "pressed" },
-    Space: { action: "INVENTORY", type: "pressed" },
-    KeyP: { action: "TEST_CHANGE_WORLD", type: "pressed" },
-    KeyO: { action: "TEST_OPEN_OPTION", type: "pressed" }
+    Enter: { action: CommonAction.CONFIRM, type: ActionType.PRESSED },
+    Escape: { action: CommonAction.CANCEL, type: ActionType.PRESSED },
+    Space: { action: CommonAction.INVENTORY, type: ActionType.PRESSED },
+    KeyP: { action: CommonAction.TEST_CHANGE_WORLD, type: ActionType.PRESSED },
+    KeyO: { action: CommonAction.TEST_OPEN_OPTION, type: ActionType.PRESSED },
+    KeyS: { action: CommonAction.SHOW_SAND_STORM_OVERLAY, type: ActionType.PRESSED },
 };
 
 // GAME専用アクション (UIには流さない)
 export const CODE_TO_GAME_ACTION: Record<string, GameActionEvent | undefined> = {
-    KeyZ: { action: "ATTACK", type: "pressed" },
-    KeyX: { action: "JUMP", type: "pressed" },
+    KeyZ: { action: GameAction.ATTACK, type: ActionType.PRESSED },
+    KeyX: { action: GameAction.JUMP, type: ActionType.PRESSED },
 };
 
 // UI専用アクション (ゲームには流さない)
 export const CODE_TO_UI_ACTION: Record<string, UIActionEvent | undefined> = {
-    KeyA: { action: "UI_ONLY_SOMETHING1", type: "pressed" },
-    KeyS: { action: "UI_ONLY_SOMETHING2", type: "pressed" },
+    KeyA: { action: UIAction.UI_ONLY_SOMETHING1, type: ActionType.PRESSED },
+    KeyS: { action: UIAction.UI_ONLY_SOMETHING2, type: ActionType.PRESSED },
 };
 
 

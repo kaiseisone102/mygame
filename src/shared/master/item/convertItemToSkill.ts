@@ -14,5 +14,6 @@ export function convertItemToSkill(item: ItemPreset): SkillPreset {
         targetType: item.targetType,
         effectScope: EffectScope.SINGLE, // targetTypeから判定してもよい
         effects: item.effects,
+        description: item.description
     };
 }

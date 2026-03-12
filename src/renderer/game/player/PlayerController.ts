@@ -21,6 +21,7 @@ import { RectPx } from "../map/objects/rect";
 import { NpcData } from "../map/talkNPC/NPCData";
 import { TileType } from "../../../shared/type/tileType";
 import { TileQueryPort } from "../../../shared/port/TileQueryPort";
+import { ZoneController } from "../map/zone/ZoneController";
 
 export type PlayerUpdateResult = {
     state: PlayerState;
@@ -49,6 +50,7 @@ export class PlayerController {
         private walkContext: any,
         private gameState: GameState,
         private mapId: MapId,
+        private readonly zoneController: ZoneController
     ) { }
 
     update(pos: WorldPxPosition, axes: InputAxis[], delta: number): PlayerUpdateResult {
@@ -125,56 +127,61 @@ export class PlayerController {
             h: P_HIT_SIZE,
         };
 
-        // --- Zone判定 ---
-        for (const zone of this.zones) {
-            const zoneRect = { pos: { x: zone.pos.x, y: zone.pos.y }, w: zone.w, h: zone.h };
+        // limit checks near by player
+        const nearbyZones = this.zoneController.getZonesNearPlayer(playerRect);
 
-            const isInside = this.rectIntersect(playerRect, zoneRect);
+        // --- Zone判定 ---
+        for (const zone of nearbyZones) {
 
             // zone侵入判定
+            const zoneRect = { pos: { x: zone.pos.x, y: zone.pos.y }, w: zone.w, h: zone.h };
+            const isInside = this.rectIntersect(playerRect, zoneRect);
             const entered = isInside && !zone.isPlayerInside;
             const left = !isInside && zone.isPlayerInside;
 
-            // zone接触処理
+            // trigger map-event 
             const behavior = ZoneBehaviors[zone.type];
             if (!behavior) continue;
 
-            if (entered) {
+            if (entered || left || isInside) {
                 const tilePos = pxPosToTilePos(pos);
+                const tileType = this.world.getTileType(tilePos);
+                const biome = this.world.getBiomeFromTile(tileType);
 
-                zone.isPlayerInside = true;
-                behavior?.onEnter?.(zone, {
-                    pos,
-                    player: this.state,
-                    gameState: this.gameState,
-                    mapId: this.mapId,
-                    biomeId: this.world.getBiomeFromTile(this.world.getTileType(tilePos))
-                });
-            }
+                if (entered) {
 
-            if (left) {
-                const tilePos = pxPosToTilePos(pos);
+                    zone.isPlayerInside = true;
+                    behavior?.onEnter?.(zone, {
+                        pos,
+                        player: this.state,
+                        gameState: this.gameState,
+                        mapId: this.mapId,
+                        biomeId: biome
+                    });
+                }
 
-                zone.isPlayerInside = false;
-                behavior?.onLeave?.(zone, {
-                    pos,
-                    player: this.state,
-                    gameState: this.gameState,
-                    mapId: this.mapId,
-                    biomeId: this.world.getBiomeFromTile(this.world.getTileType(tilePos))
-                });
-            }
+                if (left) {
 
-            if (isInside) {
-                const tilePos = pxPosToTilePos(pos);
+                    zone.isPlayerInside = false;
+                    behavior?.onLeave?.(zone, {
+                        pos,
+                        player: this.state,
+                        gameState: this.gameState,
+                        mapId: this.mapId,
+                        biomeId: biome
+                    });
+                }
 
-                behavior?.update?.(zone, {
-                    pos,
-                    player: this.state,
-                    gameState: this.gameState,
-                    mapId: this.mapId,
-                    biomeId: this.world.getBiomeFromTile(this.world.getTileType(tilePos))
-                }, delta);
+                if (isInside) {
+
+                    behavior?.update?.(zone, {
+                        pos,
+                        player: this.state,
+                        gameState: this.gameState,
+                        mapId: this.mapId,
+                        biomeId: biome
+                    }, delta);
+                }
             }
         }
 
@@ -197,7 +204,7 @@ export class PlayerController {
     }
 
     // 矩形同士の当たり判定
-    rectIntersect(a: RectPx, b: RectPx) {
+    rectIntersect(a: RectPx, b: RectPx): boolean {
         return a.pos.x < b.pos.x + b.w &&
             a.pos.x + a.w > b.pos.x &&
             a.pos.y < b.pos.y + b.h &&
@@ -211,6 +218,7 @@ export class PlayerController {
 
     setZones(zones: ZonePx[]) {
         this.zones = zones.map(z => ({ ...z, isPlayerInside: false })); // 内部フラグ初期化
+        this.zones.forEach(z => this.zoneController.addZone(z));
     }
 
     setNpcs(npcs: NpcData[]) {
@@ -233,7 +241,7 @@ export class PlayerController {
         // 効果
         switch (item.type) {
             case FieldItem.POTION:
-                this.gameState.hp = Math.min(this.gameState.hp + 20, DEFAULT_PLAYER_HP);
+                this.gameState.baseStats.hp = Math.min(this.gameState.baseStats.hp + 20, DEFAULT_PLAYER_HP);
                 break;
             case FieldItem.GOLD:
                 this.gameState.gold += 100;

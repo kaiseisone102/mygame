@@ -10,9 +10,11 @@ import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { MainScreen } from "../../interface/screen/MainScreen";
 import { UseGameInputScreen } from "../../interface/screen/UseGameInputScreen";
 import { NoFeatureTownScreenController } from "./controller/NoFeatureTownScreenController";
+import { BaseWorldScreenController } from "../../../../renderer/screens/worldScene/BaseWorldScreenController";
+import { ZoneController } from "../../../../renderer/game/map/zone/ZoneController";
 
 export class NoFeatureTownScreen implements MainScreen, UseGameInputScreen {
-    private controller!: NoFeatureTownScreenController;
+    private controller!: BaseWorldScreenController;
 
     constructor(
         private gameState: GameState,
@@ -58,8 +60,8 @@ export class NoFeatureTownScreen implements MainScreen, UseGameInputScreen {
         return true;
     }
 
-    setWorld(def: WorldDefinition): void {
+    setWorld(def: WorldDefinition, zoneController: ZoneController): void {
         console.log("[TownScreen] setWorld called");
-        this.controller.setWorld(def);
+        this.controller.setWorld(def, zoneController);
     }
 }

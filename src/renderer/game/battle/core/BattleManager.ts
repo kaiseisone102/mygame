@@ -1,14 +1,17 @@
 // src/renderer/game/battle/core/BattleManager.ts
 
-import { AlliesStatusOverlay } from "../../../../renderer/screens/battleScene/overlayScreen/AlliesStatusOverlay";
+import { SkillEffectKindId } from "../../../../shared/type/battle/skill/skillFormula";
 import { BattleInput } from "../../../../renderer/router/useCase/gameUseCase/battle/BattleInputUseCase";
+import { AlliesStatusOverlay } from "../../../../renderer/screens/battleScene/overlayScreen/AlliesStatusOverlay";
+import { SkillItem } from "../../../screens/battleScene/overlayScreen/SkillSelectOverlay";
+import { GetOverlayScreenType } from "../../../../renderer/screens/interface/overlay/OverLayScreens";
 import { delay } from "../../../../renderer/utils/delay";
-import { BattleCommandId } from "../../../../shared/domain/battleCommandId";
 import { SkillRepository } from "../../../../shared/master/battle/SkillRepository";
 import { SkillId, SkillPreset } from "../../../../shared/master/battle/type/SkillPreset";
 import { BattleAction, BattlerSide, StrangeAction, TargetSpecifier } from "../../../../shared/type/battle/BattleAction";
 import { SkillResult } from "../../../../shared/type/battle/result/SkillResult";
 import { BattleResult, CommandActionType, TargetType } from "../../../../shared/type/battle/TargetType";
+import { OverlayScreenType } from "../../../../shared/type/screenType";
 import { AIActionResolver } from "../enemy/ai/AIActionResolver";
 import { BattleLogFormatter } from "../event/BattleLogFormatter";
 import { SkillExecutor } from "../logic/skills/SkillExecutor";
@@ -17,9 +20,6 @@ import { BattlePort } from "../port/BattlePort";
 import { Battler } from "./Battler";
 import { BattleState, initialBattleState } from "./BattleState";
 import { canBattlerAct } from "./canBattlerAct";
-import { GetOverlayScreenType } from "../../../../renderer/screens/interface/overlay/OverLayScreens";
-import { BattleTurnDisplayOverlay } from "../../../../renderer/screens/battleScene/overlayScreen/BattleTurnDisplayOverlay";
-import { OverlayScreenType } from "../../../../shared/type/screenType";
 
 /**
  * 2026/02/09
@@ -121,7 +121,16 @@ export class BattleManager {
         switch (actor.side) {
             case BattlerSide.ALLY:
                 // usecase からUI入力を受け取る => action 生成
-                const input = await this.battlePort.requestCommand(actor.templateId, actor.instanceId, actor.name, this.battleState.enemies);
+                const skillItems: SkillItem[] = actor.skills.map(id => {
+                    const sp = this.skillRepository.get(id);
+                    return {
+                        skillId: sp.id,
+                        name: sp.name,
+                        description: sp.description,
+                        mpCost: sp.cost?.mp ?? 0
+                    };
+                });
+                const input = await this.battlePort.requestCommand(actor.templateId, actor.instanceId, actor.name, skillItems, this.battleState.enemies);
 
                 action = this.convertInputToAction(input);
 
@@ -138,12 +147,14 @@ export class BattleManager {
                 console.log("AIBattleInput:", AIBattleInput);
 
                 action = this.convertInputToAction(AIBattleInput);
-                console.log("💀Enemy Action「", actor.name, "」=> ", action)
-                break;
+                 break;
         }
 
         // 実行
         const results = await this.executeAction(action);
+
+        // special calls of combat-end
+        this.processSpecialResults(results);
 
         // 行動後に味方のHP/MP更新
         this.alliesStatusOverlay.update(0);
@@ -183,22 +194,6 @@ export class BattleManager {
             const reWrite = status.onRewriteAction?.(action, rewriteCtx);
             if (!reWrite) continue;
             action = this.convertInputToAction(this.convertStrangeActToInput(reWrite)) ?? action;
-        }
-
-        // 逃げる
-        if (action.type === CommandActionType.ESCAPE) {
-
-            const success = Math.random() < 0.7;
-
-            if (success) {
-                this.battlePort.addBattleLog(`${actor.name}は逃げ出した！`);
-                await delay(1000);
-                this.finish(BattleResult.ESCAPE);
-            } else {
-                this.battlePort.addBattleLog(`${actor.name}は逃げられなかった！`);
-                await delay(600);
-            }
-            return [];
         }
 
         // Traitによる行動書き換え
@@ -293,7 +288,16 @@ export class BattleManager {
     startBattle() {
         this.buildTurnOrder();
         // 初期表示用
-        if (this.alliesStatusOverlay) this.alliesStatusOverlay.show({ allies: this.battleState.allies });
+        if (this.alliesStatusOverlay) this.alliesStatusOverlay.show({
+            allies: this.battleState.allies.map(ally => ({
+                instanceId: ally.instanceId,
+                name: ally.name,
+                hp: ally.baseStats.hp,
+                maxHp: ally.baseStats.maxHp,
+                mp: ally.baseStats.mp,
+                maxMp: ally.baseStats.maxMp,
+            }))
+        });
     }
 
     /* =====================
@@ -301,6 +305,9 @@ export class BattleManager {
     ===================== */
 
     private checkBattleEnd() {
+
+        if (this.battleState.finished) return;
+
         const alliesAlive = this.battleState.allies.some(a => a.alive);
         const enemiesAlive = this.battleState.enemies.some(e => e.alive);
 
@@ -377,12 +384,12 @@ export class BattleManager {
 
     private logResults(results: SkillResult[]) {
         for (const result of results) {
-            const source = this.findBattler(result.sourceId);
+            const battler = this.findBattler(result.instanceId);
             const target = this.findBattler(result.targetId);
 
-            if (!source || !target) continue;
+            if (!battler || !target) continue;
 
-            const logs = BattleLogFormatter.fromResult(result, source, target);
+            const logs = BattleLogFormatter.fromResult(result, battler, target);
             logs.forEach(log => this.battlePort.addBattleLog(log));
         }
     }
@@ -442,5 +449,16 @@ export class BattleManager {
             instanceId: a.instanceId,
             gainedExp: perAlly
         }));
+    }
+
+    private processSpecialResults(results: SkillResult[]) {
+
+        for (const r of results) {
+
+            if (r.kind === SkillEffectKindId.ESCAPE && r.success) {
+                this.finish(BattleResult.ESCAPE);
+            }
+
+        }
     }
 }

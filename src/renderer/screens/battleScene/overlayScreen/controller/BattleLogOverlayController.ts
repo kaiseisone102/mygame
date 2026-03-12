@@ -72,9 +72,11 @@ export class BattleLogOverlayController implements UIScreenController {
     /** addLog (with EXP) */
     async playExpLogs(expLogs: ExpLog[], speed = BATTLE_LOG_TYPE_SPEED): Promise<void> {
 
+        if (expLogs.length === 0) return;
+
         for (const log of expLogs) {
 
-            const message = `${log.name}(${log.oldExp}) gained ${log.gainedExp} EXP! ${log.newExp}/${log.expRequired}]`;
+            const message = `${log.name}(${log.oldExp}) gained ${log.gainedExp} EXP! ${log.newExp}/${log.expRequired}`;
 
             await this.enqueueLog({
                 type: "exp",
@@ -148,54 +150,44 @@ export class BattleLogOverlayController implements UIScreenController {
     }
 
     /** EXPログ + バーを same block タイピング */
-    private typeMessageWithExp(item: { message: string; speed: number; currentExp: number; requiredExp: number; oldExp: number; }): Promise<void> {
-        return new Promise(resolve => {
+    private async typeMessageWithExp(item: { message: string; speed: number; currentExp: number; requiredExp: number; oldExp: number; }): Promise<void> {
 
-            const block = document.createElement("div");
-            block.className = "logBlock";
+        const block = document.createElement("div");
+        block.className = "logBlock";
 
-            const p = document.createElement("p");
-            p.style.margin = "2px 0";
+        const p = document.createElement("p");
+        p.style.margin = "2px 0";
 
-            const barContainer = document.createElement("div");
-            barContainer.className = "expBarContainer";
+        const barContainer = document.createElement("div");
+        barContainer.className = "expBarContainer";
 
-            const barFill = document.createElement("div");
-            barFill.className = "expBarFill";
+        const barFill = document.createElement("div");
+        barFill.className = "expBarFill";
 
-            barContainer.appendChild(barFill);
+        barContainer.appendChild(barFill);
 
-            block.appendChild(p);
-            block.appendChild(barContainer);
+        block.appendChild(p);
+        block.appendChild(barContainer);
 
-            this.logContainer.appendChild(block);
+        this.logContainer.appendChild(block);
 
-            this.limitLogLines();
+        this.limitLogLines();
 
-            let index = 0;
+        // 文字を1文字ずつタイピング
+        for (let i = 0; i < item.message.length; i++) {
+            p.textContent += item.message[i];
+            await new Promise(r => setTimeout(r, item.speed));
+        }
 
-            const interval = window.setInterval(() => {
+        const required = Math.max(item.requiredExp, 1);
+        // EXPバーアニメーション（await対応済み）
+        const startRatio = item.oldExp / required;
+        const endRatio = Math.min(item.currentExp / required, 1);
+        await this.animateExpBar(barFill, startRatio, endRatio, 800);
 
-                if (index >= item.message.length) {
-
-                    clearInterval(interval);
-
-                    const startRatio = item.oldExp / item.requiredExp;
-                    const endRatio = Math.min(item.currentExp / item.requiredExp, 1);
-
-                    this.animateExpBar(barFill, startRatio, endRatio, 800);
-
-                    resolve();
-                    return;
-                }
-
-                p.textContent += item.message[index];
-                index++;
-
-            }, item.speed);
-        });
     }
 
+    // これ使いません
     /** type message and EXP-bar on another block */
     private typeMessageAndExp(item: { message: string; speed: number; currentExp: number; requiredExp: number; oldExp: number; }): Promise<void> {
         return new Promise(async resolve => {
@@ -226,7 +218,8 @@ export class BattleLogOverlayController implements UIScreenController {
             // アニメーション
             const startRatio = item.oldExp / item.requiredExp;
             const endRatio = Math.min(item.currentExp / item.requiredExp, 1);
-            this.animateExpBar(barFill, startRatio, endRatio, 800);
+
+            await this.animateExpBar(barFill, startRatio, endRatio, 800);
 
             resolve();
         });
@@ -245,19 +238,30 @@ export class BattleLogOverlayController implements UIScreenController {
         }
     }
 
-    animateExpBar(bar: HTMLElement, startRatio: number, endRatio: number, duration = 500) {
-        const startTime = performance.now();
+    animateExpBar(bar: HTMLElement, startRatio: number, endRatio: number, duration = 500): Promise<void> {
 
-        function step(currentTime: number) {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const currentRatio = startRatio + (endRatio - startRatio) * progress;
-            bar.style.width = `${currentRatio * 100}%`;
-
-            if (progress < 1) requestAnimationFrame(step);
+        // note: freeze when start and destination are same 
+        if (startRatio === endRatio) {
+            bar.style.width = `${endRatio * 100}%`;
+            return Promise.resolve();
         }
 
-        requestAnimationFrame(step);
+        return new Promise(resolve => {
+            const listener = () => {
+                bar.removeEventListener('transitionend', listener);
+                resolve();
+            };
+            bar.addEventListener('transitionend', listener);
+
+            // 幅の変更に必要な初期値をセット
+            bar.style.width = `${startRatio * 100}%`;
+            bar.style.transition = `width ${duration}ms linear`;
+
+            // 少し遅延させてから幅を変更（ブラウザが transition を認識するため）
+            requestAnimationFrame(() => {
+                bar.style.width = `${endRatio * 100}%`;
+            });
+        })
     }
 
     /**

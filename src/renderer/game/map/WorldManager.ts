@@ -33,7 +33,7 @@ export class WorldManager implements TileQueryPort {
         this.currentDef = def;
     }
 
-    get(): WorldDefinition {
+    getWorld(): WorldDefinition {
         if (!this.currentDef) throw new Error("World not initialized");
         return this.currentDef;
     }

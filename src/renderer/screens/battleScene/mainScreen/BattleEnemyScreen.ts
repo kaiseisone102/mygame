@@ -10,6 +10,7 @@ import { MainScreen } from "../../interface/screen/MainScreen";
 import { InputFrame } from "../../../../renderer/input/frame/InputFrame";
 import { InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";
 import { AllyView } from "../view/AllyView";
+import { delay } from "../../../../renderer/utils/delay";
 
 /**
  * 敵の表示・演出
@@ -141,7 +142,7 @@ export class BattleEnemyScreen implements MainScreen {
     }
 
     // 演出イベントだけ処理
-    handleUIEvent(event: AppUIEvent) {
+    async handleUIEvent(event: AppUIEvent) {
         if (event.type !== "BATTLE_EVENT_QUEUE") return;
 
         const e = event.event;
@@ -157,6 +158,10 @@ export class BattleEnemyScreen implements MainScreen {
 
             case BattleEventKind.DEAD:
                 this.onKilled(e.targetId);
+                break;
+
+            case BattleEventKind.ESCAPE:
+                this.onEscape();
                 break;
         }
     }
@@ -200,5 +205,17 @@ export class BattleEnemyScreen implements MainScreen {
 
         this.allyViews.forEach(v => v.element.remove());
         this.allyViews.clear();
+    }
+
+    private onEscape() {
+        // 敵を全員フェードアウト
+        for (const view of this.enemyViews.values()) {
+            view.fadeOut();
+        }
+
+        // 味方もフェードアウト
+        for (const view of this.allyViews.values()) {
+            view.fadeOut();
+        }
     }
 }

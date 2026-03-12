@@ -1,5 +1,5 @@
 // src/renderer/input/keyboard/action/UIActionSource.ts
-import { UIAction, UIActionEvent } from "../../mapping/InputMapper";
+import { ActionType, UIAction, UIActionEvent } from "../../mapping/InputMapper";
 
 /**
  * UIActionSource
@@ -45,7 +45,7 @@ export class UIActionSource {
         const action = ev.action as UIAction;
 
         // 押された瞬間のみ通知
-        if (ev.type === "pressed") {
+        if (ev.type === ActionType.PRESSED) {
             // すでに押されていたら無視
             if (this.holding.has(action)) return;
             this.holding.add(action);

@@ -1,5 +1,6 @@
 // src/shared/type/mapRules.ts
 
+import { BASE_ENCOUNTER_RATE_SAFE, ENCOUNTER_STEP_INCREASE_RATE_SAFE, ENCOUNTER_MAX_CHANCE_SAFE } from "../data/constants";
 import { MapId } from "./MapId";
 import { TileType } from "./tileType";
 
@@ -8,9 +9,9 @@ export const mapRules = {
     // never random appear enemy ↓
     [MapId.FOREST_TEMPLE]: {
         encounterEnabled: true,
-        baseEncounterRate: 0.00,
-        stepIncrease: 0.005,  // 0.01 は結構早くエンカする
-        maxChance: 0.3,
+        baseEncounterRate: BASE_ENCOUNTER_RATE_SAFE,
+        stepIncrease: ENCOUNTER_STEP_INCREASE_RATE_SAFE,
+        maxChance: ENCOUNTER_MAX_CHANCE_SAFE,
     },
     [MapId.NO_FEATURE_TOWN]: {
         encounterEnabled: false,
@@ -21,15 +22,15 @@ export const mapRules = {
     // random appearable enemy ↓
     [MapId.WORLD_MAP]: {
         encounterEnabled: true,
-        baseEncounterRate: 0.01,
-        stepIncrease: 0.01,
-        maxChance: 0.15,
+        baseEncounterRate: BASE_ENCOUNTER_RATE_SAFE,
+        stepIncrease: ENCOUNTER_STEP_INCREASE_RATE_SAFE,
+        maxChance: ENCOUNTER_MAX_CHANCE_SAFE,
     },
     [MapId.GRAVE_CAVE]: {
         encounterEnabled: true,
-        baseEncounterRate: 0.05,
-        stepIncrease: 0.02,
-        maxChance: 0.3,
+        baseEncounterRate: BASE_ENCOUNTER_RATE_SAFE,
+        stepIncrease: ENCOUNTER_STEP_INCREASE_RATE_SAFE,
+        maxChance: ENCOUNTER_MAX_CHANCE_SAFE,
     },
 
 } satisfies Record<MapId, MapRule>;

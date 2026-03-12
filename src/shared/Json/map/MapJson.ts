@@ -14,7 +14,7 @@ export interface MapJson {
 }
 
 export interface ZoneJson {
-    id?: string;
+    id: string;
     pos: WorldTilePosition;
     tw: number;
     th: number;
@@ -30,7 +30,7 @@ export interface NpcJson {
     th?: number;
     direction: string;
     image: keyof typeof ImageKey;
-    message: string;
+    messageId: string;
 }
 
 export interface SignJson {

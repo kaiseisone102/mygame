@@ -1,12 +1,12 @@
 // src/renderer/router/UIEventRouter.ts
 
-import { MainScreenType, OverlayScreenType } from "../../shared/type/screenType";
-import { GameUseCases } from "./useCase/gameUseCase/facade/GameUseCases";
 import { UIEventPort } from "../../renderer/port/UIEventPort";
+import { TechniqueId } from "../../shared/master/battle/type/SkillPreset";
+import { CommandActionType } from "../../shared/type/battle/TargetType";
+import { MainScreenType, OverlayScreenType } from "../../shared/type/screenType";
 import { ScreenPort } from "../port/ScreenPort";
 import { AppUIEvent } from "./AppUIEvents";
-import { CommandActionType } from "../../shared/type/battle/TargetType";
-import { SkillId } from "../../shared/master/battle/type/SkillPreset";
+import { GameUseCases } from "./useCase/gameUseCase/facade/GameUseCases";
 
 export class UIEventRouter implements UIEventPort {
     emit(event: AppUIEvent) {
@@ -47,10 +47,6 @@ export class UIEventRouter implements UIEventPort {
 
             // インタラクト振り分け処理
             case "REQUEST_INTERACT": this.gameUseCases.interactUseCase.execute(event); break;
-            // インタラクト種別処理
-            case "NPC_INTERACT": this.gameUseCases.npcInteractUseCase.execute(event); break;
-            case "READ_SIGN": this.gameUseCases.readSignUseCase.execute(event); break;
-            case "COLLECT_ITEM": this.gameUseCases.collectItemUseCase.execute(event); break;
 
             case "SHOW_TRIGGER_MESSAGE":
                 this.screens.pushOverlay(OverlayScreenType.MESSAGE_LOG, { messages: [event.message] });
@@ -72,8 +68,9 @@ export class UIEventRouter implements UIEventPort {
                         this.screens.pushOverlay(OverlayScreenType.ATTACK_TARGET_OVERLAY, { phaseSecond: event.payload });
                         break;
 
-                    case CommandActionType.MAGIC:   // 魔法選択オーバーレイをプッシュ ↓は仮で攻撃コマンド
-                        this.screens.pushOverlay(OverlayScreenType.MAGIC_SELECT_OVERLAY, { phaseBase: event.payload.phaseBase, commandId: event.payload.commandId });
+                    case CommandActionType.TECHNIQUE:
+                    case CommandActionType.MAGIC:
+                        this.gameUseCases.battleCommandSelectedUseCase.execute(event.payload);
                         break;
 
                     case CommandActionType.ITEM:
@@ -81,17 +78,17 @@ export class UIEventRouter implements UIEventPort {
                         break;
 
                     case CommandActionType.DEFENCE:
-                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorTemplateId: event.payload.phaseBase.actorTemplateId, actorInstanceId: event.payload.phaseBase.actorInstanceId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: SkillId.GUARD, targetId: event.payload.phaseBase.actorInstanceId });
+                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorTemplateId: event.payload.phaseBase.actorTemplateId, actorInstanceId: event.payload.phaseBase.actorInstanceId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: TechniqueId.GUARD, targetId: event.payload.phaseBase.actorInstanceId });
                         break;
 
                     case CommandActionType.ESCAPE:// すぐにコマンド処理を実行
-                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorTemplateId: event.payload.phaseBase.actorTemplateId, actorInstanceId: event.payload.phaseBase.actorInstanceId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: SkillId.ESCAPE, targetId: event.payload.phaseBase.actorInstanceId });
+                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorTemplateId: event.payload.phaseBase.actorTemplateId, actorInstanceId: event.payload.phaseBase.actorInstanceId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: TechniqueId.ESCAPE, targetId: event.payload.phaseBase.actorInstanceId });
                         break;
                 }
                 break;
             }
 
-            case "MAGIC_SELECTED": this.screens.pushOverlay(OverlayScreenType.ATTACK_TARGET_OVERLAY, { phaseSecond: event.payload.phaseBase, skill: event.payload.skillId }); break;
+            case "SKILL_SELECTED": this.screens.pushOverlay(OverlayScreenType.ATTACK_TARGET_OVERLAY, { phaseSecond: event.payload.phaseBase, skill: event.payload.skillId }); break;
 
             // case "ITEM_SELECTED":
             //     this.gameUseCases.battleInputUseCase.onItemSelected(event.itemId);
@@ -109,15 +106,9 @@ export class UIEventRouter implements UIEventPort {
                 logOverlay?.addLog?.(`Player used item #${targetId}!`);
                 break;
 
-            case "OPEN_BATTLE_LOG":
-                if (!this.screens.isOverlayOpen(OverlayScreenType.BATTLE_LOG)) {
-                    this.screens.pushOverlay(OverlayScreenType.BATTLE_LOG, undefined);
-                }
-                break;
 
             case "ADD_BATTLE_LOG": {
-                // Overlay が開いていればログに追加
-                this.screens.getOverlayScreen(OverlayScreenType.BATTLE_LOG)?.addLog?.(event.message)
+                this.gameUseCases.addBattleLogUseCase.execute(event.message);
                 break;
             }
         }

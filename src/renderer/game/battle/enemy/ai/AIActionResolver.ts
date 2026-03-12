@@ -1,6 +1,6 @@
 // src/renderer/game/battle/enemy/ai/AIActionResolver.ts
 
-import { SkillId, SkillPreset } from "../../../../../shared/master/battle/type/SkillPreset";
+import { SkillPreset, TechniqueId } from "../../../../../shared/master/battle/type/SkillPreset";
 import { StrangeAction } from "../../../../../shared/type/battle/BattleAction";
 import { CommandActionType } from "../../../../../shared/type/battle/TargetType";
 import { Battler } from "../../core/Battler";
@@ -31,7 +31,7 @@ export class AIActionResolver {
                 actorTemplateId: actor.templateId,
                 actorInstanceId: actor.instanceId,
                 actorName: actor.name,
-                skillId: SkillId.ATTACK,
+                skillId: TechniqueId.ATTACK,
                 target: target.instanceId
             };
         }
@@ -78,7 +78,7 @@ export class AIActionResolver {
             actorTemplateId: actor.templateId,
             actorInstanceId: actor.instanceId,
             actorName: actor.name,
-            skillId: SkillId.GUARD,
+            skillId: TechniqueId.GUARD,
             target: actor.instanceId
         };
 

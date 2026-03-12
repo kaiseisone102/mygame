@@ -6,7 +6,7 @@ import { TargetType } from "../../../type/battle/TargetType";
 
 export type SkillPreset = {
     id: SkillId; // 識別用
-    name: string; // ui用
+    name: string; // UI用
 
     category: SkillCategory;
     cost?: {
@@ -22,15 +22,26 @@ export type SkillPreset = {
     element?: Element;
 
     effects: readonly SkillEffectKind[];
+
+    description: string; // UI用
 };
 
-export const SkillId = {
+export const TechniqueId = {
     ATTACK: "ATTACK",
     DOUBLE_ATTACK: "DOUBLE_ATTACK",
     POWER_SLASH: "POWER_SLASH",
     WHIRL_WIND: "WHIRL_WIND",
     BACK_STAB: "BACK_STAB",
 
+    GUARD: "GUARD",
+    PROVOKE: "PROVOKE",
+    ESCAPE: "ESCAPE",
+
+    LIMIT_BREAK: "LIMIT_BREAK",
+} as const;
+export type TechniqueId = typeof TechniqueId[keyof typeof TechniqueId];
+
+export const MagicId = {
     MERA: "MERA",
     GIRA: "GIRA",
     IO: "IO",
@@ -54,11 +65,8 @@ export const SkillId = {
     POISON: "POISON",
     PARALYZE: "PARALYZE",
 
-    GUARD: "GUARD",
-    PROVOKE: "PROVOKE",
-    ESCAPE: "ESCAPE",
-
-    LIMIT_BREAK: "LIMIT_BREAK",
     GIGADEIN: "GIGADEIN"
 } as const;
-export type SkillId = typeof SkillId[keyof typeof SkillId]
+export type MagicId = typeof MagicId[keyof typeof MagicId];
+
+export type SkillId = TechniqueId | MagicId;

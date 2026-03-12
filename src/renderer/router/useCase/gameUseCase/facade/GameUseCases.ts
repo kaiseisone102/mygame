@@ -20,8 +20,12 @@ import { BattleInputUseCase } from "../battle/BattleInputUseCase";
 import { BattleResultUseCase } from "../battle/BattleResultUseCase";
 import { InteractUseCase } from "../interact/InteractUseCase";
 import { EnteredTownUseCase } from "../zone/EnteredTownUseCase";
+import { AddBattleLogUseCase } from "../battle/AddBattleLogUseCase";
+import { BattleCommandSelectedUseCase } from "../battle/BattleCommandSelectedUseCase";
 
 type GameUseCasesDeps = {
+    addBattleLogUseCase: AddBattleLogUseCase;
+    battleCommandSelectedUseCase: BattleCommandSelectedUseCase;
     startGameFlowUseCase: StartGameFlowUseCase;
     changeMainScreenUseCase: ChangeMainScreenUseCase;
     selectSlotFlowUseCase: SelectSlotFlowUseCase;
@@ -82,6 +86,8 @@ export class GameUseCases {
 
     //バトルUI
     public readonly battleInputUseCase!: BattleInputUseCase;
+    public readonly battleCommandSelectedUseCase!: BattleCommandSelectedUseCase;
+    public readonly addBattleLogUseCase!: AddBattleLogUseCase;
 
     // インタラクト処理
     public readonly interactUseCase!: InteractUseCase;

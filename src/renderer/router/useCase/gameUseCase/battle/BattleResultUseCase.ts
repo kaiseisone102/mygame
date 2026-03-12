@@ -1,3 +1,5 @@
+// src/renderer/router/useCase/gameUseCase/battle/BattleResultUseCase.ts
+
 import { WorldEvent } from "../../../../../renderer/router/WorldEvent";
 import { BattleResult } from "../../../../../shared/type/battle/TargetType";
 

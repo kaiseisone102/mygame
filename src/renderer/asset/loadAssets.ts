@@ -41,7 +41,7 @@ export async function loadAssets() {
         // エリア
         ImageStore.load(ImageKey.AREA_ICON, "assets/images/zone/area/skipArea.png"),
         // 人
-        ImageStore.load(ImageKey.PLAYER_STAND_LEFT, "assets/walkingPlayer/standLeft.png"),
+        ImageStore.load(ImageKey.OMAENO_SHIWAZA_DATANO_KA, "assets/images/npc/omaenoshiwazadatanoka.png"),
         // 看板
         ImageStore.load(ImageKey.WOODEN_SIGN, "assets/images/sign/woodenSign.png"),
         // アイテム

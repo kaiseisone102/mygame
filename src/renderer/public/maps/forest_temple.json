@@ -2,6 +2,7 @@
     "zones": {
         "ENTRY": [
             {
+                "id": "NF_TOWN_ENTRY_01",
                 "pos": {
                     "tx": 2,
                     "ty": 3
@@ -14,6 +15,7 @@
         ],
         "FIELD_ENEMY": [
             {
+                "id": "FOREST_T_ENEMY_01",
                 "pos": {
                     "tx": 4,
                     "ty": 4
@@ -27,6 +29,7 @@
         "RANDOM_ENEMY_ENCOUNT": [],
         "WALKABLE_ZONE": [
             {
+                "id": "FOREST_T_WALKABLE_ZONE_01",
                 "pos": {
                     "tx": 0,
                     "ty": 0
@@ -50,7 +53,7 @@
             },
             "direction": "DOWN",
             "image": "PLAYER_STAND_LEFT",
-            "message": "FOREST_KEEPER_GO_AHEAD"
+            "messageId": "FOREST_KEEPER_GO_AHEAD"
         }
     ],
     "signs": [
@@ -62,12 +65,12 @@
             },
             "facing": "DOWN",
             "image": "WOODEN_SIGN",
-            "message": "WORLD_MAP_NEAR_FOREST_TEMPLE_SIGN"
+            "messageId": "WORLD_MAP_NEAR_FOREST_TEMPLE_SIGN"
         }
     ],
     "items": [
         {
-            "id": "FOREST_POTION_001",
+            "id": "FOREST_T_POTION_001",
             "pos": {
                 "tx": 6,
                 "ty": 6

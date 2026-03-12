@@ -45,7 +45,7 @@ export const initialBattleState: BattleState = {
     mode: CommandMode.NULL,
 };
 
-export function createDummyAllies(): Battler[] {
+export function createAllies(): Battler[] {
     const allyData: BattlerParams[] = [
         {
             templateId: 1,
@@ -53,8 +53,15 @@ export function createDummyAllies(): Battler[] {
             name: "Hero",
             exp: 0,
             side: BattlerSide.ALLY,
-            baseStats: { hp: 100, attack: 6, defense: 4, speed: 20 },
+            baseStats: { hp: 100, mp: 50, attack: 6, defense: 4, speed: 20 },
             growthTable: {},
+            skills: [
+                "HASTE",
+
+                "ATK_DOWN",
+
+                "GIGADEIN"
+            ],
             traits: [TraitPresets.WEAK_FIRE]
         },
         {
@@ -63,8 +70,144 @@ export function createDummyAllies(): Battler[] {
             name: "Mage",
             exp: 0,
             side: BattlerSide.ALLY,
-            baseStats: { hp: 80, attack: 4, defense: 2, magic: 20, speed: 10 },
+            baseStats: { hp: 80, mp: 80, attack: 4, defense: 2, magic: 20, speed: 10 },
             growthTable: {},
+            skills: [
+                "MERA",
+                "GIRA",
+                "IO",
+                "HYADO",
+                "RAIDEIN",
+                "BAGI",
+                "HEAL",
+                "HEAL_ALL",
+                "REVIVE",
+
+                "ATK_UP_SMALL",
+                "ATK_UP_LARGE",
+                "DEF_UP",
+                "HASTE",
+
+                "ATK_DOWN",
+                "SLOW",
+
+                "SLEEP",
+                "POISON",
+                "PARALYZE",
+
+                "GIGADEIN",
+
+                "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO", "MERA",
+                "GIRA",
+                "IO",
+
+            ],
             traits: [TraitPresets.RESIST_MAGIC]
         },
     ];
@@ -85,6 +228,7 @@ function createDummyEnemies(): Battler[] {
             side: BattlerSide.ENEMY,
             baseStats: { hp: 10, attack: 3, defense: 1, speed: 15 },
             growthTable: {},
+            skills: [],
             traits: [TraitPresets.WEAK_FIRE]
         },
         {
@@ -95,6 +239,7 @@ function createDummyEnemies(): Battler[] {
             side: BattlerSide.ENEMY,
             baseStats: { hp: 12, attack: 4, defense: 2, speed: 8 },
             growthTable: {},
+            skills: [],
             traits: [TraitPresets.RESIST_MAGIC]
         },
         {
@@ -105,6 +250,7 @@ function createDummyEnemies(): Battler[] {
             side: BattlerSide.ENEMY,
             baseStats: { hp: 8, attack: 2, defense: 1, speed: 5 },
             growthTable: {},
+            skills: [],
             traits: []
         },
     ];
@@ -116,7 +262,7 @@ function createDummyEnemies(): Battler[] {
  * 初期 BattleState を生成（仮敵入り）
  */
 export function createInitialBattleState(): BattleState {
-    const allies = createDummyAllies();
+    const allies = createAllies();
     const enemies = createDummyEnemies();
 
     const allBattlers = [...allies, ...enemies];

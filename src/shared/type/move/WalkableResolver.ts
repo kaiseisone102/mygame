@@ -1,9 +1,9 @@
-// src/shared/game/WalkableResolver.ts
-import { TileType } from "../../../../shared/type/tileType";
+// src/shared/type/move/WalkableResolver.ts
+import { TileType } from "../tileType";
 
 export type WalkableResolver = (
-  tile: TileType,
-  context: any
+    tile: TileType,
+    context: any
 ) => WalkResult;
 
 export interface WalkResult {

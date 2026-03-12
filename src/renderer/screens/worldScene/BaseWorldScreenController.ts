@@ -1,5 +1,6 @@
 // src/renderer/screens/worldScene/BaseWorldScreenController.ts
 
+import { ZoneController } from "../../../renderer/game/map/zone/ZoneController";
 import { CameraController } from "../../../renderer/game/camera/CameraController";
 import { WorldDefinition } from "../../../renderer/game/map/builder/interface/definition/WorldDefinition";
 import { ObjectLayer } from "../../../renderer/game/map/objects/objectLayer";
@@ -263,7 +264,7 @@ export abstract class BaseWorldScreenController implements MainScreenController 
     /**
      * ワールド差し替え
      */
-    setWorld(def: WorldDefinition) {
+    setWorld(def: WorldDefinition, zoneController: ZoneController) {
 
         this.world = def.world;
         this.objectLayer = def.objectLayer;
@@ -286,7 +287,8 @@ export abstract class BaseWorldScreenController implements MainScreenController 
             this.tileEffectService,
             walkContext,
             this.gameState,
-            currentMapId
+            currentMapId,
+            zoneController
         );
 
         this.playerController.setZones(this.zones);

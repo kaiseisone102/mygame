@@ -1,6 +1,6 @@
 // src/renderer/screens/router/useCase/world/BattleStartedUseCase.ts
 
-import { createDummyAllies } from "../../../../../renderer/game/battle/core/BattleState";
+import { createAllies } from "../../../../../renderer/game/battle/core/BattleState";
 import { BattlerFactory } from "../../../../../renderer/game/battle/enemy/factory/createEnemy";
 import { EncounterRepository } from "../../../../../renderer/game/battle/enemy/repository/EncounterRepository";
 import { EnemyRepository } from "../../../../../renderer/game/battle/enemy/repository/EnemyRepository";
@@ -25,21 +25,23 @@ export class BattleStartedUseCase {
     ) { }
 
     execute(biomeId: BiomeId) {
+
         // 1.エリアから敵ID取得
         const enemyIds = this.encounterRepo.getEnemyIds(biomeId);
-        console.log("enemyIds", enemyIds);
+
         // 2.テンプレ取得
         const templates = enemyIds.map((id: EnemyKey) =>
             this.enemyRepo.get(id)
         );
-        console.log("biomeId", biomeId);
-        console.log("templates", templates);
+
         // 3.Battler生成
-        const allies = createDummyAllies();
+        const allies = createAllies();
         const enemies = templates.map(temp =>
             this.battlerFactory.createEnemy(temp)
         );
-        console.log("enemies", enemies);
+
+        console.log("enemyIds:", enemyIds, ", biomeId:", biomeId, ", templates:", templates, ", allies:", allies, ", enemies:", enemies);
+
         // 4.イベント通知
         this.emitWorld({
             type: "BATTLE_STARTED", payload: {

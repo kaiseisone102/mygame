@@ -1,12 +1,13 @@
 // src/renderer/router/useCase/interact/InteractUseCase.ts
 
-import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
-import { tryCollectItem } from "../../../../../renderer/game/map/talkNPC/CollectItemSystem";
-import { tryInteractNpc, tryReadSign } from "../../../../../renderer/game/map/talkNPC/TalkNPCSystem";
+import { WorldEvent } from "../../../../../renderer/router/WorldEvent";
+import { InteractionService } from "../../../../../renderer/game/map/interaction/application/InteractionService";
+import { InteractionResolver } from "../../../../../renderer/game/map/interaction/InteractionResolver";
 import { ItemData } from "../../../../../renderer/game/map/talkNPC/ItemData";
 import { NpcData } from "../../../../../renderer/game/map/talkNPC/NPCData";
 import { SignData } from "../../../../../renderer/game/map/talkNPC/SignData";
-import { WorldPxPosition, WorldTilePosition } from "../../../../../shared/type/playerPosition/posType";
+import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
+import { WorldPxPosition } from "../../../../../shared/type/playerPosition/posType";
 import { PlayerState } from "../../../../../shared/type/PlayerState";
 
 type InteractUseCaseEvent = {
@@ -20,39 +21,33 @@ type InteractUseCaseEvent = {
 export class InteractUseCase {
 
     constructor(
-        private emitUI: (e: AppUIEvent) => void
+        private emitWorld: (e: WorldEvent) => void,
+        private emitUI: (e: AppUIEvent) => void,
+        private resolver: InteractionResolver,
+        private service: InteractionService,
     ) { }
 
     execute(input: InteractUseCaseEvent) {
-
         const { playerState, playerPos, npcs, signs, items } = input;
 
-        // ① NPC
-        const npcMessage = tryInteractNpc(playerState, playerPos, npcs);
-        if (npcMessage) {
-            this.emitUI({
-                type: "NPC_INTERACT",
-                message: [npcMessage]
-            });
-        }
+        // resolver で前方のターゲットを判定
+        const target = this.resolver.resolve(playerState, playerPos, { npcs, signs, items });
+        if (!target) return;
 
-        // ② Sign
-        const signMessage = tryReadSign(playerState, playerPos, signs);
-        if (signMessage) {
-            this.emitUI({
-                type: "READ_SIGN",
-                message: [signMessage]
-            });
-        }
+        switch (target.type) {
+            case "NPC":
+            case "SIGN":
+                // 既存通り service で UIイベント作成
+                this.emitUI(this.service.toUIEvent(target));
+                break;
 
-        // ③ Item
-        const itemId = tryCollectItem(playerState, playerPos, items);
-        if (itemId) {
-            this.emitUI({
-                type: "COLLECT_ITEM",
-                item: items
-            });
+            case "ITEM":
+                // 世界側に状態更新を通知
+                this.emitWorld({ type: "ITEM_COLLECTED", item: target.item });
+
+                // UI通知
+                this.emitUI(this.service.toUIEvent(target));
+                break;
         }
-        return null;
     }
 }

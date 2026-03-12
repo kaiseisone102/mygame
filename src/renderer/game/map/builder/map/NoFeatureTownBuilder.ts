@@ -1,16 +1,19 @@
 // src/renderer/game/map/builder/NoFeatureTownBuilder.ts
 
-import { World } from "../../../../shared/core/world";
-import { WORLD_DEFAULT_TILE, MapCategory } from "../../../../shared/type/mapRules";
-import { TileType } from "../../../../shared/type/tileType";
-import { addObjectBlock, addObject } from "../objects/addObjectBlock";
-import { ObjectLayer } from "../objects/objectLayer";
-import { ObjectType } from "../objects/objectType";
-import { fillRectTile } from "../tiles/fillRectTile";
-import { BaseWorldDefinition } from "./interface/definition/WorldDefinition";
-import { MapBuilder } from "./interface/MapBuilder";
+import { World } from "../../../../../shared/core/world";
+import { WORLD_DEFAULT_TILE, MapCategory } from "../../../../../shared/type/mapRules";
+import { TileType } from "../../../../../shared/type/tileType";
+import { addObjectBlock, addObject } from "../../objects/addObjectBlock";
+import { ObjectLayer } from "../../objects/objectLayer";
+import { ObjectType } from "../../objects/objectType";
+import { fillRectTile } from "../../tiles/fillRectTile";
+import { BuildingSquare } from "../../tiles/placeBuildingSquare";
+import { BaseWorldDefinition } from "../interface/definition/WorldDefinition";
+import { MapBuilder } from "../interface/MapBuilder";
 
 export class NoFeatureTownBuilder implements MapBuilder {
+
+    constructor(private buildingSquare: BuildingSquare) { };
 
     build(): BaseWorldDefinition {
 

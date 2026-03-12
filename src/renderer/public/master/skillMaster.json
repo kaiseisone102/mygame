@@ -15,7 +15,8 @@
                 "formula": "ATK_DEF",
                 "power": 0
             }
-        ]
+        ],
+        "description": "物理単体攻撃。通常攻撃です。"
     },
     "DOUBLE_ATTACK": {
         "id": "DOUBLE_ATTACK",
@@ -34,7 +35,8 @@
                 "power": 0,
                 "rate": 0.55
             }
-        ]
+        ],
+        "description": "2回連続で攻撃する物理技。威力はやや低め。"
     },
     "POWER_SLASH": {
         "id": "POWER_SLASH",
@@ -54,7 +56,8 @@
                 "rate": 1.8,
                 "element": "SLASH"
             }
-        ]
+        ],
+        "description": "力を込めて斬る単体攻撃。斬撃属性。"
     },
     "WHIRL_WIND": {
         "id": "WHIRL_WIND",
@@ -73,7 +76,8 @@
                 "power": 0,
                 "rate": 1.1
             }
-        ]
+        ],
+        "description": "範囲攻撃。敵全体に斬撃ダメージ。"
     },
     "BACK_STAB": {
         "id": "BACK_STAB",
@@ -92,7 +96,8 @@
                 "power": 0,
                 "rate": 3
             }
-        ]
+        ],
+        "description": "背後からの強力な単体攻撃。"
     },
     "MERA": {
         "id": "MERA",
@@ -112,7 +117,8 @@
                 "power": 12,
                 "element": "FIRE"
             }
-        ]
+        ],
+        "description": "火属性の単体魔法攻撃。威力12。"
     },
     "GIRA": {
         "id": "GIRA",
@@ -132,7 +138,8 @@
                 "power": 18,
                 "element": "FIRE"
             }
-        ]
+        ],
+        "description": "火属性の全体魔法攻撃。威力18。"
     },
     "IO": {
         "id": "IO",
@@ -152,7 +159,8 @@
                 "power": 18,
                 "element": "IMPACT"
             }
-        ]
+        ],
+        "description": "範囲型魔法攻撃。衝撃属性、威力18。"
     },
     "HYADO": {
         "id": "HYADO",
@@ -172,7 +180,8 @@
                 "power": 18,
                 "element": "ICE"
             }
-        ]
+        ],
+        "description": "氷属性の単体魔法攻撃。威力18。"
     },
     "RAIDEIN": {
         "id": "RAIDEIN",
@@ -192,7 +201,8 @@
                 "power": 18,
                 "element": "ELECTRICITY"
             }
-        ]
+        ],
+        "description": "雷属性の単体魔法攻撃。威力18。"
     },
     "BAGI": {
         "id": "BAGI",
@@ -212,7 +222,8 @@
                 "power": 18,
                 "element": "WIND"
             }
-        ]
+        ],
+        "description": "風属性の全体魔法攻撃。威力18。"
     },
     "HEAL": {
         "id": "HEAL",
@@ -230,7 +241,8 @@
                 "type": "HEAL",
                 "power": 30
             }
-        ]
+        ],
+        "description": "単体を回復する魔法。HP30回復。"
     },
     "HEAL_ALL": {
         "id": "HEAL_ALL",
@@ -248,7 +260,8 @@
                 "type": "HEAL",
                 "power": 35
             }
-        ]
+        ],
+        "description": "味方全体を回復する魔法。HP35回復。"
     },
     "REVIVE": {
         "id": "REVIVE",
@@ -266,7 +279,8 @@
                 "type": "REVIVE",
                 "rate": 0.5
             }
-        ]
+        ],
+        "description": "戦闘不能の味方を復活させる魔法。成功率50％。"
     },
     "ATK_UP_SMALL": {
         "id": "ATK_UP_SMALL",
@@ -285,7 +299,8 @@
                 "value": "SMALL",
                 "turns": 3
             }
-        ]
+        ],
+        "description": "単体の攻撃力を小アップ。3ターン持続。"
     },
     "ATK_UP_LARGE": {
         "id": "ATK_UP_LARGE",
@@ -304,7 +319,8 @@
                 "value": "LARGE",
                 "turns": 3
             }
-        ]
+        ],
+        "description": "単体の攻撃力を大アップ。3ターン持続。"
     },
     "DEF_UP": {
         "id": "DEF_UP",
@@ -323,7 +339,8 @@
                 "value": "SMALL",
                 "turns": 3
             }
-        ]
+        ],
+        "description": "味方全体の防御力をアップ。3ターン持続。"
     },
     "HASTE": {
         "id": "HASTE",
@@ -342,7 +359,8 @@
                 "value": "SMALL",
                 "turns": 3
             }
-        ]
+        ],
+        "description": "味方全体の素早さを上げるバフ。3ターン持続。"
     },
     "ATK_DOWN": {
         "id": "ATK_DOWN",
@@ -361,7 +379,8 @@
                 "value": "-SMALL",
                 "turns": 3
             }
-        ]
+        ],
+        "description": "敵全体の攻撃力を下げる。3ターン持続。ルカニはATKを下げるのだ!!"
     },
     "SLOW": {
         "id": "SLOW",
@@ -380,7 +399,8 @@
                 "value": "-SMALL",
                 "turns": 3
             }
-        ]
+        ],
+        "description": "敵全体の素早さを下げる。3ターン持続。"
     },
     "SLEEP": {
         "id": "SLEEP",
@@ -398,7 +418,8 @@
                 "statusId": "SLEEP",
                 "chance": 0.6
             }
-        ]
+        ],
+        "description": "敵全体に眠りを付与する。成功率60％。"
     },
     "POISON": {
         "id": "POISON",
@@ -416,7 +437,8 @@
                 "statusId": "POISON",
                 "chance": 0.7
             }
-        ]
+        ],
+        "description": "敵全体に毒を付与する。成功率70％。"
     },
     "PARALYZE": {
         "id": "PARALYZE",
@@ -434,7 +456,8 @@
                 "statusId": "PARALYSIS",
                 "chance": 0.4
             }
-        ]
+        ],
+        "description": "単体に麻痺を付与する。成功率40％。"
     },
     "GUARD": {
         "id": "GUARD",
@@ -446,7 +469,8 @@
         "targetSide": "SELF",
         "targetType": "SELF",
         "effectScope": "SINGLE",
-        "effects": []
+        "effects": [],
+        "description": "身を守り、防御を固める。"
     },
     "PROVOKE": {
         "id": "PROVOKE",
@@ -465,7 +489,8 @@
                 "value": 1,
                 "turns": 2
             }
-        ]
+        ],
+        "description": "敵全体の攻撃を引き寄せる挑発。"
     },
     "ESCAPE": {
         "id": "ESCAPE",
@@ -478,7 +503,13 @@
         "targetType": "SELF",
         "effectScope": "SINGLE",
         "element": "NONE",
-        "effects": []
+        "effects": [
+            {
+                "type": "ESCAPE",
+                "chance": 0.7
+            }
+        ],
+        "description": "戦闘から逃げる。"
     },
     "LIMIT_BREAK": {
         "id": "LIMIT_BREAK",
@@ -497,7 +528,8 @@
                 "power": 0,
                 "rate": 1.8
             }
-        ]
+        ],
+        "description": "敵全体に強力な攻撃を行うリミットブレイク。"
     },
     "GIGADEIN": {
         "id": "GIGADEIN",
@@ -516,6 +548,7 @@
                 "power": 80,
                 "element": "ELECTRICITY"
             }
-        ]
+        ],
+        "description": "雷属性の全体魔法攻撃。威力80。"
     }
 }

@@ -13,7 +13,7 @@ export const MagicFormulaId = {
 export type MagicFormula = typeof MagicFormulaId[keyof typeof MagicFormulaId];
 
 export const SkillEffectKindId = {
-    HEAL: "HEAL", STATUS: "STATUS", BUFF: "BUFF", DAMAGE: "DAMAGE",
+    HEAL: "HEAL", STATUS: "STATUS", BUFF: "BUFF", DAMAGE: "DAMAGE", ESCAPE: "ESCAPE"
 } as const;
 export type SkillEffectKindId = typeof SkillEffectKindId[keyof typeof SkillEffectKindId];
 

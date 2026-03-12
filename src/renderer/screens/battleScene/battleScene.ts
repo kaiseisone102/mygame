@@ -1,5 +1,6 @@
 // src/renderer/screens/battleScene/BattleScene.ts
 
+import { delay } from "../../../renderer/utils/delay";
 import { GameState } from "../../../shared/data/gameState";
 import { GrowTableJson } from "../../../shared/Json/growTable/growTableJson";
 import { BiomeId } from "../../../shared/type/battle/enemy/BiomeId";
@@ -36,17 +37,15 @@ export type BattleScenePayload = {
  * BattleScene
  * 
  * [責務]
- * - BattleManager を保持
  * - Battle Screen / Overlay を生成・初期化
  * - BattleState を各 Screen に配る
- * - UIイベントを解釈して Manager に渡す
+ * - UIイベントを解釈して router に渡す
  * - 勝敗時に WorldEvent を投げる
  */
 export class BattleScene implements MainScreen<BattleScenePayload> {
     private processing!: boolean;
     private resultProcessing!: boolean;
 
-    private initialState!: BattleState;
     private eventQueue!: BattleEventQueue;
 
     private emitWorld!: (event: WorldEvent) => void;
@@ -104,6 +103,12 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
 
         this.manager.init({ turn: 1, allies: payload.allies, enemies: payload.enemies, currentActorId: 999, order: [], actionQueue: [], result: BattleResult.NULL, finished: false, mode: CommandMode.NULL, });
 
+        // guard: no enemy
+        // if (payload.enemies.length === 0) {
+        //     this.emitWorld({ type: "BATTLE_RESULT", result: BattleResult.WIN });
+        //     return;
+        // }
+
         this.manager.startBattle();
 
         this.resultService = new BattleResultService(
@@ -125,7 +130,7 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
         this.screens.forEach(s => s.hide());
     }
 
-    // be called every frame from screenManager 
+    // called every frame from screenManager 
     async update(delta: number, frame: InputFrame) {
 
         // ignore that, in processing
@@ -161,9 +166,9 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
             }
         }
 
-        // ----- ----- //
-        // end loop    //
-        // ----- ----- //
+        // ----- ----- ----- //
+        // finish process    //
+        // ----- ----- ----- //
         else {
             this.resultProcessing = true;
 
@@ -177,26 +182,34 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
                     const resultData = this.resultService.process(battleResult);
 
                     await this.battleLog.playExpLogs(resultData.expLogs);
-                    await this.levelUpOverlay.playLevelUps(resultData.levelUps);
+                    await delay(1000);
+
+                    if (resultData.levelUps.length > 0) await this.levelUpOverlay.show(resultData.levelUps);
 
                 }
                 // Note its position
                 this.cleanup();
 
                 this.emitWorld({ type: "BATTLE_RESULT", result: battleResult });
-
-                throw new Error("Battle result was null");
             }
         }
     }
 
     handleUIAxes(axes: InputAxis[]): boolean {
-        this.basicCommandOverlay.handleUIAxes(axes);
+        if (this.processing && !this.resultProcessing) {
+            this.basicCommandOverlay.handleUIAxes(axes);
+        } else if (!this.processing && this.resultProcessing) {
+            this.levelUpOverlay.handleUIAxes(axes);
+        }
         return true
     }
 
     handleUIActions(actions: UIActionEvent[]): boolean {
-        this.basicCommandOverlay.handleUIActions(actions);
+        if (this.processing && !this.resultProcessing) {
+            this.basicCommandOverlay.handleUIActions(actions);
+        } else if (!this.processing && this.resultProcessing) {
+            this.levelUpOverlay.handleUIActions(actions);
+        }
         return true
     }
 

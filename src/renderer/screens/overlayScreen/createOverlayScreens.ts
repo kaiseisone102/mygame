@@ -10,21 +10,23 @@ import { BattleLogOverlay } from "../battleScene/overlayScreen/BattleLogOverlay"
 import { ItemSelectOverLayInBattle } from "../battleScene/overlayScreen/ItemSelectOverLayInBattle";
 import { BattleBasicCommandOverlay } from "../battleScene/overlayScreen/BattleBasicCommandOverlay";
 import { InputNameOverlay } from "./screen/InputNameOverlay";
-import { MagicSelectOverlay } from "../battleScene/overlayScreen/MagicSelectOverlay";
+import { SkillSelectOverlay } from "../battleScene/overlayScreen/SkillSelectOverlay";
 import { AlliesStatusOverlay } from "../battleScene/overlayScreen/AlliesStatusOverlay";
 import { BattleTurnDisplayOverlay } from "../battleScene/overlayScreen/BattleTurnDisplayOverlay";
 import { LevelUpOverlay } from "../battleScene/overlayScreen/LevelUpOverlay";
+import { SandStormOverlay } from "./screen/sandStormOverlay";
 
 export function createOverlayScreens() {
     return {
         [OverlayScreenType.OPTIONS]: new OptionsOverlay(),
+        [OverlayScreenType.SANDSTORMOVERLAY]: new SandStormOverlay(),
         [OverlayScreenType.INPUT_NAME_OVERLAY]: new InputNameOverlay(),
         [OverlayScreenType.YES_NO_OVERLAY]: new YesNoOverlay(),
         [OverlayScreenType.INVENTORY]: new InventoryOverlay(),
         [OverlayScreenType.MESSAGE_LOG]: new MessageLogOverlay(),
         [OverlayScreenType.BATTLE_BASIC_COMMAND_OVERLAY]: new BattleBasicCommandOverlay(),
         [OverlayScreenType.ATTACK_TARGET_OVERLAY]: new AttackTargetOverlay(),
-        [OverlayScreenType.MAGIC_SELECT_OVERLAY]: new MagicSelectOverlay(),
+        [OverlayScreenType.SKILL_SELECT_OVERLAY]: new SkillSelectOverlay(),
         [OverlayScreenType.ITEM_SELECT_OVERLAY_IN_BATTLE]: new ItemSelectOverLayInBattle(),
         [OverlayScreenType.BATTLE_LOG]: new BattleLogOverlay(),
         [OverlayScreenType.ALLIES_STATUS_OVERLAY]: new AlliesStatusOverlay(),

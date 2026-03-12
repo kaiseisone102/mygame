@@ -4,6 +4,7 @@ import { GameActionEvent, InputAxis, UIActionEvent } from "../../../../renderer/
 import { InputFrame } from "../../../../renderer/input/frame/InputFrame";
 import { ScreenInitContext } from "../context/ScreenInitContext";
 import { WorldDefinition } from "../../../game/map/builder/interface/definition/WorldDefinition";
+import { ZoneController } from "../../../../renderer/game/map/zone/ZoneController";
 
 export interface MainScreen<T = void> {
     init(root: HTMLElement, ctx: ScreenInitContext): void;
@@ -15,5 +16,8 @@ export interface MainScreen<T = void> {
     handleUIAxes(axes: InputAxis[]): boolean;
     update?(delta: number, frame: InputFrame): void;
 
-    setWorld?(def: WorldDefinition): void;
+    setWorld?(def: WorldDefinition, zoneController: ZoneController): void;
+
+    // リソースの開放用 vueでいうunmount 今は使わないけど
+    destroy?(): void;
 }

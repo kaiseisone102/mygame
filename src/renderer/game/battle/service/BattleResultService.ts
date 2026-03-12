@@ -54,27 +54,27 @@ export class BattleResultService {
         // --- 経験値分配 ---
         const expDistribution = this.manager.calculateExpForAllies();
 
-        for (const d of expDistribution) {
+        for (const distribution of expDistribution) {
 
-            const ally = this.gameState.party.find(p => p.instanceId === d.instanceId);
+            const ally = this.gameState.party.find(p => p.instanceId === distribution.instanceId);
             if (!ally) {
-                console.warn("ally not found", d.instanceId);
+                console.warn("ally not found", distribution.instanceId);
                 continue;
             }
 
             // 仮ログ用
             const oldExp = ally.exp;
-      
-            // 経験値加算
-            ally.exp += d.gainedExp;
 
-                  // --- バトルログに経験値情報を表示 ---
+            // 経験値加算
+            ally.exp += distribution.gainedExp;
+
+            // --- バトルログに経験値情報を表示 ---
             const nextGrow = this.growTable[ally.level + 1];
             const expRequired = nextGrow?.expRequired ?? Infinity;
 
             expLogs.push({
                 name: ally.name,
-                gainedExp: d.gainedExp,
+                gainedExp: distribution.gainedExp,
                 oldExp,
                 newExp: ally.exp,
                 expRequired
@@ -102,11 +102,9 @@ export class BattleResultService {
                 ally.baseStats.speed = grow.speed;
 
                 levelUps.push({
-                    ally: {
-                        name: ally.name,
-                        oldLevel,
-                        newLevel: ally.level
-                    }
+                    name: ally.name,
+                    oldLevel,
+                    newLevel: ally.level
                 });
             }
         }

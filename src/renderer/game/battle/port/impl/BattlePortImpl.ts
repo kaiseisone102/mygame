@@ -6,6 +6,7 @@ import { ItemPresetsById } from "../../../../../shared/master/battle/ItemPreset"
 import { SkillPreset } from "../../../../../shared/master/battle/type/SkillPreset";
 import { convertItemToSkill } from "../../../../../shared/master/item/convertItemToSkill";
 import { BattleEnemy } from "../../../../../renderer/screens/battleScene/overlayScreen/AttackTargetOverlay";
+import { SkillItem } from "../../../../../renderer/screens/battleScene/overlayScreen/SkillSelectOverlay";
 
 export class BattlePortImpl implements BattlePort {
 
@@ -17,7 +18,7 @@ export class BattlePortImpl implements BattlePort {
         private manager: BattleManager
     ) { }
 
-    async requestCommand(actorTemplateId: number, actorInstanceId: number, actorName: string, enemies: BattleEnemy[]): Promise<BattleInput> {
+    async requestCommand(actorTemplateId: number, actorInstanceId: number, actorName: string, skills: SkillItem[], enemies: BattleEnemy[]): Promise<BattleInput> {
         // 🎮 プレイヤーの場合
         if (this.isPlayer(actorInstanceId)) {
             console.log(`requestCommand wait for [${actorName}] input`);
@@ -30,6 +31,7 @@ export class BattlePortImpl implements BattlePort {
                         actorTemplateId,
                         actorInstanceId,
                         actorName,
+                        skills,
                         enemies
                     }
                 });

@@ -10,9 +10,11 @@ import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { MainScreen } from "../../interface/screen/MainScreen";
 import { UseGameInputScreen } from "../../interface/screen/UseGameInputScreen";
 import { GraveCaveScreenController } from "./controller/GraveCaveScreenController";
+import { BaseWorldScreenController } from "../../../../renderer/screens/worldScene/BaseWorldScreenController";
+import { ZoneController } from "../../../../renderer/game/map/zone/ZoneController";
 
 export class GraveCaveScreen implements MainScreen, UseGameInputScreen {
-    private controller!: GraveCaveScreenController;
+    private controller!: BaseWorldScreenController;
 
     constructor(
         private gameState: GameState,
@@ -58,8 +60,8 @@ export class GraveCaveScreen implements MainScreen, UseGameInputScreen {
         return false;
     }
 
-    setWorld(def: WorldDefinition): void {
+    setWorld(def: WorldDefinition, zoneController: ZoneController): void {
         console.log("[CaveScreen] setWorld called");
-        this.controller.setWorld(def);
+        this.controller.setWorld(def, zoneController);
     }
 }

@@ -6,7 +6,7 @@ import { Battler } from "../../core/Battler";
 import { EnemyTemplateJson } from "../../../../../shared/Json/enemy/EnemyTemplateJson";
 import { AiType } from "../../../../../shared/master/battle/type/EnemyPreset ";
 import { TraitPresets } from "../../../../../shared/master/battle/TraitPresets";
-import { SkillId } from "../../../../../shared/master/battle/type/SkillPreset";
+import { MagicId, SkillId, TechniqueId } from "../../../../../shared/master/battle/type/SkillPreset";
 import { ImageKey } from "../../../../../shared/type/ImageKey";
 
 export class BattlerFactory {
@@ -42,33 +42,26 @@ export class BattlerFactory {
 }
 
 function toSkillId(skills: string[]): SkillId[] {
-
-    return skills.map((s) => {
-
-        const value = SkillId[s as keyof typeof SkillId];
-
-        if (!value) {
-            throw new Error(`Invalid SkillId: ${s}`);
-        }
-
-        return value;
+    return skills.map(skill => {
+        if (skill in TechniqueId) return TechniqueId[skill as keyof typeof TechniqueId];
+        if (skill in MagicId) return MagicId[skill as keyof typeof MagicId];
+        throw new Error(`Invalid SkillId: ${skill}`);
     });
-
 }
 
 function toTraits(traits: string[]): Trait[] {
 
-    return traits.map((t) => {
+    return traits.map((trait) => {
 
-        const preset = t as keyof typeof TraitPresets;
+        const preset = trait as keyof typeof TraitPresets;
 
-        const trait = TraitPresets[preset];
+        const traitPrest = TraitPresets[preset];
 
-        if (!trait) {
-            throw new Error(`Unknown trait: ${t}`);
+        if (!traitPrest) {
+            throw new Error(`Unknown trait: ${trait}`);
         }
 
-        return trait;
+        return traitPrest;
     });
 
 }

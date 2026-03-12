@@ -14,6 +14,7 @@ import { OverlayInstanceMap, OverlayPayloadMap } from "./interface/overlay/overl
 import { OverlayScreen } from "./interface/overlay/OverLayScreens";
 import type { MainScreen } from "./interface/screen/MainScreen";
 import { MainScreenInstanceMap, MainScreenPayloadMap } from "./interface/screen/MainScreenPayloadMap";
+import { ZoneController } from "../../renderer/game/map/zone/ZoneController";
 
 /**
  * 01/17/26
@@ -229,8 +230,8 @@ export class ScreenManager implements ScreenPort, ScreenStateReader {
     }
 
     // 現在のワールドに差し替える
-    setWorld(screenType: MainScreenType, def: WorldDefinition) {
-        this.mainScreens[screenType].setWorld?.(def);
+    setWorld(screenType: MainScreenType, def: WorldDefinition, zoneController: ZoneController) {
+        this.mainScreens[screenType].setWorld?.(def, zoneController);
     }
 
     getMainScreen<K extends keyof MainScreenInstanceMap>(type: K): MainScreenInstanceMap[K] {

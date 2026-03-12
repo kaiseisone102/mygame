@@ -7,14 +7,12 @@ import { OverlayScreen } from "../../../../renderer/screens/interface/overlay/Ov
 import { OverlayScreenType } from "../../../../shared/type/screenType";
 
 export type LevelUpPayload = {
-    ally: {
-        name: string;
-        oldLevel: number;
-        newLevel: number;
-    };
+    name: string;
+    oldLevel: number;
+    newLevel: number;
 };
 
-export class LevelUpOverlay implements OverlayScreen<LevelUpPayload> {
+export class LevelUpOverlay implements OverlayScreen<LevelUpPayload[]> {
     readonly overlayId: string = OverlayScreenType.LEVEL_UP_OVERLAY;
     readonly capturesInput: boolean = true;
 
@@ -30,18 +28,6 @@ export class LevelUpOverlay implements OverlayScreen<LevelUpPayload> {
         this.emitUI = initCtx.emitUI;
 
         this.screen = document.createElement("div");
-        this.screen.style.position = "absolute";
-        this.screen.style.top = "0";
-        this.screen.style.left = "0";
-        this.screen.style.width = "100%";
-        this.screen.style.height = "100%";
-        this.screen.style.display = "none";
-        this.screen.style.justifyContent = "center";
-        this.screen.style.alignItems = "center";
-        this.screen.style.background = "rgba(0,0,0,0.7)";
-        this.screen.style.color = "white";
-        this.screen.style.fontSize = "24px";
-        this.screen.style.textAlign = "center";
 
         this.messageElem = document.createElement("div");
         this.screen.appendChild(this.messageElem);
@@ -50,15 +36,8 @@ export class LevelUpOverlay implements OverlayScreen<LevelUpPayload> {
     }
 
     /** 表示 */
-    show(payload: LevelUpPayload) {
-        this.currentPayload = payload;
-        this.screen.className = "LevelUpOverlay";
-        this.messageElem.className = "LevelUpOverlayMessage";
-
-        // レベルの数字だけ span で囲む
-        this.messageElem.innerHTML = `${payload.ally.name} はレベル <span class="levelNumber">${payload.ally.oldLevel}</span> → <span class="levelNumber">${payload.ally.newLevel}</span> に上がった！`;
-
-        this.screen.style.display = "flex";
+    async show(payloads: LevelUpPayload[]): Promise<void> {
+        await this.playLevelUps(payloads);
     }
 
     /** 非表示 */
@@ -77,7 +56,6 @@ export class LevelUpOverlay implements OverlayScreen<LevelUpPayload> {
         for (const action of actions)
             if (action.action === "CONFIRM" && this.resolvePromise) {
                 this.resolvePromise();
-                this.emitUI({ type: "POP_OVERLAY" })
                 return true;
             }
         return true;
@@ -87,15 +65,34 @@ export class LevelUpOverlay implements OverlayScreen<LevelUpPayload> {
     }
 
     /** payload を表示して、CONFIRM まで待機する */
-    async playLevelUps(payload: LevelUpPayload[]): Promise<void> {
-        this.show(payload);
+    private async playLevelUps(payloads: LevelUpPayload[]): Promise<void> {
 
-        return new Promise((resolve) => {
-            this.resolvePromise = () => {
-                this.screen.style.display = "none";
-                this.resolvePromise = undefined;
-                resolve();
-            };
-        });
+        for (const payload of payloads) {
+            this.showSingle(payload);
+
+            await new Promise<void>(resolve => {
+                this.resolvePromise = () => {
+                    this.hide();
+                    this.resolvePromise = undefined;
+                    resolve();
+                };
+            });
+        }
+    }
+
+    private showSingle(payload: LevelUpPayload) {
+        this.currentPayload = payload;
+        this.screen.className = "LevelUpOverlay";
+        this.messageElem.className = "LevelUpOverlayMessage";
+
+        this.messageElem.innerHTML = `${payload.name} はレベル <span class="levelNumber">${payload.oldLevel}</span> → <span class="levelNumber">${payload.newLevel}</span> に上がった！`;
+        
+        // CONFIRM 要素を作って追加
+        const confirmElem = document.createElement("div");
+        confirmElem.className = "confirmText";
+        confirmElem.textContent = "[CONFIRM]";  // ここで文字を設定
+        this.messageElem.appendChild(confirmElem);
+        
+        this.screen.style.display = "flex";
     }
 }

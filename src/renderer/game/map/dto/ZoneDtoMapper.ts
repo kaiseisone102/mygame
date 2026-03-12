@@ -21,6 +21,7 @@ export function toZoneTile(typeKey: keyof typeof ZoneType, dto: ZoneJson): ZoneT
 
 export function buildZones(zoneTile: ZoneTileDto[]): ZonePx[] {
     return zoneTile.map(zone => ({
+        id: zone.id,
         pos: { x: zone.pos.tx * NORM_SIZE, y: zone.pos.ty * NORM_SIZE },
         w: zone.tw * NORM_SIZE,
         h: zone.th * NORM_SIZE,

@@ -51,7 +51,7 @@ export class SkillExecutor {
 
                         results.push({
                             kind: SkillEffectKindId.DAMAGE,
-                            sourceId: actor.instanceId,
+                            instanceId: actor.instanceId,
                             targetId: target.instanceId,
                             value: final,
                             isCritical: base.isCritical, // calcDamageで返してもいい
@@ -71,7 +71,7 @@ export class SkillExecutor {
 
                         results.push({
                             kind: SkillEffectKindId.HEAL,
-                            sourceId: actor.instanceId,
+                            instanceId: actor.instanceId,
                             targetId: target.instanceId,
                             value: final
                         });
@@ -87,7 +87,7 @@ export class SkillExecutor {
 
                             results.push({
                                 kind: SkillEffectKindId.STATUS,
-                                sourceId: actor.instanceId,
+                                instanceId: actor.instanceId,
                                 targetId: target.instanceId,
                                 statusId: effect.statusId
                             });
@@ -101,10 +101,22 @@ export class SkillExecutor {
 
                         results.push({
                             kind: SkillEffectKindId.BUFF,
-                            sourceId: actor.instanceId,
+                            instanceId: actor.instanceId,
                             targetId: target.instanceId,
                             buffId: effect.buffId
                         });
+                        break;
+                    case SkillEffectKindId.ESCAPE:
+
+                        const success = Math.random() < (effect.chance ?? 0.7);
+
+                        results.push({
+                            kind: SkillEffectKindId.ESCAPE,
+                            instanceId: actor.instanceId,
+                            targetId: actor.instanceId,
+                            success
+                        });
+
                         break;
                 }
             }

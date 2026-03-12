@@ -11,7 +11,7 @@ export function toNpcTile(dto: NpcJson): NpcTileDto {
         tw: dto.tw ?? 1,
         th: dto.th ?? 1,
         direction: toAppDirection(dto.direction),
-        message: dto.message,
+        messageId: dto.messageId,
         image: dto.image ? mapImageKey(dto.image) : undefined
     }
 }
@@ -23,7 +23,7 @@ export function buildNpcs(npcTiles: NpcTileDto[]): NpcData[] {
         w: npc.tw * NORM_SIZE,
         h: npc.th * NORM_SIZE,
         direction: npc.direction,
-        message: npc.message,
+        messageId: npc.messageId,
         image: npc.image
     }));
 }

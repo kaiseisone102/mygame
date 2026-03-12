@@ -11,7 +11,7 @@ import { BattleInput } from "./useCase/gameUseCase/battle/BattleInputUseCase";
 import { WorldPxPosition } from "../../shared/type/playerPosition/posType";
 import { OverlayPayloadMap } from "../../renderer/screens/interface/overlay/overlayPayloadMap";
 import { BasicCommandPayload, CommandSelectedPayload } from "../../renderer/screens/battleScene/overlayScreen/BattleBasicCommandOverlay";
-import { SelectedMagicPayload } from "../../renderer/screens/battleScene/overlayScreen/MagicSelectOverlay";
+import { SelectedSkillPayload } from "../screens/battleScene/overlayScreen/SkillSelectOverlay";
 
 export type AppUIEvent =
     | { type: "OPEN_YES_NO"; message: string; onYes: () => void; onNo: () => void; }
@@ -25,7 +25,6 @@ export type AppUIEvent =
     | { type: "EXIT_TO_TITLE" }
     | { type: "EXIT_TO_SLOT_SELECT_MENU" }
     | { type: "GO_SLOT_SELECT" }
-
 
     // セーブ ?? 確認メッセージ画面へ : 名前入力画面へ => ゲームスタート
     | { type: "SHOW_START_MESSAGE" }
@@ -42,9 +41,7 @@ export type AppUIEvent =
 
     // 動的イベント
     | { type: "REQUEST_INTERACT", playerState: PlayerState, playerPos: WorldPxPosition, npcs: NpcData[], signs: SignData[], items: ItemData[] }
-    | { type: "NPC_INTERACT"; message: string[] }
-    | { type: "READ_SIGN"; message: string[] }
-    | { type: "COLLECT_ITEM"; item: ItemData[] }
+
     | { type: "SHOW_TRIGGER_MESSAGE"; message: string }
 
     // イベント結果
@@ -57,7 +54,7 @@ type BattleEventGroup =
     // ===== UI段階 =====
     | { type: "REQUEST_COMMAND", payload: BasicCommandPayload }
     | { type: "BATTLE_COMMAND_SELECTED", payload: CommandSelectedPayload }// UI操作
-    | { type: "MAGIC_SELECTED", payload: SelectedMagicPayload }
+    | { type: "SKILL_SELECTED", payload: SelectedSkillPayload }
     | { type: "ITEM_SELECTED", itemId: string }
     | { type: "PLAYER_COMMAND_SELECTED", input: BattleInput }
     | { type: "BATTLE_ITEM_SELECTED"; itemId: string }

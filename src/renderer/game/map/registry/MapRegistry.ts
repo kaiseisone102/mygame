@@ -1,22 +1,32 @@
 // src/renderer/game/map/registry/MapRegistry.ts
 
 import { MapId } from "../../../../shared/type/MapId";
-import { ForestTempleBuilder } from "../builder/ForestTempleBuilder";
-import { GraveCaveBuilder } from "../builder/GraveCaveBuilder";
+import { ForestTempleBuilder } from "../builder/map/ForestTempleBuilder";
+import { GraveCaveBuilder } from "../builder/map/GraveCaveBuilder";
 import { MapBuilder } from "../builder/interface/MapBuilder";
-import { NoFeatureTownBuilder } from "../builder/NoFeatureTownBuilder";
-import { WorldMapBuilder } from "../builder/WorldMapBuilder";
+import { NoFeatureTownBuilder } from "../builder/map/NoFeatureTownBuilder";
+import { WorldMapBuilder } from "../builder/map/WorldMapBuilder";
+import { BuildingSquare } from "../tiles/placeBuildingSquare";
 
 export class MapRegistry {
 
-    private static builders: Record<MapId, MapBuilder> = {
-        [MapId.FOREST_TEMPLE]: new ForestTempleBuilder(),
-        [MapId.NO_FEATURE_TOWN]: new NoFeatureTownBuilder(),
-        [MapId.GRAVE_CAVE]: new GraveCaveBuilder(),
-        [MapId.WORLD_MAP]: new WorldMapBuilder(),
-    };
+    private builders: Record<MapId, MapBuilder>;
 
-    static get(mapId: MapId): MapBuilder {
+    constructor(
+        private forestTempleBuilder: ForestTempleBuilder,
+        private noFeatureTownBuilder: NoFeatureTownBuilder,
+        private graveCaveBuilder: GraveCaveBuilder,
+        private worldMapBuilder: WorldMapBuilder,
+    ) {
+        this.builders = {
+            [MapId.FOREST_TEMPLE]: this.forestTempleBuilder,
+            [MapId.NO_FEATURE_TOWN]: this.noFeatureTownBuilder,
+            [MapId.GRAVE_CAVE]: this.graveCaveBuilder,
+            [MapId.WORLD_MAP]: this.worldMapBuilder,
+        };
+    }
+
+    get(mapId: MapId): MapBuilder {
 
         const builder = this.builders[mapId];
 

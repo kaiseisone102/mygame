@@ -6,10 +6,13 @@ import { WorldDefinition } from "../builder/interface/definition/WorldDefinition
 import { MapRegistry } from "../registry/MapRegistry";
 
 export class WorldDefinitionFactory {
+
+    constructor(private mapRegistry: MapRegistry) { }
+
     /** World生成 */
     create(mapId: MapId, mapJson: MapJson): WorldDefinition {
 
-        const builder = MapRegistry.get(mapId);
+        const builder = this.mapRegistry.get(mapId);
 
         const base = builder.build();
 

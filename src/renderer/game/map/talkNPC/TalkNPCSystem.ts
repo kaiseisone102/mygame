@@ -1,52 +1,47 @@
 // src/renderer/game/map/talkNPC/TalkNPCSystem.ts
 
-import { WorldPxPosition, WorldTilePosition } from "../../../../shared/type/playerPosition/posType";
+import { WorldPxPosition } from "../../../../shared/type/playerPosition/posType";
 import { getPlayerTalkRect } from "../../../../renderer/module/debug/debugDrawPlayerHitbox";
 import { NORM_SIZE } from "../../../../shared/data/constants";
 import { AppDirection, PlayerState } from "../../../../shared/type/PlayerState";
-import { RectPx, RectTile } from "../objects/rect";
+import { RectPx } from "../objects/rect";
 import { NpcData } from "./NPCData";
 import { SignData } from "./SignData";
 
-export function tryInteractNpc(
+/**
+ * プレイヤーの前にいるNPCの messageId を返す
+ * 見つからなければ null
+ */
+export function findNpcInFront(
     playerState: PlayerState,
     playerPos: WorldPxPosition,
-    npcs: NpcData[],
-): string {
-    const talkRect: RectPx = getPlayerTalkRect(playerPos, playerState); // GameState からの位置取得は呼び出し側で
+    npcs: NpcData[]
+): string | null {
+    const talkRect: RectPx = getPlayerTalkRect(playerPos, playerState);
     const npc = npcs.find(n => {
         const npcRect: RectPx = {
             pos: { x: n.pos.x, y: n.pos.y },
-            w: (n.w ?? NORM_SIZE),
-            h: (n.h ?? NORM_SIZE),
+            w: n.w ?? NORM_SIZE,
+            h: n.h ?? NORM_SIZE,
         };
         return rectsOverlap(talkRect, npcRect);
     });
 
-    if (npc) {
-        console.log(`✅ NPC found at (${npc.pos.x}, ${npc.pos.y}), direction: ${npc.direction}`);
-        return npc.message ?? "…";
-    } else {
-        console.log("❌ no NPC in front");
-        return "";
-    }
+    return npc?.messageId ?? null;
 }
 
-export function tryReadSign(
+/**
+ * プレイヤーの前にある看板の messageId を返す
+ * 見つからなければ null
+ */
+export function findSignInFront(
     playerState: PlayerState,
     playerPos: WorldPxPosition,
-    signs: SignData[],
-): string {
+    signs: SignData[]
+): string | null {
     const talkRect: RectPx = getPlayerTalkRect(playerPos, playerState);
     const sign = signs.find(s => canReadSign(talkRect, playerState.direction, s));
-
-    if (sign) {
-        console.log(`📜 Sign read at (${sign.pos.x}, ${sign.pos.y}), facing: ${sign.facing}`);
-        return sign.message ?? "…";
-    } else {
-        console.log("❌ no sign in front");
-        return "";
-    }
+    return sign?.messageId ?? null;
 }
 
 // 矩形同士が重なっているか判定
@@ -62,7 +57,7 @@ export function rectsOverlap(a: RectPx, b: RectPx): boolean {
 // 看板向き判定
 function canReadSign(playerRect: RectPx, playerFacing: AppDirection, sign: SignData): boolean {
     const signRect: RectPx = {
-        pos: { x: sign.pos.x, y: sign.pos.y},
+        pos: { x: sign.pos.x, y: sign.pos.y },
         w: (sign.w ?? NORM_SIZE),
         h: (sign.h ?? NORM_SIZE),
     };

@@ -11,6 +11,7 @@ import { MainScreen } from "../../interface/screen/MainScreen";
 import { UseGameInputScreen } from "../../interface/screen/UseGameInputScreen";
 import { ForestTempleScreenController } from "./controller/ForestTempleScreenController";
 import { BaseWorldScreenController } from "../../../../renderer/screens/worldScene/BaseWorldScreenController";
+import { ZoneController } from "../../../../renderer/game/map/zone/ZoneController";
 
 export class ForestTempleScreen implements MainScreen, UseGameInputScreen {
     private controller!: BaseWorldScreenController;
@@ -59,8 +60,8 @@ export class ForestTempleScreen implements MainScreen, UseGameInputScreen {
         return false;
     }
 
-    setWorld(def: WorldDefinition): void {
+    setWorld(def: WorldDefinition, zoneController: ZoneController): void {
         console.log("[ForestTempleScreen] setWorld called");
-        this.controller.setWorld(def);
+        this.controller.setWorld(def, zoneController);
     }
 }

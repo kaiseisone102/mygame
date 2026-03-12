@@ -1,6 +1,5 @@
 // src/renderer/screens/battleScene/overlayScreen/AlliesStatusOverlay.ts
 
-import { Battler } from "../../../../renderer/game/battle/core/Battler";
 import { InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";
 import { AppUIEvent } from "../../../../renderer/router/AppUIEvents";
 import { WorldEvent } from "../../../../renderer/router/WorldEvent";
@@ -8,10 +7,23 @@ import { ScreenInitContext } from "../../../../renderer/screens/interface/contex
 import { OverlayScreen } from "../../../../renderer/screens/interface/overlay/OverLayScreens";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
 
-export interface AlliesStatusPayload {
-    allies: Battler[];
+export interface AllyStatusData {
+    instanceId: number;
+    name: string;
+    hp: number;
+    maxHp: number;
+    mp: number;
+    maxMp: number;
 }
 
+export interface AlliesStatusPayload {
+    allies: AllyStatusData[];
+}
+
+/**
+ * AlliesStatusOverlay
+ * - 戦闘中の味方 hp, mp を表示
+ */
 export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
     readonly overlayId: string = OverlayScreenType.ALLIES_STATUS_OVERLAY;
 
@@ -26,7 +38,7 @@ export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
     private allyElements: Map<number, { hpEl: HTMLElement; mpEl: HTMLElement, hpTextEl: HTMLElement, mpTextEl: HTMLElement }> = new Map();
 
     /** 表示中の味方リスト */
-    private allies: Battler[] = [];
+    private allies: AllyStatusData[] = [];
 
     constructor() { }
 
@@ -63,11 +75,11 @@ export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
 
             const hpBar = document.createElement("div");
             hpBar.className = "ally-hp-bar";
-            hpBar.style.width = `${(ally.baseStats.hp / ally.baseStats.maxHp) * 100}%`;
+            hpBar.style.width = `${(ally.hp / ally.maxHp) * 100}%`;
 
             const hpText = document.createElement("div");
             hpText.className = "ally-hp-text";
-            hpText.textContent = `${ally.baseStats.hp} / ${ally.baseStats.maxHp}`;
+            hpText.textContent = `${ally.hp} / ${ally.maxHp}`;
 
             hpContainer.appendChild(hpBar);
             hpContainer.appendChild(hpText);
@@ -78,11 +90,11 @@ export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
 
             const mpBar = document.createElement("div");
             mpBar.className = "ally-mp-bar";
-            mpBar.style.width = `${(ally.baseStats.mp / ally.baseStats.maxMp) * 100}%`;
+            mpBar.style.width = `${(ally.mp / ally.maxMp) * 100}%`;
 
             const mpText = document.createElement("div");
             mpText.className = "ally-mp-text";
-            mpText.textContent = `${ally.baseStats.mp} / ${ally.baseStats.maxMp}`;
+            mpText.textContent = `${ally.mp} / ${ally.maxMp}`;
 
             mpContainer.appendChild(mpBar);
             mpContainer.appendChild(mpText);
@@ -109,16 +121,16 @@ export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
             const el = this.allyElements.get(ally.instanceId);
             if (!el) return;
 
-            const hpRatio = ally.baseStats.hp / ally.baseStats.maxHp;
-            const mpRatio = ally.baseStats.mp / ally.baseStats.maxMp;
+            const hpRatio = ally.hp / ally.maxHp;
+            const mpRatio = ally.mp / ally.maxMp;
 
             // バーの幅だけ変更
             el.hpEl.style.width = `${hpRatio * 100}%`;
             el.mpEl.style.width = `${mpRatio * 100}%`;
 
             // テキストは別要素に表示
-            el.hpTextEl.textContent = `${ally.baseStats.hp} / ${ally.baseStats.maxHp}`;
-            el.mpTextEl.textContent = `${ally.baseStats.mp} / ${ally.baseStats.maxMp}`;
+            el.hpTextEl.textContent = `${ally.hp} / ${ally.maxHp}`;
+            el.mpTextEl.textContent = `${ally.mp} / ${ally.maxMp}`;
         });
     }
 

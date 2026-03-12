@@ -11,7 +11,7 @@ export function toSignTile(dto: SignJson): SignTileDto {
         tw: dto.tw ?? 1,
         th: dto.th ?? 1,
         facing: toAppDirection(dto.facing),
-        message: dto.messageId ?? "",
+        messageId: dto.messageId ?? "",
         image: dto.image ? mapImageKey(dto.image) : undefined,
     };
 }
@@ -24,7 +24,7 @@ export function buildSigns(signTiles: SignTileDto[]): SignData[] {
         w: sign.tw * NORM_SIZE,
         h: sign.th * NORM_SIZE,
         facing: sign.facing,
-        message: sign.message,
+        messageId: sign.messageId,
         image: sign.image
     }));
 }

@@ -6,34 +6,45 @@ export type SkillResult =
     | DamageResult
     | HealResult
     | StatusResult
-    | BuffResult;
+    | BuffResult
+    | EscapeResult;
 
 export interface DamageResult {
     kind: typeof SkillEffectKindId.DAMAGE;
-    sourceId: number;
+    instanceId: number;
     targetId: number;
     value: number;
     isCritical: boolean;
     killed: boolean;
+    success?: boolean; // ミス用
 }
 
 export interface HealResult {
     kind: typeof SkillEffectKindId.HEAL;
-    sourceId: number;
+    instanceId: number;
     targetId: number;
     value: number;
+    success?: boolean;
 }
 
 export interface StatusResult {
     kind: typeof SkillEffectKindId.STATUS;
-    sourceId: number;
+    instanceId: number;
     targetId: number;
     statusId: string;
+    success?: boolean;
 }
 
 export interface BuffResult {
     kind: typeof SkillEffectKindId.BUFF;
-    sourceId: number;
+    instanceId: number;
     targetId: number;
     buffId: string;
+    success?: boolean;
+}
+export interface EscapeResult {
+    kind: typeof SkillEffectKindId.ESCAPE;
+    instanceId: number;
+    targetId: number;
+    success: boolean;
 }

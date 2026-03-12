@@ -25,29 +25,44 @@ export class WorldEventRouter {
             case "ENTER_GAME_START_FLOW":
                 this.gameUseCases.startGameFlowUseCase.execute();
                 break;
+
             case "INIT_GAME_SCREEN_FINISHED":
                 this.screens.changeMain(MainScreenType.TITLE, undefined);
                 break;
+
             case "AUTO_SAVE":
                 this.gameUseCases.saveGameUseCase.execute();
                 break;
-            // MainScreen 共通イベント
+
             case "CHANGE_WORLD":
                 if (!event.mapId) break;
                 this.gameUseCases.changeWorldUseCase.execute(event.mapId);
                 break;
 
-            // 設定保存
+            case "ITEM_COLLECTED":
+                this.gameUseCases.collectItemUseCase.execute(event.item);
+                break;
+
             case "SAVE_CONFIG": this.gameUseCases.saveConfigUseCase.execute(event.config); break;
 
             case "ZONE_ENTERED_TOWN": {
-                this.gameUseCases.enteredTownUseCase.execute(event.ctx);
+                const zoneId = event.zone.id;
+
+                switch (zoneId) {
+                    case "NF_TOWN_ENTRY_01":
+                        this.gameUseCases.enteredTownUseCase.execute(event.ctx);
+                        break;
+
+                    default:
+                        console.warn("[WorldEventRouter] 未登録のENTRYゾーンID:", zoneId);
+                        break;
+                }
                 break;
             }
-            case "ZONE_ENTERED_WARP": {
+
+            case "ZONE_ENTERED_WARP":
                 this.gameUseCases.changeWorldUseCase.execute(MapId.WORLD_MAP);
                 break;
-            }
 
             case "PLAYER_ENTERED_ZONE":
                 this.gameUseCases.encounterUseCase.onPlayerEnteredZone({ zone: event.zone, ctx: event.ctx });
@@ -58,27 +73,23 @@ export class WorldEventRouter {
             case "PLAYER_MOVED":
                 this.gameUseCases.encounterUseCase.onStep(event.ctx);
                 break;
-            // 敵が出現
+
             case "ENCOUNTER_CONFIRMED":
                 this.gameUseCases.battleStartedUseCase.execute(event.biomeId);
                 break;
-            // 戦闘画面へ
+
             case "BATTLE_STARTED": {
                 this.gameUseCases.encounterUseCase.reset();
                 this.screens.changeMain(MainScreenType.BATTLE_SCENE, event.payload);
                 break;
             }
-            // 戦闘結果
+
             case "BATTLE_RESULT":
                 this.gameUseCases.battleResultUseCase.execute(event.result);
                 break;
-            // 戦闘前の場所へ戻す
-            case "BATTLE_FINISHED": {
-                // ワールド復帰
-                //   changeWorld
-                //   座標復元
-                // 👉 ここで BattleManager は破棄してOK
 
+            case "BATTLE_FINISHED": {
+        
                 const ret = this.gameState.battleReturn;
                 if (!ret) break;
 

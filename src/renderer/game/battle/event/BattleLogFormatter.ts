@@ -6,14 +6,14 @@ import { Battler } from "../core/Battler";
 
 export class BattleLogFormatter {
 
-    static fromResult(result: SkillResult, source: Battler, target: Battler): string[] {
+    static fromResult(result: SkillResult, instanceId: Battler, target: Battler): string[] {
 
         const logs: string[] = [];
 
         switch (result.kind) {
 
             case SkillEffectKindId.DAMAGE:
-                logs.push(`${source.name}が${target.name}に${result.value}のダメージ！`);
+                logs.push(`${instanceId.name}が${target.name}に${result.value}のダメージ！`);
 
                 if (result.killed) {
                     logs.push(`${target.name}は倒れた！`);
@@ -21,15 +21,25 @@ export class BattleLogFormatter {
                 break;
 
             case SkillEffectKindId.HEAL:
-                logs.push(`${source.name}が${target.name}のHPを${result.value}回復！`);
+                logs.push(`${instanceId.name}が${target.name}のHPを${result.value}回復！`);
                 break;
 
             case SkillEffectKindId.STATUS:
-                logs.push(`${source.name}が${target.name}を${result.statusId}状態にした！`);
+                logs.push(`${instanceId.name}が${target.name}を${result.statusId}状態にした！`);
                 break;
 
             case SkillEffectKindId.BUFF:
-                logs.push(`${source.name}が${target.name}の${result.buffId}が上げた！`);
+                logs.push(`${instanceId.name}が${target.name}の${result.buffId}が上げた！`);
+                break;
+
+            case SkillEffectKindId.ESCAPE:
+
+                if (result.success) {
+                    logs.push(`${instanceId.name}は逃げ出した！`);
+                } else {
+                    logs.push(`${instanceId.name}は逃げられなかった！`);
+                }
+
                 break;
         }
 

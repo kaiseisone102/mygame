@@ -143,7 +143,8 @@ function getBlockedTile(
         const ty = Math.floor(p.y / NORM_SIZE);
 
         // ワールド外も通行不可扱い
-        if (tx < 0 || ty < 0 || tx >= world.width || ty >= world.height) {
+        const { width, height } = world.getWorldSize();
+        if (tx < 0 || ty < 0 || tx >= width || ty >= height) {
             return TileType.SKY; // 仮に空扱い
         }
         const tile = world.getTileType({ tx, ty });

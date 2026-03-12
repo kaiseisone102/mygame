@@ -1,8 +1,8 @@
 // src/shared/battle/status/logic/confusionLogic.ts
 
-import { SkillId } from "../../../../master/battle/type/SkillPreset";
+import { TechniqueId } from "../../../../master/battle/type/SkillPreset";
 import { BattleAction } from "../../BattleAction";
-import { CommandActionType, TargetType } from "../../TargetType";
+import { CommandActionType } from "../../TargetType";
 import { ActionRewriteContext } from "../context/ActionRewriteContext";
 import { StatusEffect } from "../StatusEffect";
 
@@ -22,7 +22,7 @@ export function confusionLogic(params: { failRate: number; recoverRate: number; 
                 actorInstanceId: ctx.self.instanceId,
                 actorTemplateId: ctx.self.templateId,
                 actorName: ctx.self.name,
-                skillId: SkillId.ATTACK
+                skillId: TechniqueId.ATTACK
             };
         },
 

@@ -12,12 +12,14 @@ import "./screens/style/itemSelectOverLayInBattle.css";
 import "./screens/style/levelUpOverlay.css";
 import "./screens/style/magicSelectOverlay.css";
 import "./screens/style/optionsOverlay.css";
+import "./screens/style/sandStormOverlay.css";
 import "./screens/style/slotSelect.css";
 import "./screens/style/startMessage.css";
 import "./screens/style/title.css";
 import "./screens/style/viewport.css";
 import "./screens/style/YesNoOverlay.css";
 
+import { NORM_SIZE } from "../shared/data/constants";
 import { GameState } from "../shared/data/gameState";
 import { EnemyMasterJson } from "../shared/Json/enemy/EnemyTemplateJson";
 import { GrowTableJson } from "../shared/Json/growTable/growTableJson";
@@ -45,6 +47,7 @@ import { MapRepository } from "./game/map/repository/MapRepository";
 import { createTileDatabase } from "./game/map/tiles/createTileDatabase";
 import { TileRenderer } from "./game/map/tiles/tileRenderer";
 import { WorldManager } from "./game/map/WorldManager";
+import { ZoneController } from "./game/map/zone/ZoneController";
 import { InputSystem } from "./input/InputSystem";
 import { AxisEventQueue } from "./input/keyboard/axis/AxisEventQueue";
 import { InputManager } from "./input/keyboard/InputManager";
@@ -65,6 +68,12 @@ import { createMainScreens } from "./screens/mainScreen/createMainScreens";
 import { createOverlayScreens } from "./screens/overlayScreen/createOverlayScreens";
 import { ScreenManager } from "./screens/ScreenManager";
 import { TileEffectService } from "./service/tile/TileEffectService ";
+import { BuildingTemplateRepository } from "./game/map/repository/BuildingTemplateRepository";
+import { MapRegistry } from "./game/map/registry/MapRegistry";
+import { ForestTempleBuilder } from "./game/map/builder/map/ForestTempleBuilder";
+import { GraveCaveBuilder } from "./game/map/builder/map/GraveCaveBuilder";
+import { NoFeatureTownBuilder } from "./game/map/builder/map/NoFeatureTownBuilder";
+import { WorldMapBuilder } from "./game/map/builder/map/WorldMapBuilder";
 
 console.log("window.saveGameAPI =", window.saveGameAPI);
 
@@ -72,11 +81,30 @@ if (!window.saveGameAPI) { throw new Error("saveGameAPI not found (preload not l
 if (!window.configAPI) { throw new Error("configAPI not found (preload not loaded)") };
 
 await loadAssets();
-// スキル生成
+
 // NOTE:
 // Electron(file://) 用のため、asset は HTML 相対パスで指定する
 const skillsJson = await fetch("master/skillMaster.json").then(r => r.json()) as Record<SkillId, SkillPreset>;
 const skillRepository = new SkillRepository(skillsJson);
+
+const enemyMaster = await fetch("master/enemies/enemyMaster.json").then(r => r.json()) as EnemyMasterJson;
+const enemyRepository = new EnemyRepository(enemyMaster);
+
+const encounterTable = await fetch("master/enemies/encounterTable.json").then(r => r.json()) as EncounterTableJson;
+const encounterRepository = new EncounterRepository(encounterTable);
+
+const allyGrowTable = await fetch("master/growTable.json").then(r => r.json()) as GrowTableJson;
+
+const mapRepository = new MapRepository();
+
+const messageRepo = new TableMessageRepository();
+
+const buildingTemplateRepository = new BuildingTemplateRepository();
+const buildingSquare = await buildingTemplateRepository.getBuildingSquare();
+
+
+const interactionResolver = new InteractionResolver();
+const interactionService = new InteractionService(messageRepo);
 
 const playerAssets = createPlayerAssets(key => ImageStore.get(key));
 
@@ -86,17 +114,15 @@ audioManager.setMasterVolume(config.masterVolume);
 audioManager.setBgmVolume(config.bgmVolume);
 audioManager.setSeVolume(config.seVolume);
 
-const enemyMaster = await fetch("master/enemies/enemyMaster.json").then(r => r.json()) as EnemyMasterJson;
-const encounterTable = await fetch("master/enemies/encounterTable.json").then(r => r.json()) as EncounterTableJson;
-
-const allyGrowTable = await fetch("master/growTable.json").then(r => r.json()) as GrowTableJson;
-
-const enemyRepository = new EnemyRepository(enemyMaster);
-const encounterRepository = new EncounterRepository(encounterTable);
 const battlerFactory = new BattlerFactory();
 
-const worldDefinitionFactory = new WorldDefinitionFactory();
-const mapRepository = new MapRepository();
+const forestTempleBuilder = new ForestTempleBuilder(buildingSquare);
+const noFeatureTownBuilder = new NoFeatureTownBuilder(buildingSquare);
+const graveCaveBuilder = new GraveCaveBuilder(buildingSquare);
+const worldMapBuilder = new WorldMapBuilder(buildingSquare);
+const mapRegistry = new MapRegistry(forestTempleBuilder, noFeatureTownBuilder, graveCaveBuilder, worldMapBuilder);
+
+const worldDefinitionFactory = new WorldDefinitionFactory(mapRegistry);
 
 // ワールドマップ (初期ワールド)
 const worldManager = new WorldManager();
@@ -105,7 +131,6 @@ const worldManager = new WorldManager();
 const tileDB = createTileDatabase();
 const tileRenderer = new TileRenderer(tileDB);
 const tileEffectService = new TileEffectService(tileDB);
-
 
 // overlayScreen
 const overlayScreen = createOverlayScreens();
@@ -116,9 +141,8 @@ const battleLogFormatter = new BattleLogFormatter();
 // BattleManager を生成
 const battleManager = new BattleManager(battleLogFormatter, skillRepository, overlayScreen);
 
-const interactionResolver = new InteractionResolver();
-const messageRepo = new TableMessageRepository();
-const interactionService = new InteractionService(messageRepo);
+const zoneController = new ZoneController(NORM_SIZE);
+
 // MainScreen
 const mainScreens = createMainScreens(gameState, allyGrowTable, tileEffectService, worldManager, battleManager, overlayScreen);
 
@@ -160,6 +184,7 @@ battleManager.setPort(battlePort);
 // UseCases(サービス層？)
 const gameUseCases = createGameUseCases({
     mapRepository,
+    zoneController,
     worldDefinitionFactory,
     worldManager,
     gameState,
@@ -175,6 +200,8 @@ const gameUseCases = createGameUseCases({
     enemyRepository,
     encounterRepository,
     battlerFactory,
+    interactionResolver,
+    interactionService,
     emitWorld: (event) => worldRouter.dispatch(event),
     emitUI: (event) => uiRouter.dispatch(event)
 });

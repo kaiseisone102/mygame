@@ -41,7 +41,7 @@ export class WorldRenderer {
     ) {
         // タイル描画
         this.tileRenderer.render(world, camera, this.ctx);
-   
+
         // オブジェクト描画
         this.objectLayerRenderer.render(objectLayer, camera);
 
@@ -50,18 +50,14 @@ export class WorldRenderer {
             debugDrawHitboxes(this.ctx, playerPos, objectLayer, camera);
             debugDrawPlayerTalkRect(this.ctx, playerPos, playerState, camera);
             if (zones) {
-                if (zones) {
-                    debugDrawZonesHitBox(this.ctx, zones, camera);
-                }
+                debugDrawZonesHitBox(this.ctx, zones, camera);
             }
             if (npcs) {
                 debugDrawNpcsHitBox(this.ctx, npcs, camera);
             }
-            // サイン描画
             if (signs) {
                 debugDrawSignHitboxes(this.ctx, signs, camera);
             }
-            // アイテム描画
             if (items) {
                 debugDrawItems(this.ctx, items, camera);
             }
@@ -121,7 +117,7 @@ export class WorldRenderer {
         for (const sign of signs) {
             if (!sign.image) continue;
             const img = ImageStore.get(sign.image);
-           
+
             const worldX = sign.pos.x;
             const worldY = sign.pos.y;
 
@@ -137,9 +133,9 @@ export class WorldRenderer {
 
     drawItems(items: ItemData[], camera: Camera) {
         for (const item of items) {
-             if (!item.image) continue;
+            if (!item.image) continue;
             const img = ImageStore.get(item.image);
-          
+
             const worldX = item.pos.x;
             const worldY = item.pos.y;
 

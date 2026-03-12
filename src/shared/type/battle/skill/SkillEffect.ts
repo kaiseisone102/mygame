@@ -25,6 +25,10 @@ export type SkillEffectKind =
         value: number;
         turns: number;
     }
+    | {
+        type: typeof SkillEffectKindId.ESCAPE;
+        chance: number;
+    }
 
 export type DamageEffect =
     | {

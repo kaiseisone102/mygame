@@ -2,7 +2,7 @@
 
 import { OverlayScreenType } from "../../../../../shared/type/screenType";
 import { audioManager } from "../../../../../renderer/asset/audio/audioManager";
-import { UIActionEvent } from "../../../../../renderer/input/mapping/InputMapper";
+import { CommonAction, UIActionEvent } from "../../../../../renderer/input/mapping/InputMapper";
 import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
 import { ScreenInitContext } from "../../../../../renderer/screens/interface/context/ScreenInitContext";
 import { MainScreenController } from "../../../../../renderer/screens/interface/controller/MainScreenController";
@@ -18,7 +18,7 @@ export class TitleScreenController implements MainScreenController {
     private blinkCtrl?: AbortController;
 
     /** WorldEvent 発行関数 */
-    private emitUI?: (event: AppUIEvent) => void;
+    private emitUI!: (event: AppUIEvent) => void;
 
     constructor() { }
 
@@ -71,12 +71,16 @@ export class TitleScreenController implements MainScreenController {
         for (const e of events) {
 
             switch (e.action) {
-                case "CONFIRM":
+                case CommonAction.CONFIRM:
                     audioManager.playSE("assets/se/decide.mp3");
                     this.emitUI?.({ type: "GO_SLOT_SELECT" });
                     break;
 
-                case "CANCEL":
+                case CommonAction.SHOW_SAND_STORM_OVERLAY:
+                    this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.SANDSTORMOVERLAY, payload: undefined })
+                    break;
+
+                case CommonAction.CANCEL:
                     audioManager.playSE("assets/se/cancel.mp3");
                     this.emitUI?.({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.OPTIONS, payload: undefined })
                     break;

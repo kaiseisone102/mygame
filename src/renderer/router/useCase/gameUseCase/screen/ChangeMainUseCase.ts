@@ -22,7 +22,7 @@ export class ChangeMainScreenUseCase {
         console.log("[ChangeMainScreenUseCase] mapId :", mapId)
 
         this.bgmUseCase.onMainScreenChanged(type);
-        this.screens.changeMain(type);
+        this.screens.changeMain(type, undefined);
     }
 
     private resolveMapId(type: MainScreenType): MapId | null {

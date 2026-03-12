@@ -10,7 +10,7 @@ export type NpcData = {
     h: number;
     direction: AppDirection;
 
-    message: string;
+    messageId: string;
     image?: string;
 };
 
@@ -21,6 +21,6 @@ export type NpcTileDto = {
     th: number;
     direction: AppDirection;
 
-    message: string;
+    messageId: string;
     image?: ImageKey;
 }

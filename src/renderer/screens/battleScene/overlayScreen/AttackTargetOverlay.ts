@@ -8,7 +8,7 @@ import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { AttackTargetOverlayScreen } from "../../interface/overlay/OverLayScreens";
 import { CommandActionType } from "../../../../shared/type/battle/TargetType";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
-import { SkillId, SkillPreset } from "../../../../shared/master/battle/type/SkillPreset";
+import { SkillId, TechniqueId } from "../../../../shared/master/battle/type/SkillPreset";
 import { CommandSelectedPayload } from "./BattleBasicCommandOverlay";
 
 export type BattleEnemy = {
@@ -169,7 +169,7 @@ export class AttackTargetOverlay implements AttackTargetOverlayScreen {
                             actorInstanceId: this.actorInstanceId,
                             actorName: this.actorName,
                             enemy: this.enemies,
-                            skillId: this.skill ?? SkillId.ATTACK,
+                            skillId: this.skill ?? TechniqueId.ATTACK,
                             targetId: enemyId
                         }
                     });
@@ -214,12 +214,5 @@ export class AttackTargetOverlay implements AttackTargetOverlayScreen {
     setEnemies(enemies: BattleEnemy[]) {
         this.enemies = enemies;
         this.buildTargetList();
-        this.renderEnemies();
-    }
-
-    private renderEnemies() {
-        // DOM を作って敵を表示する処理
-        console.log("Rendering enemies:", this.enemies);
-        // 例えば this.rootElement に表示
     }
 }

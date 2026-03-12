@@ -1,5 +1,5 @@
 // src/renderer/input/keyboard/InputManager.ts
-import { CODE_TO_AXIS, CODE_TO_COMMON_ACTION, CODE_TO_GAME_ACTION, CODE_TO_UI_ACTION } from "../mapping/InputMapper";
+import { ActionType, CODE_TO_AXIS, CODE_TO_COMMON_ACTION, CODE_TO_GAME_ACTION, CODE_TO_UI_ACTION } from "../mapping/InputMapper";
 import { InputState } from "../state/InputState";
 import { RawKeyboardSource } from "./RawKeyboardSource";
 import { GameActionSource } from "./action/GameActionSource";
@@ -68,7 +68,7 @@ export class InputManager {
 
         // 生キー入力
         this.raw.on((code, pressed) => {
-            const type = pressed ? "pressed" : "released";
+            const type = pressed ? ActionType.PRESSED : ActionType.RELEASED;
 
             const axis = CODE_TO_AXIS[code];
             if (axis) {

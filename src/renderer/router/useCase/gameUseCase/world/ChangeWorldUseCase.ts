@@ -1,5 +1,6 @@
 // src/renderer/router/useCase/world/ChangeWorldUseCase.ts
 
+import { ZoneController } from "../../../../../renderer/game/map/zone/ZoneController";
 import { WorldDefinitionFactory } from "../../../../../renderer/game/map/factory/WorldDefinitionFactory";
 import { MapRepository } from "../../../../../renderer/game/map/repository/MapRepository";
 import { WorldManager } from "../../../../../renderer/game/map/WorldManager";
@@ -13,6 +14,7 @@ import { ChangeMainScreenUseCase } from "../screen/ChangeMainUseCase";
 export class ChangeWorldUseCase {
     constructor(
         private mapRepository: MapRepository,
+        private zoneController: ZoneController,
         private factory: WorldDefinitionFactory,
         private screenPort: ScreenPort,
         private worldManager: WorldManager,
@@ -29,27 +31,22 @@ export class ChangeWorldUseCase {
      * - 画面切替
      */
     async execute(mapId: MapId) {
-        // 1 JSONロード
-        const mapJson = await this.mapRepository.load(mapId);
 
-        // 2 新しいワールド定義作成
+        const mapJson = await this.mapRepository.load(mapId);
         const worldDef = this.factory.create(mapId, mapJson);
 
-        // 3 WorldManager にセット（内部参照更新）
+        // preserve def while same map
         this.worldManager.setWorld(worldDef);
-
-        // 4 GameState にワールド更新
         this.gameState.setWorld(mapId);
 
-        // 5 対応するスクリーン取得
+        this.zoneController.clear();
+
         const screenType = mapIdToMainScreen[mapId];
+        // pass def and zoneController for the screen 
+        this.screenPort.setWorld(screenType, worldDef, this.zoneController);
 
-        // Port経由でMainScreenにWorldを反映
-        this.screenPort.setWorld(screenType, worldDef);
-        // 累積エンカ率をリセット
         this.encounterUseCase.reset();
-
-        // 6 画面切替
+        // switch BGM and main screen
         this.changeMain.execute(screenType);
     }
 }

@@ -104,7 +104,6 @@
     background: linear-gradient(90deg, #ff003c, #ff9a00, #00ff3c);
     /* 赤→オレンジ→緑 */
     border-radius: 6px 0 0 6px;
-    transition: width 0.5s ease-out;
     /* 滑らかに伸びる */
     box-shadow: 0 0 6px rgba(255, 255, 255, 0.4) inset;
     overflow: hidden;

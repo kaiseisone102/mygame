@@ -2,19 +2,19 @@
 
 import { eventBus } from "../../renderer/app";
 import type { ZoneBehavior } from "../game/map/zone/type/ZoneBehavior";
-import { ZoneType } from "../../shared/type/ZoneType";
-import { ZonePx } from "../../shared/type/ZonePx";
 import { ZoneContext } from "../../shared/type/ZoneEvent";
+import { ZoneObject } from "../../shared/type/zone/ZoneObject";
+import { ZoneType } from "../../shared/type/ZoneType";
 
 export const ZoneBehaviors: Record<ZoneType, ZoneBehavior> = {
     ENTRY: {
-        onEnter: (zone: ZonePx, ctx: ZoneContext) => {
+        onEnter: (zone: ZoneObject, ctx: ZoneContext) => {
             eventBus.emit("ZONE_ENTER_TOWN", { zone, ctx });
         },
     },
 
     FIELD_ENEMY: {
-        onEnter: (zone: ZonePx, ctx: ZoneContext) => {
+        onEnter: (zone: ZoneObject, ctx: ZoneContext) => {
             eventBus.emit("ZONE_ENTER_ENEMY", { zone, ctx });
         },
     },
@@ -24,7 +24,7 @@ export const ZoneBehaviors: Record<ZoneType, ZoneBehavior> = {
     WALKABLE_ZONE: {},
 
     EVENT: {
-        onEnter: (zone: ZonePx, ctx: ZoneContext) => {
+        onEnter: (zone: ZoneObject, ctx: ZoneContext) => {
             const id = zone.id;
             if (!id) return;
 
@@ -39,7 +39,7 @@ export const ZoneBehaviors: Record<ZoneType, ZoneBehavior> = {
     },
 
     WARP: {
-        onEnter: (zone: ZonePx, ctx: ZoneContext) => {
+        onEnter: (zone: ZoneObject, ctx: ZoneContext) => {
             eventBus.emit("ZONE_ENTER_WARP", { zone, ctx });
         },
     },

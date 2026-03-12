@@ -55,7 +55,7 @@ export interface BattlerParams {
     baseStats?: Partial<BaseStats>;
     growthTable: LevelGrowthTable;
     statModifier?: number; // キャラ固有補正
-    skills?: SkillId[];
+    skills: SkillId[];
     traits?: Trait[];
     aiType?: AiType;
     imageKey?: ImageKey;

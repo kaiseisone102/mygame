@@ -10,7 +10,7 @@ export interface SignData {
     h: number;
     facing: AppDirection; // 看板の向き
 
-    message: string;
+    messageId: string;
     image?: ImageKey;
     onRead?: (overlay: MessageLogOverlayController) => Promise<void>;
 }
@@ -22,7 +22,7 @@ export interface SignTileDto {
     th: number;
     facing: AppDirection; // 看板の向き
 
-    message: string;
+    messageId: string;
     image?: ImageKey;
     onRead?: (overlay: MessageLogOverlayController) => Promise<void>;
 }

@@ -10,12 +10,15 @@ import { BattleResult, CommandActionType } from "../../../../shared/type/battle/
 import { BattleEnemy } from "./AttackTargetOverlay";
 import { OverlayScreen } from "../../interface/overlay/OverLayScreens";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
+import { SkillItem } from "./SkillSelectOverlay";
+import { BASIC_COMMANDS_DISPLAY } from "../../../../shared/data/constants";
 
 export type BasicCommandPayload = {
     actorTemplateId: number;
     actorInstanceId: number;
     actorName: string,
     enemies: BattleEnemy[],
+    skills: SkillItem[]
 }
 
 export type CommandSelectedPayload = {
@@ -81,7 +84,7 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BasicCommandPayl
         this.screen.appendChild(this.command);
 
         // コマンド生成
-        COMMANDS.forEach((cmd, index) => {
+        BASIC_COMMANDS_DISPLAY.forEach((cmd, index) => {
             const p = document.createElement("p");
             p.textContent = cmd.label;
 
@@ -155,11 +158,16 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BasicCommandPayl
                 case "CONFIRM": {
                     audioManager.playSE("assets/se/decide.mp3");
 
-                    const commandId = COMMANDS[this.selectedIndex].id;
+                    const commandId = BASIC_COMMANDS_DISPLAY[this.selectedIndex].id;
                     const battleCommandSelectedPayload: CommandSelectedPayload = { phaseBase: this.payload, commandId }
 
                     switch (commandId) {
                         case CommandActionType.ATTACK: {
+                            this.emitUI({ type: "BATTLE_COMMAND_SELECTED", payload: battleCommandSelectedPayload });
+                            break;
+                        }
+
+                        case CommandActionType.TECHNIQUE: {
                             this.emitUI({ type: "BATTLE_COMMAND_SELECTED", payload: battleCommandSelectedPayload });
                             break;
                         }
@@ -233,12 +241,3 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BasicCommandPayl
         }
     }
 }
-
-const COMMANDS: { id: CommandActionType; label: string }[] = [
-    { id: CommandActionType.ATTACK, label: "Attack" },
-    { id: CommandActionType.TECHNIQUE, label: "Technique" },
-    { id: CommandActionType.MAGIC, label: "Magic Spell" },
-    { id: CommandActionType.DEFENCE, label: "Defence" },
-    { id: CommandActionType.ITEM, label: "Items" },
-    { id: CommandActionType.ESCAPE, label: "Run" },
-];
