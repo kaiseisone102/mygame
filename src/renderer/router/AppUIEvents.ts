@@ -12,6 +12,7 @@ import { WorldPxPosition } from "../../shared/type/playerPosition/posType";
 import { OverlayPayloadMap } from "../../renderer/screens/interface/overlay/overlayPayloadMap";
 import { BasicCommandPayload, CommandSelectedPayload } from "../../renderer/screens/battleScene/overlayScreen/BattleBasicCommandOverlay";
 import { SelectedSkillPayload } from "../screens/battleScene/overlayScreen/SkillSelectOverlay";
+import { AlliesStatusPayload } from "../../renderer/screens/battleScene/overlayScreen/AlliesStatusOverlay";
 
 export type AppUIEvent =
     | { type: "OPEN_YES_NO"; message: string; onYes: () => void; onNo: () => void; }
@@ -62,6 +63,8 @@ type BattleEventGroup =
     | { type: "BATTLE_ACTION_DECIDED", action: BattleAction }// 戦闘的に確定
     // ===== 演出 =====
     | BattleVisualEvent
+    // ===== ステータス更新 =====
+    | { type: "UPDATE_STATUS", allies: AlliesStatusPayload }
     // ===== その他 =====
     | { type: "OPEN_BATTLE_LOG" }
     | { type: "SEND_MESSAGE" }

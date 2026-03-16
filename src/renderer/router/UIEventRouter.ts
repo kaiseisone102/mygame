@@ -1,8 +1,9 @@
 // src/renderer/router/UIEventRouter.ts
 
+import { TargetSide } from "../../shared/type/battle/skill/skillFormula";
 import { UIEventPort } from "../../renderer/port/UIEventPort";
 import { TechniqueId } from "../../shared/master/battle/type/SkillPreset";
-import { CommandActionType } from "../../shared/type/battle/TargetType";
+import { CommandActionType, TargetType } from "../../shared/type/battle/TargetType";
 import { MainScreenType, OverlayScreenType } from "../../shared/type/screenType";
 import { ScreenPort } from "../port/ScreenPort";
 import { AppUIEvent } from "./AppUIEvents";
@@ -65,7 +66,7 @@ export class UIEventRouter implements UIEventPort {
             case "BATTLE_COMMAND_SELECTED": {  // UI操作
                 switch (event.payload.commandId) {
                     case CommandActionType.ATTACK: // 攻撃対象選択用オーバーレイを表示
-                        this.screens.pushOverlay(OverlayScreenType.ATTACK_TARGET_OVERLAY, { phaseSecond: event.payload });
+                        this.screens.pushOverlay(OverlayScreenType.SELECT_TARGET_OVERLAY, { phaseSecond: event.payload, isTargetEnemy: true });
                         break;
 
                     case CommandActionType.TECHNIQUE:
@@ -88,7 +89,25 @@ export class UIEventRouter implements UIEventPort {
                 break;
             }
 
-            case "SKILL_SELECTED": this.screens.pushOverlay(OverlayScreenType.ATTACK_TARGET_OVERLAY, { phaseSecond: event.payload.phaseBase, skill: event.payload.skillId }); break;
+            case "SKILL_SELECTED":
+                if (event.payload.target.type === TargetType.ALL_ALLIES || event.payload.target.type === TargetType.ALL_ENEMIES) {
+                    this.emit({
+                        type: "PLAYER_COMMAND_SELECTED",
+                        input: {
+                            commandId: event.payload.phaseSec.commandId,
+                            actorTemplateId: event.payload.phaseSec.phaseBase.actorTemplateId,
+                            actorInstanceId: event.payload.phaseSec.phaseBase.actorInstanceId,
+                            actorName: event.payload.phaseSec.phaseBase.actorName,
+                            enemy: event.payload.phaseSec.phaseBase.enemies,
+                            skillId: event.payload.skillId ?? TechniqueId.ATTACK,
+                            targetId: 0
+                        }
+                    });
+                    break;
+                }
+                this.screens.pushOverlay(OverlayScreenType.SELECT_TARGET_OVERLAY, { phaseSecond: event.payload.phaseSec, skill: event.payload.skillId, isTargetEnemy: event.payload.target.side === TargetSide.ENEMY ? true : false });
+                break;
+
 
             // case "ITEM_SELECTED":
             //     this.gameUseCases.battleInputUseCase.onItemSelected(event.itemId);
@@ -106,6 +125,10 @@ export class UIEventRouter implements UIEventPort {
                 logOverlay?.addLog?.(`Player used item #${targetId}!`);
                 break;
 
+            case "UPDATE_STATUS":
+                const alliesStatusOverlay = this.screens.getOverlayScreen(OverlayScreenType.ALLIES_STATUS_OVERLAY);
+                alliesStatusOverlay.updateStatus?.(event.allies);
+                break;
 
             case "ADD_BATTLE_LOG": {
                 this.gameUseCases.addBattleLogUseCase.execute(event.message);

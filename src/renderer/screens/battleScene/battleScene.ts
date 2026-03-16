@@ -96,7 +96,7 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
     // ----- ----- ----- ----- //
     // initialize display      //
     // ----- ----- ----- ----- //
-    async show(payload: BattleScenePayload): Promise<void> {
+    show(payload: BattleScenePayload): void {
 
         this.processing = false;
         this.resultProcessing = false;
@@ -109,7 +109,7 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
         //     return;
         // }
 
-        this.manager.startBattle();
+        this.manager.startBattle(this.emitUI);
 
         this.resultService = new BattleResultService(
             this.gameState,

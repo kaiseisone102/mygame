@@ -43,7 +43,7 @@ function migrateV1toV2(v1: SaveDataV1): SaveDataV2 {
             speed: DEFAULT_PLAYER_SPEED,
             luck: DEFAULT_PLAYER_LUCK,
             avoid: DEFAULT_PLAYER_AVOID,
-            crtical: DEFAULT_PLAYER_CRTICAL
+            critical: DEFAULT_PLAYER_CRTICAL
         },
 
         statusEffects: [],

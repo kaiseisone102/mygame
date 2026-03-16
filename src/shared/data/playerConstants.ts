@@ -46,7 +46,7 @@ export const DEFAULT_PLAYER_BASE_STATS: BaseStats = {
     speed: DEFAULT_PLAYER_SPEED,
     luck: DEFAULT_PLAYER_LUCK,
     avoid: DEFAULT_PLAYER_AVOID,
-    crtical: DEFAULT_PLAYER_CRTICAL,
+    critical: DEFAULT_PLAYER_CRTICAL,
 };
 
 export const DEFAULT_EVENTFLAG: EventFlagsByWorld = { FOREST_TEMPLE: {}, WORLD_MAP: {}, NO_FEATURE_TOWN: {}, GRAVE_CAVE: {} };
@@ -63,5 +63,5 @@ export interface BaseStats {
     speed: number;
     luck: number;
     avoid: number;
-    crtical: number;
+    critical: number;
 }

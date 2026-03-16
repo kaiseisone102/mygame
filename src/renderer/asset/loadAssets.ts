@@ -7,6 +7,8 @@ import { ImageStore } from "./ImageStore";
 
 export async function loadAssets() {
     await Promise.all([
+        // タイトル
+        ImageStore.load(ImageKey.TITLE_TEXT, "assets/images/title/titleText.png"),
         // タイル
         ImageStore.load(ImageKey.DIRT, "assets/images/tiles/dirt.gif"),
         ImageStore.load(ImageKey.WOODS, "assets/images/tiles/woods.gif"),

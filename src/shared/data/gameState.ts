@@ -1,12 +1,11 @@
 // src/shared/data/gameState.ts
 
-import { BattleState, createInitialBattleState } from "../../renderer/game/battle/core/BattleState";
-import { SkillId } from "../master/battle/type/SkillPreset";
+import { BattleState, createInitialBattleState, createInitialParty } from "../../renderer/game/battle/core/BattleState";
 import { SaveData } from "../save/SaveData";
 import { MapId } from "../type/MapId";
 import { PlayerPxPosition, WorldPxPosition } from "../type/playerPosition/posType";
 import { BattlerSaveData } from "./BattlerSaveData";
-import { BaseStats, DEFAULT_COLLECTED_ITEMS, DEFAULT_EVENTFLAG, DEFAULT_PLAYER_BASE_STATS, DEFAULT_PLAYER_EXP, DEFAULT_PLAYER_GOLD, DEFAULT_PLAYER_LEVEL, DEFAULT_PLAYER_NAME, DEFAULT_START_MAP_ID, DEFAULT_START_POSITION_BY_WORLD, SAVE_VERSION } from "./playerConstants";
+import { DEFAULT_COLLECTED_ITEMS, DEFAULT_EVENTFLAG, DEFAULT_PLAYER_BASE_STATS, DEFAULT_PLAYER_EXP, DEFAULT_PLAYER_GOLD, DEFAULT_PLAYER_LEVEL, DEFAULT_PLAYER_NAME, DEFAULT_START_MAP_ID, DEFAULT_START_POSITION_BY_WORLD, SAVE_VERSION } from "./playerConstants";
 
 /**
  * GameState
@@ -25,53 +24,43 @@ export class GameState {
     version: number = SAVE_VERSION;
     selectedSlotId: number | null = null;
 
-    playerName: string = DEFAULT_PLAYER_NAME; // 初期値を設定
-    level: number = DEFAULT_PLAYER_LEVEL;
-    exp: number = DEFAULT_PLAYER_EXP;
+    playerName: string = DEFAULT_PLAYER_NAME;
     gold: number = DEFAULT_PLAYER_GOLD;
 
-    // 戦闘用ステータス
-    baseStats: BaseStats = DEFAULT_PLAYER_BASE_STATS;
+    // パーティメンバー（個々のレベル、経験値、ステータスはここが保持する）
+    party: BattlerSaveData[] = [];
 
-    // 戦闘システム拡張用（オプション）
-    statusEffects: string[] = []; // 状態異常やバフ/デバフ
-    skills: SkillId[] = [];        // 覚えているスキル
+    // --- 便利アクセサ（主人公の情報をサクッと取りたい時用） ---
+    get mainPlayer() {
+        return this.party[0];
+    }
 
-    // 装備やアイテム
+    get level() { return this.mainPlayer?.level ?? DEFAULT_PLAYER_LEVEL; }
+    get exp() { return this.mainPlayer?.exp ?? DEFAULT_PLAYER_EXP; }
+    get baseStats() { return this.mainPlayer?.baseStats ?? DEFAULT_PLAYER_BASE_STATS; }
+    get skills() { return this.mainPlayer?.skills ?? []; }
+
+    // アイテム、マップ等のフラグ類
     equipment: Record<string, boolean> = {};
     items: Record<string, number> = {};
-
     currentMapId: MapId = DEFAULT_START_MAP_ID;
     where: PlayerPxPosition = structuredClone(DEFAULT_START_POSITION_BY_WORLD)
+    collectedItems: Record<string, boolean> = structuredClone(DEFAULT_COLLECTED_ITEMS);
 
     abilities: {
         swim: boolean,   // ← 最初は泳げないとか？
     } = { swim: true };
 
     eventFlags: { [world in MapId]?: Record<string, boolean> } = structuredClone(DEFAULT_EVENTFLAG);
-    collectedItems: Record<string, boolean> = structuredClone(DEFAULT_COLLECTED_ITEMS);
-
-    playerPos: PlayerPxPosition = structuredClone(DEFAULT_START_POSITION_BY_WORLD);
 
     currentBattleState?: BattleState;
     battleReturn?: { mapId: MapId, pos: WorldPxPosition };
-
-    party: BattlerSaveData[] = [];
 
     constructor(public saveFileId: number) { }
 
     // 戦闘後の味方データを反映
     applyBattleResult(allies: BattlerSaveData[]) {
         this.party = allies;
-
-        // メインプレイヤーのHP/MP/EXP はパーティの先頭を使う
-        if (allies.length > 0) {
-            const main = allies[0];
-            this.baseStats.hp = main.baseStats.hp;
-            this.baseStats.mp = main.baseStats.mp;
-            this.level = main.level;
-            this.exp = main.exp;
-        }
     }
 
     /**
@@ -94,34 +83,25 @@ export class GameState {
         return {
             version: this.version,
             playerName: this.playerName,
+            gold: this.gold,
+            party: this.party, // パーティ全員の状態を保存
+
+            // UI表示用に主人公のデータも残す
             level: this.level,
             exp: this.exp,
-            gold: this.gold,
-
-            // 戦闘用ステータス
             baseStats: this.baseStats,
-
-            // 戦闘システム拡張用（オプション）
-            statusEffects: this.statusEffects,
             skills: this.skills,
 
             // 装備やアイテム
             equipment: this.equipment,
             items: this.items,
-
             currentMapId: this.currentMapId,
             where: this.where,
-
-            abilities: this.abilities,
-
             eventFlags: this.eventFlags,
             collectedItems: this.collectedItems,
-
-            playerPos: this.playerPos,
-
             currentBattleState: this.currentBattleState,
             battleReturn: this.battleReturn,
-            party: this.party,
+            abilities: this.abilities,
         };
     }
 
@@ -136,33 +116,21 @@ export class GameState {
 
         this.version = save.version;
         this.playerName = save.playerName;
-        this.level = save.level;
-        this.exp = save.exp;
         this.gold = save.gold;
+        this.party = save.party ?? [];
 
-        this.baseStats = save.baseStats;
-
-        this.statusEffects = save.statusEffects ?? [];
-        this.skills = save.skills ?? [];
         this.equipment = save.equipment ?? [];
         this.items = save.items ?? [];
-
         this.currentMapId = save.currentMapId;
         this.where = save.where;
-
         this.abilities = this.abilities = {
             ...this.createDefaultAbilities(),
             ...save.abilities
         };
-
         this.eventFlags = save.eventFlags;
         this.collectedItems = save.collectedItems;
-
-        this.playerPos = save.playerPos;
-
         this.currentBattleState = save.currentBattleState;
         this.battleReturn = save.battleReturn;
-        this.party = this.party;
     }
 
     /**
@@ -230,7 +198,7 @@ export class GameState {
      * - シンプルな参照用途
      */
     getCurrentPosition() {
-        return this.playerPos[this.currentMapId];
+        return this.where[this.currentMapId];
     }
 
     /**
@@ -243,29 +211,18 @@ export class GameState {
         this.version = SAVE_VERSION;
 
         this.playerName = DEFAULT_PLAYER_NAME;
-        this.level = DEFAULT_PLAYER_LEVEL;
-        this.exp = DEFAULT_PLAYER_EXP;
         this.gold = DEFAULT_PLAYER_GOLD;
+        this.party = [createInitialParty()];
 
-        this.baseStats = DEFAULT_PLAYER_BASE_STATS;
-
-        this.statusEffects = [];
-        this.skills = [];
         this.equipment = {};
         this.items = {};
-
         this.currentMapId = DEFAULT_START_MAP_ID;
         this.where = structuredClone(DEFAULT_START_POSITION_BY_WORLD);
-
-        this.abilities = { swim: false };
-
         this.eventFlags = structuredClone(DEFAULT_EVENTFLAG);
         this.collectedItems = structuredClone(DEFAULT_COLLECTED_ITEMS);
-
-        this.playerPos = structuredClone(DEFAULT_START_POSITION_BY_WORLD);
-
         this.currentBattleState = createInitialBattleState();
-        this.battleReturn = { mapId: this.currentMapId, pos: this.playerPos[this.currentMapId] };
+        this.battleReturn = { mapId: this.currentMapId, pos: this.where[this.currentMapId] };
+        this.abilities = { swim: false };
     }
 
     /**

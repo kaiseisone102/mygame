@@ -67,8 +67,8 @@
             "mp": 5
         },
         "targetSide": "ENEMY",
-        "targetType": "GROUP_ENEMY",
-        "effectScope": "GROUP",
+        "targetType": "ALL_ENEMY",
+        "effectScope": "ALL",
         "effects": [
             {
                 "type": "DAMAGE",
@@ -139,7 +139,7 @@
                 "element": "FIRE"
             }
         ],
-        "description": "火属性の全体魔法攻撃。威力18。"
+        "description": "火属性の敵グループ魔法攻撃。威力18。"
     },
     "IO": {
         "id": "IO",
@@ -149,8 +149,8 @@
             "mp": 6
         },
         "targetSide": "ENEMY",
-        "targetType": "GROUP_ENEMY",
-        "effectScope": "GROUP",
+        "targetType": "ALL_ENEMY",
+        "effectScope": "ALL",
         "element": "IMPACT",
         "effects": [
             {
@@ -223,7 +223,7 @@
                 "element": "WIND"
             }
         ],
-        "description": "風属性の全体魔法攻撃。威力18。"
+        "description": "風属性の敵グループ魔法攻撃。威力18。"
     },
     "HEAL": {
         "id": "HEAL",
@@ -380,7 +380,7 @@
                 "turns": 3
             }
         ],
-        "description": "敵全体の攻撃力を下げる。3ターン持続。ルカニはATKを下げるのだ!!"
+        "description": "敵グループの攻撃力を下げる。3ターン持続。ルカニはATKを下げるのだ!!"
     },
     "SLOW": {
         "id": "SLOW",
@@ -400,7 +400,7 @@
                 "turns": 3
             }
         ],
-        "description": "敵全体の素早さを下げる。3ターン持続。"
+        "description": "敵グループの素早さを下げる。3ターン持続。"
     },
     "SLEEP": {
         "id": "SLEEP",
@@ -419,7 +419,7 @@
                 "chance": 0.6
             }
         ],
-        "description": "敵全体に眠りを付与する。成功率60％。"
+        "description": "敵グループに眠りを付与する。成功率60％。"
     },
     "POISON": {
         "id": "POISON",
@@ -438,7 +438,7 @@
                 "chance": 0.7
             }
         ],
-        "description": "敵全体に毒を付与する。成功率70％。"
+        "description": "敵グループに毒を付与する。成功率70％。"
     },
     "PARALYZE": {
         "id": "PARALYZE",
@@ -490,7 +490,7 @@
                 "turns": 2
             }
         ],
-        "description": "敵全体の攻撃を引き寄せる挑発。"
+        "description": "敵グループの攻撃を引き寄せる挑発。"
     },
     "ESCAPE": {
         "id": "ESCAPE",

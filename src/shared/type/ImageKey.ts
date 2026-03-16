@@ -4,6 +4,8 @@
  * loadAssets() と 必ず一致させる
  */
 export const ImageKey = {
+    // タイトル
+    TITLE_TEXT: "TITLE_TEXT",
     // タイル
     DIRT: "DIRT",
     WOODS: "WOODS",

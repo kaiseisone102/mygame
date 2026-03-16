@@ -7,7 +7,7 @@ import { WorldEvent } from "../../../router/WorldEvent";
 import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { BattleState } from "../../../game/battle/core/BattleState";
 import { BattleResult, CommandActionType } from "../../../../shared/type/battle/TargetType";
-import { BattleEnemy } from "./AttackTargetOverlay";
+import { BattleActor } from "./SelectTargetOverlay";
 import { OverlayScreen } from "../../interface/overlay/OverLayScreens";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
 import { SkillItem } from "./SkillSelectOverlay";
@@ -17,7 +17,8 @@ export type BasicCommandPayload = {
     actorTemplateId: number;
     actorInstanceId: number;
     actorName: string,
-    enemies: BattleEnemy[],
+    allies: BattleActor[],
+    enemies: BattleActor[],
     skills: SkillItem[]
 }
 
@@ -50,7 +51,6 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BasicCommandPayl
     private commandItems: HTMLParagraphElement[] = [];
     private selectedIndex = 0;
     private actorName: string = "";
-    private enemies: BattleEnemy[] = [];
     private enabled = true;
 
     private payload!: BasicCommandPayload;
@@ -132,16 +132,16 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BasicCommandPayl
                 case "UP":
                 case "LEFT":
                     this.selectedIndex = (this.selectedIndex - 1 + this.commandItems.length) % this.commandItems.length;
-                    audioManager.playSE("assets/se/cursorMove.mp3");
                     break;
 
                 case "DOWN":
                 case "RIGHT":
                     this.selectedIndex = (this.selectedIndex + 1) % this.commandItems.length;
-                    audioManager.playSE("assets/se/cursorMove.mp3");
                     break;
             }
         }
+        audioManager.playSE("assets/se/cursorMove.mp3");
+
         this.updateCommandUI();
         return true;
     }
@@ -159,36 +159,15 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BasicCommandPayl
                     audioManager.playSE("assets/se/decide.mp3");
 
                     const commandId = BASIC_COMMANDS_DISPLAY[this.selectedIndex].id;
-                    const battleCommandSelectedPayload: CommandSelectedPayload = { phaseBase: this.payload, commandId }
 
                     switch (commandId) {
-                        case CommandActionType.ATTACK: {
-                            this.emitUI({ type: "BATTLE_COMMAND_SELECTED", payload: battleCommandSelectedPayload });
-                            break;
-                        }
-
-                        case CommandActionType.TECHNIQUE: {
-                            this.emitUI({ type: "BATTLE_COMMAND_SELECTED", payload: battleCommandSelectedPayload });
-                            break;
-                        }
-
-                        case CommandActionType.MAGIC: {
-                            this.emitUI({ type: "BATTLE_COMMAND_SELECTED", payload: battleCommandSelectedPayload });
-                            break;
-                        }
-
-                        case CommandActionType.DEFENCE: {
-                            this.emitUI({ type: "BATTLE_COMMAND_SELECTED", payload: battleCommandSelectedPayload });
-                            break;
-                        }
-
-                        case CommandActionType.ITEM: {
-                            this.emitUI({ type: "BATTLE_COMMAND_SELECTED", payload: battleCommandSelectedPayload });
-                            break;
-                        }
-
+                        case CommandActionType.ATTACK:
+                        case CommandActionType.TECHNIQUE:
+                        case CommandActionType.MAGIC:
+                        case CommandActionType.DEFENCE:
+                        case CommandActionType.ITEM:
                         case CommandActionType.ESCAPE: {
-                            this.emitUI({ type: "BATTLE_COMMAND_SELECTED", payload: battleCommandSelectedPayload });
+                            this.emitUI({ type: "BATTLE_COMMAND_SELECTED", payload: { phaseBase: this.payload, commandId } });
                             break;
                         }
                     }
@@ -225,7 +204,7 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BasicCommandPayl
     /**
      * 攻撃対象をセット
      */
-    setEnemies(enemies: BattleEnemy[]) {
+    setEnemies(enemies: BattleActor[]) {
 
     }
 

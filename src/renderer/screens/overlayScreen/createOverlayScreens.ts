@@ -4,7 +4,7 @@ import { OverlayScreenType } from "../../../shared/type/screenType";
 import { InventoryOverlay } from "./screen/InventoryOverlay";
 import { YesNoOverlay } from "./screen/YesNoOverlay";
 import { OptionsOverlay } from "./screen/OptionsOverlay";
-import { AttackTargetOverlay } from "../battleScene/overlayScreen/AttackTargetOverlay";
+import { SelectTargetOverlay } from "../battleScene/overlayScreen/SelectTargetOverlay";
 import { MessageLogOverlay } from "./screen/MessageLogOverlay";
 import { BattleLogOverlay } from "../battleScene/overlayScreen/BattleLogOverlay";
 import { ItemSelectOverLayInBattle } from "../battleScene/overlayScreen/ItemSelectOverLayInBattle";
@@ -14,7 +14,7 @@ import { SkillSelectOverlay } from "../battleScene/overlayScreen/SkillSelectOver
 import { AlliesStatusOverlay } from "../battleScene/overlayScreen/AlliesStatusOverlay";
 import { BattleTurnDisplayOverlay } from "../battleScene/overlayScreen/BattleTurnDisplayOverlay";
 import { LevelUpOverlay } from "../battleScene/overlayScreen/LevelUpOverlay";
-import { SandStormOverlay } from "./screen/sandStormOverlay";
+import { SandStormOverlay } from "./screen/SandStormOverlay";
 
 export function createOverlayScreens() {
     return {
@@ -25,7 +25,7 @@ export function createOverlayScreens() {
         [OverlayScreenType.INVENTORY]: new InventoryOverlay(),
         [OverlayScreenType.MESSAGE_LOG]: new MessageLogOverlay(),
         [OverlayScreenType.BATTLE_BASIC_COMMAND_OVERLAY]: new BattleBasicCommandOverlay(),
-        [OverlayScreenType.ATTACK_TARGET_OVERLAY]: new AttackTargetOverlay(),
+        [OverlayScreenType.SELECT_TARGET_OVERLAY]: new SelectTargetOverlay(),
         [OverlayScreenType.SKILL_SELECT_OVERLAY]: new SkillSelectOverlay(),
         [OverlayScreenType.ITEM_SELECT_OVERLAY_IN_BATTLE]: new ItemSelectOverLayInBattle(),
         [OverlayScreenType.BATTLE_LOG]: new BattleLogOverlay(),

@@ -71,7 +71,7 @@ export function createGameUseCases(deps: {
 
     // バトルWorld
     const encounterUseCase = new EncounterUseCase(deps.gameState, deps.tileDB, deps.emitWorld);
-    const battleStartedUseCase = new BattleStartedUseCase(deps.enemyRepository, deps.encounterRepository, deps.battlerFactory, deps.emitWorld, deps.emitUI);
+    const battleStartedUseCase = new BattleStartedUseCase(deps.gameState, deps.enemyRepository, deps.encounterRepository, deps.battlerFactory, deps.emitWorld, deps.emitUI);
     const battleCommandSelectedUseCase = new BattleCommandSelectedUseCase(deps.emitUI);
     const battleResultUseCase = new BattleResultUseCase(deps.emitWorld);
 

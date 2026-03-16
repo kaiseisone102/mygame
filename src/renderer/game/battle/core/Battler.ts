@@ -354,7 +354,7 @@ export class Battler implements StatusContext, BattlerPort {
             speed: base.speed ?? 5,
             luck: base.luck ?? 5,
             avoid: base.avoid ?? 5,
-            crtical: base.crtical ?? 5,
+            critical: base.critical ?? 5,
         };
     }
 

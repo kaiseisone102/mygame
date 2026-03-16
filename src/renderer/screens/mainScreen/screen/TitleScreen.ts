@@ -23,7 +23,6 @@ export class TitleScreen implements MainScreen {
 
         this.hide();
         console.log("[TitleScreen] done init")
-
     }
 
     show() {
@@ -34,7 +33,7 @@ export class TitleScreen implements MainScreen {
         this.controller.hide();
     }
 
-    update(delta: number) {    }
+    update(delta: number) { }
 
     handleUIAxes(axes: InputAxis[]): boolean {
         return true;

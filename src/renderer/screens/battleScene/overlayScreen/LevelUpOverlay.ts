@@ -5,11 +5,14 @@ import { UIActionEvent, InputAxis } from "../../../../renderer/input/mapping/Inp
 import { ScreenInitContext } from "../../../../renderer/screens/interface/context/ScreenInitContext";
 import { OverlayScreen } from "../../../../renderer/screens/interface/overlay/OverLayScreens";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
+import { BaseStats } from "shared/data/playerConstants";
 
 export type LevelUpPayload = {
     name: string;
     oldLevel: number;
     newLevel: number;
+    oldStats: BaseStats;
+    newStats: BaseStats;
 };
 
 export class LevelUpOverlay implements OverlayScreen<LevelUpPayload[]> {
@@ -85,14 +88,53 @@ export class LevelUpOverlay implements OverlayScreen<LevelUpPayload[]> {
         this.screen.className = "LevelUpOverlay";
         this.messageElem.className = "LevelUpOverlayMessage";
 
-        this.messageElem.innerHTML = `${payload.name} はレベル <span class="levelNumber">${payload.oldLevel}</span> → <span class="levelNumber">${payload.newLevel}</span> に上がった！`;
-        
+        // メッセージ部分の構築
+        let html = `<div class="characterName">${payload.name} はレベルアップした！</div>`;
+        html += `<div class="levelTransition">Level ${payload.oldLevel} → <span class="newLevel">${payload.newLevel}</span></div>`;
+
+        // ステータス変化表の構築
+        html += `<div class="statsContainer">`;
+
+        // 表示したいステータス項目のリスト
+        const statKeys: (keyof BaseStats)[] = [
+            "maxHp", "maxMp", "attack", "defense", "magic", "speed", "luck"
+        ];
+
+        for (const key of statKeys) {
+            const oldVal = payload.oldStats[key];
+            const newVal = payload.newStats[key];
+            const diff = newVal - oldVal;
+
+            html += `
+                    <div class="statRow">
+                        <span class="statName">${this.getStatDisplayName(key)}</span>
+                        <span class="statValues">${oldVal} → ${newVal}</span>
+                        <span class="statDiff">${diff > 0 ? `(+${diff})` : ""}</span>
+                    </div>`;
+        }
+
+        html += `</div>`;
+        this.messageElem.innerHTML = html;
+
         // CONFIRM 要素を作って追加
         const confirmElem = document.createElement("div");
         confirmElem.className = "confirmText";
-        confirmElem.textContent = "[CONFIRM]";  // ここで文字を設定
+        confirmElem.textContent = "PRESS ENTER";  // ここで文字を設定
         this.messageElem.appendChild(confirmElem);
-        
+
         this.screen.style.display = "flex";
+    }
+
+    /** キー名を日本語名に変換 */
+    private getStatDisplayName(key: keyof BaseStats): string {
+        const names: Record<keyof BaseStats, string> = {
+            hp: "HP", maxHp: "最大HP",
+            mp: "MP", maxMp: "最大MP",
+            attack: "攻撃力", defense: "守備力",
+            magic: "魔法力", speed: "素早さ",
+            luck: "運の良さ", avoid: "回避率",
+            crtical: "会心率"
+        };
+        return names[key] || key;
     }
 }

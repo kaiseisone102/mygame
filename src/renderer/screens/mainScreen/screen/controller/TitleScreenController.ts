@@ -7,12 +7,16 @@ import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
 import { ScreenInitContext } from "../../../../../renderer/screens/interface/context/ScreenInitContext";
 import { MainScreenController } from "../../../../../renderer/screens/interface/controller/MainScreenController";
 import { blinkText } from "../../../../../renderer/utils/blinkLoop";
+import { ImageStore } from "../../../../../renderer/asset/ImageStore";
+import { ImageKey } from "../../../../../shared/type/ImageKey";
 
 export class TitleScreenController implements MainScreenController {
     private screen!: HTMLElement;
     private title!: HTMLElement;
     private pressEnter!: HTMLElement;
     private right!: HTMLElement;
+
+    private titleText!: HTMLImageElement;
 
     /** PRESS ENTER の点滅制御 */
     private blinkCtrl?: AbortController;
@@ -36,7 +40,8 @@ export class TitleScreenController implements MainScreenController {
         // タイトル文字
         this.title = document.createElement("div");
         this.title.id = "title";
-        this.title.textContent = "DNATOKAQUAE";
+        this.titleText = ImageStore.get(ImageKey.TITLE_TEXT);
+        this.title.appendChild(this.titleText);
 
         // PRESS ENTER 表示
         this.pressEnter = document.createElement("div");

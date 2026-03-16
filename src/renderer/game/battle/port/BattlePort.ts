@@ -4,12 +4,12 @@ import { BattleInput } from "../../../../renderer/router/useCase/gameUseCase/bat
 import { BattleState } from "../core/BattleState";
 import { CommandActionType } from "../../../../shared/type/battle/TargetType";
 import { SkillPreset, TechniqueId } from "../../../../shared/master/battle/type/SkillPreset";
-import { BattleEnemy } from "../../../../renderer/screens/battleScene/overlayScreen/AttackTargetOverlay";
+import { BattleActor } from "../../../screens/battleScene/overlayScreen/SelectTargetOverlay";
 import { SkillItem } from "../../../../renderer/screens/battleScene/overlayScreen/SkillSelectOverlay";
 
 export interface BattlePort {
 
-    requestCommand(actorTemplateId: number, actorInstanceId: number, actorName: string, skills: SkillItem[], enemies: BattleEnemy[]): Promise<BattleInput>;
+    requestCommand(allies: BattleActor[], enemies: BattleActor[], skills: SkillItem[]): Promise<BattleInput>;
     resolvePlayerInput(inputResult: BattleInput): void;
     isPlayer(actorId: number): boolean;
     addBattleLog(message: string): void;

@@ -1,7 +1,7 @@
 // src/renderer/screens/interface/overlay/OverlayPayloadMap.ts
 
 import { AlliesStatusPayload } from "../../../../renderer/screens/battleScene/overlayScreen/AlliesStatusOverlay";
-import { AttackTargetPayload } from "../../../../renderer/screens/battleScene/overlayScreen/AttackTargetOverlay";
+import { SelectTargetPayload } from "../../battleScene/overlayScreen/SelectTargetOverlay";
 import { BasicCommandPayload, CommandSelectedPayload } from "../../../../renderer/screens/battleScene/overlayScreen/BattleBasicCommandOverlay";
 import { BattleTurnPayload } from "../../../../renderer/screens/battleScene/overlayScreen/BattleTurnDisplayOverlay";
 import { LevelUpPayload } from "../../../../renderer/screens/battleScene/overlayScreen/LevelUpOverlay";
@@ -11,7 +11,7 @@ import { OverlayScreenType } from "../../../../shared/type/screenType";
 import { OverlayScreen } from "./OverLayScreens";
 
 export type OverlayPayloadMap = {
-    [OverlayScreenType.ATTACK_TARGET_OVERLAY]: AttackTargetPayload;
+    [OverlayScreenType.SELECT_TARGET_OVERLAY]: SelectTargetPayload;
     [OverlayScreenType.YES_NO_OVERLAY]: YesNoEvent;
     [OverlayScreenType.SKILL_SELECT_OVERLAY]: CommandSelectedPayload;
     [OverlayScreenType.MESSAGE_LOG]: MessageLogEvent;
@@ -28,7 +28,7 @@ export type OverlayPayloadMap = {
 };
 
 // export type OverlayInstanceMap = {
-//     [OverlayScreenType.ATTACK_TARGET_OVERLAY]: AttackTargetOverlay;
+//     [OverlayScreenType.SELECT_TARGET_OVERLAY]: AttackTargetOverlay;
 //     [OverlayScreenType.YES_NO_OVERLAY]: YesNoOverlay;
 //     [OverlayScreenType.MAGIC_TARGET_OVERLAY]: MagicTargetOverlay;
 //     [OverlayScreenType.MESSAGE_LOG]: MessageLogOverlay;

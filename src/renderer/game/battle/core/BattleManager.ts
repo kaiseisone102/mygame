@@ -1,17 +1,18 @@
 // src/renderer/game/battle/core/BattleManager.ts
 
-import { SkillEffectKindId } from "../../../../shared/type/battle/skill/skillFormula";
+import { AppUIEvent } from "renderer/router/AppUIEvents";
 import { BattleInput } from "../../../../renderer/router/useCase/gameUseCase/battle/BattleInputUseCase";
 import { AlliesStatusOverlay } from "../../../../renderer/screens/battleScene/overlayScreen/AlliesStatusOverlay";
-import { SkillItem } from "../../../screens/battleScene/overlayScreen/SkillSelectOverlay";
 import { GetOverlayScreenType } from "../../../../renderer/screens/interface/overlay/OverLayScreens";
 import { delay } from "../../../../renderer/utils/delay";
 import { SkillRepository } from "../../../../shared/master/battle/SkillRepository";
 import { SkillId, SkillPreset } from "../../../../shared/master/battle/type/SkillPreset";
 import { BattleAction, BattlerSide, StrangeAction, TargetSpecifier } from "../../../../shared/type/battle/BattleAction";
 import { SkillResult } from "../../../../shared/type/battle/result/SkillResult";
+import { SkillEffectKindId } from "../../../../shared/type/battle/skill/skillFormula";
 import { BattleResult, CommandActionType, TargetType } from "../../../../shared/type/battle/TargetType";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
+import { SkillItem } from "../../../screens/battleScene/overlayScreen/SkillSelectOverlay";
 import { AIActionResolver } from "../enemy/ai/AIActionResolver";
 import { BattleLogFormatter } from "../event/BattleLogFormatter";
 import { SkillExecutor } from "../logic/skills/SkillExecutor";
@@ -34,10 +35,12 @@ export class BattleManager {
 
     private alliesStatusOverlay: AlliesStatusOverlay;
 
+    private emitUI!: (event: AppUIEvent) => void;
+
     constructor(
         private battleLogFormatter: BattleLogFormatter,
         private skillRepository: SkillRepository,
-        private overlay: GetOverlayScreenType
+        private overlay: GetOverlayScreenType,
     ) {
         this.skillData = this.skillRepository.getAll();
         this.alliesStatusOverlay = this.overlay[OverlayScreenType.ALLIES_STATUS_OVERLAY];
@@ -120,6 +123,9 @@ export class BattleManager {
 
         switch (actor.side) {
             case BattlerSide.ALLY:
+
+                this.battlePort.addBattleLog(`${actor.name}のターン！`);
+
                 // usecase からUI入力を受け取る => action 生成
                 const skillItems: SkillItem[] = actor.skills.map(id => {
                     const sp = this.skillRepository.get(id);
@@ -127,10 +133,14 @@ export class BattleManager {
                         skillId: sp.id,
                         name: sp.name,
                         description: sp.description,
-                        mpCost: sp.cost?.mp ?? 0
+                        mpCost: sp.cost?.mp ?? 0,
+                        target: {
+                            type: sp.targetType,
+                            side: sp.targetSide
+                        }
                     };
                 });
-                const input = await this.battlePort.requestCommand(actor.templateId, actor.instanceId, actor.name, skillItems, this.battleState.enemies);
+                const input = await this.battlePort.requestCommand(this.battleState.allies, this.battleState.enemies, skillItems);
 
                 action = this.convertInputToAction(input);
 
@@ -147,7 +157,7 @@ export class BattleManager {
                 console.log("AIBattleInput:", AIBattleInput);
 
                 action = this.convertInputToAction(AIBattleInput);
-                 break;
+                break;
         }
 
         // 実行
@@ -157,6 +167,18 @@ export class BattleManager {
         this.processSpecialResults(results);
 
         // 行動後に味方のHP/MP更新
+        this.emitUI({
+            type: "UPDATE_STATUS", allies: {
+                allies: this.battleState.allies.map(ally => ({
+                    instanceId: ally.instanceId,
+                    name: ally.name,
+                    hp: ally.baseStats.hp,
+                    maxHp: ally.baseStats.maxHp,
+                    mp: ally.baseStats.mp,
+                    maxMp: ally.baseStats.maxMp,
+                }))
+            }
+        })
         this.alliesStatusOverlay.update(0);
 
         this.checkBattleEnd();
@@ -211,50 +233,62 @@ export class BattleManager {
 
             return SkillExecutor.execute(actor, skill, targets);
         }
-        this.battlePort.addBattleLog(
-            `${actor.name}は${action.skill.name}を使った！`
-        );
+
+        this.battlePort.addBattleLog(`${actor.name}は${action.skill.name}を使った！`);
+
         const targets = this.resolveTargets(action.target ?? { type: TargetType.SELF });
         return SkillExecutor.execute(actor, action.skill, targets);
     }
 
     /** 行動から対象の Battler 配列を返す */
     private resolveTargets(spec: TargetSpecifier): Battler[] {
+
+        // まず行動の主体（実行者）を特定する
+        const executor = this.findBattler(spec.actorInstanceId ?? this.currentActor.instanceId);
+        if (!executor) return [];
+
+        // 実行者のサイドに基づいて「相手チーム」と「自分チーム」を定義
+        const opponentSide = executor.side === BattlerSide.ALLY ? this.battleState.enemies : this.battleState.allies;
+        const teamSide = executor.side === BattlerSide.ALLY ? this.battleState.allies : this.battleState.enemies;
+
         switch (spec.type) {
             case TargetType.SINGLE_ENEMY:
-                return spec.enemyInstanceId
-                    ? [this.findBattler(spec.enemyInstanceId)!].filter(b => b.alive)
-                    : [];
+                // 敵単体：指定IDのバトラーが「生きている」かつ「相手チーム」にいるか
+                if (!spec.enemyInstanceId) return [];
+                const targetEnemy = this.findBattler(spec.enemyInstanceId);
+                return (targetEnemy && targetEnemy.alive) ? [targetEnemy] : [];
 
             case TargetType.GROUP_ENEMY:
-                return spec.ids.map(id => this.findBattler(id)).filter((b): b is Battler => !!b && b.alive);
+                // 指定されたIDリストのうち、相手チームに属するもの
+                if (!spec.ids) return [];
+                return spec.ids
+                    .map(id => this.findBattler(id))
+                    .filter((b): b is Battler => !!b && b.alive && b.side !== executor.side);
 
             case TargetType.ALL_ENEMIES:
-                const actor = this.findBattler(spec.actorInstanceId ?? this.currentActor.instanceId);
-                if (!actor) return [];
-                return actor.side === BattlerSide.ALLY
-                    ? this.battleState.enemies.filter(b => b.alive)
-                    : this.battleState.allies.filter(b => b.alive);
+                // 敵全体：相手チームの生存者全員
+                return opponentSide.filter(b => b.alive);
 
             case TargetType.SINGLE_ALLY:
-                return spec.actorInstanceId
-                    ? [this.findBattler(spec.actorInstanceId)!].filter(b => b.alive)
-                    : [];
+                // 味方単体：指定ID（または自分）が「生きている」かつ「自分チーム」にいるか
+                const allyId = spec.actorInstanceId ?? executor.instanceId;
+                const targetAlly = this.findBattler(allyId);
+                return (targetAlly && targetAlly.alive) ? [targetAlly] : [];
 
             case TargetType.SELF_AND_SINGLE_ALLY:
-                const self = this.currentActor;
-                const ally = spec.actorInstanceId ? this.findBattler(spec.actorInstanceId) : undefined;
-                return [self, ally].filter((b): b is Battler => !!b && b.alive);
+                // 自分と味方単体
+                const otherAlly = spec.actorInstanceId ? this.findBattler(spec.actorInstanceId) : undefined;
+                return [executor, otherAlly].filter((b): b is Battler => !!b && b.alive);
 
             case TargetType.ALL_ALLIES:
-                const actor2 = this.findBattler(spec.actorInstanceId ?? this.currentActor.instanceId);
-                if (!actor2) return [];
-                return actor2.side === BattlerSide.ALLY
-                    ? this.battleState.allies.filter(b => b.alive)
-                    : this.battleState.enemies.filter(b => b.alive);
+                // 味方全体：自分チームの生存者全員
+                return teamSide.filter(b => b.alive);
 
             case TargetType.SELF:
-                return [this.currentActor];
+                return executor.alive ? [executor] : [];
+
+            default:
+                return [];
         }
     }
 
@@ -285,7 +319,8 @@ export class BattleManager {
         }
     }
 
-    startBattle() {
+    startBattle(emitUI: (event: AppUIEvent) => void) {
+        this.emitUI = emitUI
         this.buildTurnOrder();
         // 初期表示用
         if (this.alliesStatusOverlay) this.alliesStatusOverlay.show({
@@ -354,29 +389,59 @@ export class BattleManager {
         skill: SkillPreset
     ): TargetSpecifier {
 
+        const actor = this.findBattler(input.actorInstanceId);
+        const isActorEnemy = actor?.side === BattlerSide.ENEMY;
+
         switch (skill.targetType) {
             case TargetType.SINGLE_ENEMY:
                 return {
                     type: TargetType.SINGLE_ENEMY,
+                    actorInstanceId: input.actorInstanceId,
                     enemyInstanceId: input.targetId,
                 };
+
+            case TargetType.GROUP_ENEMY: {
+
+                // 敵が使った場合は ALL_ENEMIES の処理へ横流しする
+                if (isActorEnemy) {
+                    return { type: TargetType.ALL_ENEMIES, actorInstanceId: input.actorInstanceId };
+                }
+
+                // 選択されたメインのターゲットを取得
+                const mainTarget = this.findBattler(input.targetId);
+                if (!mainTarget) return { type: TargetType.GROUP_ENEMY, actorInstanceId: input.actorInstanceId, ids: [] };
+
+                // メインターゲットと同じ陣営（side）かつ、同じ種類（templateId）の生存者を抽出
+                const targets = (mainTarget.side === BattlerSide.ALLY ? this.battleState.allies : this.battleState.enemies)
+                    .filter(b => b.templateId === mainTarget.templateId && b.alive)
+                    .map(b => b.instanceId);
+
+                return {
+                    type: TargetType.GROUP_ENEMY,
+                    actorInstanceId: input.actorInstanceId,
+                    ids: targets
+                };
+            }
+
+            case TargetType.ALL_ENEMIES:
+                return { type: TargetType.ALL_ENEMIES, actorInstanceId: input.actorInstanceId };
 
             case TargetType.SINGLE_ALLY:
                 return {
                     type: TargetType.SINGLE_ALLY,
-                    actorInstanceId: input.targetId,
+                    actorInstanceId: input.targetId ?? input.actorInstanceId,
                 };
 
             case TargetType.ALL_ALLIES:
                 return { type: TargetType.ALL_ALLIES, actorInstanceId: input.actorInstanceId };
 
-            case TargetType.ALL_ENEMIES:
-                return { type: TargetType.ALL_ENEMIES, actorInstanceId: input.actorInstanceId };
 
             case TargetType.SELF:
+            case TargetType.SELF_AND_SINGLE_ALLY:
             default:
                 return {
                     type: TargetType.SELF,
+                    actorInstanceId: input.actorInstanceId,
                 };
 
         }

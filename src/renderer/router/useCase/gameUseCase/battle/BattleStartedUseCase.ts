@@ -1,5 +1,6 @@
 // src/renderer/screens/router/useCase/world/BattleStartedUseCase.ts
 
+import { GameState } from "shared/data/gameState";
 import { createAllies } from "../../../../../renderer/game/battle/core/BattleState";
 import { BattlerFactory } from "../../../../../renderer/game/battle/enemy/factory/createEnemy";
 import { EncounterRepository } from "../../../../../renderer/game/battle/enemy/repository/EncounterRepository";
@@ -17,6 +18,7 @@ import { BiomeId } from "../../../../../shared/type/battle/enemy/BiomeId";
  */
 export class BattleStartedUseCase {
     constructor(
+        private gameState: GameState,
         private enemyRepo: EnemyRepository,
         private encounterRepo: EncounterRepository,
         private battlerFactory: BattlerFactory,

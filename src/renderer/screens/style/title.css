@@ -11,6 +11,10 @@
     font-size: 80px;
 }
 
+#title img {
+    width: 1000px;
+}
+
 #pressEnterKey {
     position: absolute;
     left: 50%;

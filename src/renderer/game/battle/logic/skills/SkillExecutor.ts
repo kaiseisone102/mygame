@@ -106,6 +106,7 @@ export class SkillExecutor {
                             buffId: effect.buffId
                         });
                         break;
+                        
                     case SkillEffectKindId.ESCAPE:
 
                         const success = Math.random() < (effect.chance ?? 0.7);

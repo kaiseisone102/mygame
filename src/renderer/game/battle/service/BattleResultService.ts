@@ -64,6 +64,7 @@ export class BattleResultService {
 
             // 仮ログ用
             const oldExp = ally.exp;
+            const oldStats = {...ally.baseStats};
 
             // 経験値加算
             ally.exp += distribution.gainedExp;
@@ -88,14 +89,18 @@ export class BattleResultService {
                 const nextLevel = ally.level + 1;
                 const grow = this.growTable[nextLevel];
                 if (!grow) break;
-
                 if ((grow.expRequired ?? Infinity) > ally.exp) break;
+
+                // このレベルに上がる直前のステータスをコピー
+                const statsBeforeThisLevel = { ...ally.baseStats };
 
                 const oldLevel = ally.level;
                 ally.level = nextLevel;
 
-                ally.baseStats.hp = grow.maxHp;
-                ally.baseStats.mp = grow.maxMp;
+                ally.baseStats.maxHp = grow.maxHp;
+                ally.baseStats.maxMp = grow.maxMp;
+                ally.baseStats.hp = grow.maxHp; // 現在HPも全回復させる場合
+                ally.baseStats.mp = grow.maxMp; // 現在MPも全回復させる場合
                 ally.baseStats.attack = grow.attack;
                 ally.baseStats.defense = grow.defense;
                 ally.baseStats.magic = grow.magic;
@@ -104,7 +109,9 @@ export class BattleResultService {
                 levelUps.push({
                     name: ally.name,
                     oldLevel,
-                    newLevel: ally.level
+                    newLevel: ally.level,
+                    oldStats: statsBeforeThisLevel,
+                    newStats: {...ally.baseStats}
                 });
             }
         }

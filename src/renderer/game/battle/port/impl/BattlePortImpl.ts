@@ -5,7 +5,7 @@ import { BattleManager } from "../../core/BattleManager";
 import { ItemPresetsById } from "../../../../../shared/master/battle/ItemPreset";
 import { SkillPreset } from "../../../../../shared/master/battle/type/SkillPreset";
 import { convertItemToSkill } from "../../../../../shared/master/item/convertItemToSkill";
-import { BattleEnemy } from "../../../../../renderer/screens/battleScene/overlayScreen/AttackTargetOverlay";
+import { BattleActor } from "../../../../screens/battleScene/overlayScreen/SelectTargetOverlay";
 import { SkillItem } from "../../../../../renderer/screens/battleScene/overlayScreen/SkillSelectOverlay";
 
 export class BattlePortImpl implements BattlePort {
@@ -18,19 +18,20 @@ export class BattlePortImpl implements BattlePort {
         private manager: BattleManager
     ) { }
 
-    async requestCommand(actorTemplateId: number, actorInstanceId: number, actorName: string, skills: SkillItem[], enemies: BattleEnemy[]): Promise<BattleInput> {
+    async requestCommand(allies: BattleActor[], enemies: BattleActor[], skills: SkillItem[]): Promise<BattleInput> {
         // 🎮 プレイヤーの場合
-        if (this.isPlayer(actorInstanceId)) {
-            console.log(`requestCommand wait for [${actorName}] input`);
+        if (this.isPlayer(this.manager.currentActor.instanceId)) {
+            console.log(`requestCommand wait for [${this.manager.currentActor.name}] input`);
             return new Promise(resolve => {
                 this.resolver = resolve;
                 // UI 入力スタート通知(バトルスクリーンoverlayを show)
                 this.emitUI({
                     type: "REQUEST_COMMAND",
                     payload: {
-                        actorTemplateId,
-                        actorInstanceId,
-                        actorName,
+                        actorTemplateId: this.manager.currentActor.templateId,
+                        actorInstanceId: this.manager.currentActor.instanceId,
+                        actorName: this.manager.currentActor.name,
+                        allies,
                         skills,
                         enemies
                     }
@@ -39,7 +40,7 @@ export class BattlePortImpl implements BattlePort {
         }
 
         // 🤖 AIの場合
-        return this.ai.decide(actorTemplateId, actorInstanceId, this.getState());
+        return this.ai.decide(this.manager.currentActor.templateId, this.manager.currentActor.instanceId, this.getState());
     }
     // 入力完了時に呼ばれる
     resolvePlayerInput(input: BattleInput) {

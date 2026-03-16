@@ -5,9 +5,9 @@ export const TargetType = {
     GROUP_ENEMY: "GROUP_ENEMY",
     ALL_ENEMIES: "ALL_ENEMIES",
     SINGLE_ALLY: "SINGLE_ALLY",
-    SELF_AND_SINGLE_ALLY: "SELF_AND_SINGLE_ALLY", // 味方をかばう（想定）
     ALL_ALLIES: "ALL_ALLIES",
     SELF: "SELF",
+    SELF_AND_SINGLE_ALLY: "SELF_AND_SINGLE_ALLY", // 味方をかばう（想定）
 } as const;
 export type TargetType = typeof TargetType[keyof typeof TargetType];
 

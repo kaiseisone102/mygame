@@ -49,13 +49,13 @@ export type BattleAction =
     };
 
 export type TargetSpecifier =
-    | { type: typeof TargetType.SINGLE_ENEMY; enemyInstanceId: number }
-    | { type: typeof TargetType.GROUP_ENEMY; ids: number[] }
+    | { type: typeof TargetType.SINGLE_ENEMY, actorInstanceId: number, enemyInstanceId: number }
+    | { type: typeof TargetType.GROUP_ENEMY, actorInstanceId: number, ids: number[] }
     | { type: typeof TargetType.ALL_ENEMIES, actorInstanceId: number }
     | { type: typeof TargetType.SINGLE_ALLY; actorInstanceId: number }
     | { type: typeof TargetType.SELF_AND_SINGLE_ALLY; actorInstanceId: number }
     | { type: typeof TargetType.ALL_ALLIES, actorInstanceId: number }
-    | { type: typeof TargetType.SELF };
+    | { type: typeof TargetType.SELF, actorInstanceId: number };
 
 
 export const BattlerSide = {

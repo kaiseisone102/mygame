@@ -2,7 +2,7 @@
 
 import { BattlePort } from "../../../../../renderer/game/battle/port/BattlePort";
 import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
-import { BattleEnemy } from "../../../../../renderer/screens/battleScene/overlayScreen/AttackTargetOverlay";
+import { BattleActor } from "../../../../screens/battleScene/overlayScreen/SelectTargetOverlay";
 import { SkillId } from "../../../../../shared/master/battle/type/SkillPreset";
 import { CommandActionType } from "../../../../../shared/type/battle/TargetType";
 
@@ -24,7 +24,7 @@ export type BattleInput = {
     actorTemplateId: number;
     actorInstanceId: number;
     actorName: string;
+    enemy: BattleActor[];
     skillId: SkillId;
-    enemy: BattleEnemy[];
     targetId: number;
 }

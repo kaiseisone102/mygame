@@ -6,7 +6,7 @@ import { InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/Inp
 import { OverlayScreenType } from "../../../../shared/type/screenType";
 import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { OverlayScreen } from "../../interface/overlay/OverLayScreens";
-import { BattleEnemy } from "./AttackTargetOverlay";
+import { BattleActor } from "./SelectTargetOverlay";
 import { BattleLogOverlayController } from "./controller/BattleLogOverlayController";
 
 /**
@@ -75,6 +75,6 @@ export class BattleLogOverlay implements OverlayScreen {
     public async playExpLogs(expLogs: ExpLog[]) {
         await this.controller.playExpLogs(expLogs);
     }
-    setEnemies(enemies: BattleEnemy[]) {
+    setEnemies(enemies: BattleActor[]) {
     }
 }

@@ -1,38 +1,40 @@
 // src/renderer/screens/battleScene/overlayScreen/AttackTargetOverlay.ts
 
-import { audioManager } from "../../../../renderer/asset/audio/audioManager";
-import { InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";
-import { AppUIEvent } from "../../../../renderer/router/AppUIEvents";
-import { WorldEvent } from "../../../../renderer/router/WorldEvent";
+import { audioManager } from "../../../asset/audio/audioManager";
+import { InputAxis, UIActionEvent } from "../../../input/mapping/InputMapper";
+import { AppUIEvent } from "../../../router/AppUIEvents";
+import { WorldEvent } from "../../../router/WorldEvent";
 import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
-import { AttackTargetOverlayScreen } from "../../interface/overlay/OverLayScreens";
+import { SelectTargetOverlayScreen } from "../../interface/overlay/OverLayScreens";
 import { CommandActionType } from "../../../../shared/type/battle/TargetType";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
 import { SkillId, TechniqueId } from "../../../../shared/master/battle/type/SkillPreset";
 import { CommandSelectedPayload } from "./BattleBasicCommandOverlay";
 
-export type BattleEnemy = {
+
+export type BattleActor = {
     templateId: number;
     instanceId: number;
     name: string;
     alive: boolean;
 };
 
-export type AttackTargetPayload = {
-    phaseSecond: CommandSelectedPayload
+export type SelectTargetPayload = {
+    phaseSecond: CommandSelectedPayload;
     skill?: SkillId;
+    isTargetEnemy: boolean;
 };
 
 /**
- * AttackTargetOverlay
+ * SelectTargetOverlay
  * 
  * 役割:
  * - 攻撃ターゲットの決定,前の画面に戻る(BattelScreen)
  * - 敵の数は1~8(エンカウントパターンによる)
  * - 生存している敵のみ選択
  */
-export class AttackTargetOverlay implements AttackTargetOverlayScreen {
-    readonly overlayId: string = OverlayScreenType.ATTACK_TARGET_OVERLAY;
+export class SelectTargetOverlay implements SelectTargetOverlayScreen {
+    readonly overlayId: string = OverlayScreenType.SELECT_TARGET_OVERLAY;
 
     readonly capturesInput: true = true;
 
@@ -43,7 +45,7 @@ export class AttackTargetOverlay implements AttackTargetOverlayScreen {
     private actorTemplateId: number = 0;
     private actorInstanceId: number = 0;
     private actorName: string = "";
-    private enemies: BattleEnemy[] = [];
+    private targets: BattleActor[] = [];
     private commandId!: CommandActionType;
 
     private skill?: SkillId;
@@ -80,14 +82,15 @@ export class AttackTargetOverlay implements AttackTargetOverlayScreen {
         this.hide();
     }
 
-    show(payload: AttackTargetPayload) {
+    show(payload: SelectTargetPayload) {
         this.selectedIndex = 0;
         this.screen.style.display = "block";
         this.commandId = payload.phaseSecond.commandId;
         this.actorTemplateId = payload.phaseSecond.phaseBase.actorTemplateId;
         this.actorInstanceId = payload.phaseSecond.phaseBase.actorInstanceId;
         this.actorName = payload.phaseSecond.phaseBase.actorName;
-        this.setEnemies(payload.phaseSecond.phaseBase.enemies); // 敵リスト描画
+        const targets = payload.isTargetEnemy ? payload.phaseSecond.phaseBase.enemies : payload.phaseSecond.phaseBase.allies
+        this.setTargets(targets); // ターゲットリスト描画
         this.skill = payload.skill;
         this.updateCommandTargetUI();
     }
@@ -168,7 +171,7 @@ export class AttackTargetOverlay implements AttackTargetOverlayScreen {
                             actorTemplateId: this.actorTemplateId,
                             actorInstanceId: this.actorInstanceId,
                             actorName: this.actorName,
-                            enemy: this.enemies,
+                            enemy: this.targets,
                             skillId: this.skill ?? TechniqueId.ATTACK,
                             targetId: enemyId
                         }
@@ -187,12 +190,12 @@ export class AttackTargetOverlay implements AttackTargetOverlayScreen {
         this.target.innerHTML = "";
         this.commandItems = [];
 
-        const aliveEnemies = this.enemies.filter(e => e.alive);
+        const aliveTargets = this.targets.filter(t => t.alive);
 
-        aliveEnemies.forEach(enemy => {
+        aliveTargets.forEach(target => {
             const p = document.createElement("p");
-            p.textContent = enemy.name;
-            p.dataset.enemyId = String(enemy.instanceId);
+            p.textContent = target.name;
+            p.dataset.enemyId = String(target.instanceId);
 
             this.target.appendChild(p);
             this.commandItems.push(p);
@@ -211,8 +214,8 @@ export class AttackTargetOverlay implements AttackTargetOverlayScreen {
     /**
      * 攻撃対象をセット
      */
-    setEnemies(enemies: BattleEnemy[]) {
-        this.enemies = enemies;
+    setTargets(targets: BattleActor[]) {
+        this.targets = targets;
         this.buildTargetList();
     }
 }

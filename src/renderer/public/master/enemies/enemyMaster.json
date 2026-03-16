@@ -90,11 +90,11 @@
         "level": 1,
         "exp": 24,
         "baseStats": {
-            "hp": 8,
+            "hp": 100,
             "mp": 20,
-            "attack": 2,
-            "defense": 1,
-            "magic": 0,
+            "attack": 20,
+            "defense": 20,
+            "magic": 20,
             "speed": 5
         },
         "growthTable": {},

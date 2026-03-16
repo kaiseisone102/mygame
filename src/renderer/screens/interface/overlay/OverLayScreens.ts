@@ -3,7 +3,7 @@
 import { YesNoEvent } from "../../../../shared/events/ui/YesNoEvent";
 import { ScreenInitContext } from "../context/ScreenInitContext";
 import { InputAxis, UIActionEvent } from "../../../input/mapping/InputMapper";
-import { AttackTargetPayload, BattleEnemy } from "../../battleScene/overlayScreen/AttackTargetOverlay";
+import { SelectTargetPayload, BattleActor } from "../../battleScene/overlayScreen/SelectTargetOverlay";
 import { createOverlayScreens } from "../../overlayScreen/createOverlayScreens";
 import { createMainScreens } from "../../mainScreen/createMainScreens";
 import { MessageLogEvent } from "../../../../renderer/screens/overlayScreen/screen/MessageLogOverlay";
@@ -19,7 +19,7 @@ export interface OverlayScreen<T = void> {
     handleUIActions(actions: UIActionEvent[]): boolean;
     handleUIAxes(axes: InputAxis[]): boolean;
     // UI は必ず Action で受ける
-    // 時間更新専用（入力は禁止）
+    // スクリーンマネージャーによって毎フレーム更新 (pushした場合)
     update(delta: number): void;
     // アニメ停止メソッド
     pause?(): void;
@@ -38,6 +38,8 @@ export interface OverlayScreen<T = void> {
     capturesInput: boolean;
     showMessages?(message: string[]): void;
 
+    updateStatus?(payload: T): void;
+
     capturesTextInput?: boolean;
 }
 
@@ -45,8 +47,8 @@ export interface YesNoOverlayScreen extends OverlayScreen<YesNoEvent> {
 
 }
 
-export interface AttackTargetOverlayScreen extends OverlayScreen<AttackTargetPayload> {
-    setEnemies(enemies: BattleEnemy[]): void;
+export interface SelectTargetOverlayScreen extends OverlayScreen<SelectTargetPayload> {
+    setTargets(targets: BattleActor[]): void;
 }
 
 export interface MessageLogOverlayScreen extends OverlayScreen<MessageLogEvent> {

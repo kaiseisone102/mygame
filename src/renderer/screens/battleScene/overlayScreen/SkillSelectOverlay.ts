@@ -10,8 +10,12 @@ import { OverlayScreenType } from "../../../../shared/type/screenType";
 import { CommandSelectedPayload } from "./BattleBasicCommandOverlay";
 
 export type SelectedSkillPayload = {
-    phaseBase: CommandSelectedPayload,
-    skillId: SkillId
+    phaseSec: CommandSelectedPayload,
+    skillId: SkillId,
+    target: {
+        type: string,
+        side: string
+    };
 };
 
 export type SkillItem = {
@@ -19,6 +23,10 @@ export type SkillItem = {
     name: string;
     description: string;
     mpCost: number;
+    target: {
+        type: string,
+        side: string
+    };
 };
 
 export class SkillSelectOverlay implements OverlayScreen<CommandSelectedPayload> {
@@ -206,7 +214,7 @@ export class SkillSelectOverlay implements OverlayScreen<CommandSelectedPayload>
                     const selectedSkill = this.skills[start + this.selectedIndex];
                     this.emitUI({
                         type: "SKILL_SELECTED",
-                        payload: { phaseBase: this.payload, skillId: selectedSkill.skillId }
+                        payload: { phaseSec: this.payload, skillId: selectedSkill.skillId, target: selectedSkill.target }
                     });
                     audioManager.playSE("assets/se/decide.mp3");
                     break;

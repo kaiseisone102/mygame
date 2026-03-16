@@ -115,24 +115,7 @@ export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
         this.screen.style.display = "none";
     }
 
-    update(delta: number) {
-        // 生存している味方の HP/MP を DOM に反映
-        this.allies.forEach(ally => {
-            const el = this.allyElements.get(ally.instanceId);
-            if (!el) return;
-
-            const hpRatio = ally.hp / ally.maxHp;
-            const mpRatio = ally.mp / ally.maxMp;
-
-            // バーの幅だけ変更
-            el.hpEl.style.width = `${hpRatio * 100}%`;
-            el.mpEl.style.width = `${mpRatio * 100}%`;
-
-            // テキストは別要素に表示
-            el.hpTextEl.textContent = `${ally.hp} / ${ally.maxHp}`;
-            el.mpTextEl.textContent = `${ally.mp} / ${ally.maxMp}`;
-        });
-    }
+    update(delta: number) { }
 
     pause() { }
     resume() { }
@@ -142,5 +125,27 @@ export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
     }
     handleUIAxes(axes: InputAxis[]): boolean {
         return true;
+    }
+
+    updateStatus(payload: AlliesStatusPayload): void {
+        this.allies = payload.allies;
+        // 生存している味方の HP/MP を DOM に反映
+        this.allies.forEach(ally => {
+            const el = this.allyElements.get(ally.instanceId);
+            if (!el) return;
+
+            const hpRatio = ally.hp / ally.maxHp;
+            const mpRatio = ally.mp / ally.maxMp;
+
+            console.log("overlay mp:", ally.mp);
+
+            // バーの幅だけ変更
+            el.hpEl.style.width = `${hpRatio * 100}%`;
+            el.mpEl.style.width = `${mpRatio * 100}%`;
+
+            // テキストは別要素に表示
+            el.hpTextEl.textContent = `${ally.hp} / ${ally.maxHp}`;
+            el.mpTextEl.textContent = `${ally.mp} / ${ally.maxMp}`;
+        });
     }
 }
