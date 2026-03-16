@@ -1,0 +1,16 @@
+{
+    "FOREST": [
+        "SLIME",
+        "DRACKY",
+        "GHOST"
+    ],
+    "PLAIN": [
+        "SLIME",
+        "DRACKY"
+    ],
+    "CAVE": [
+        "GHOST",
+        "GHOST",
+        "DRAGON"
+    ]
+}

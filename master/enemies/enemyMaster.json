@@ -1,0 +1,111 @@
+{
+    "SLIME": {
+        "templateId": 101,
+        "name": "SLIME",
+        "side": "ENEMY",
+        "level": 1,
+        "exp": 1,
+        "baseStats": {
+            "hp": 10,
+            "mp": 20,
+            "attack": 3,
+            "defense": 1,
+            "magic": 0,
+            "speed": 15
+        },
+        "growthTable": {},
+        "statModifier": 1,
+        "skills": [
+            "ATTACK",
+            "HEAL",
+            "HEAL_ALL",
+            "REVIVE"
+        ],
+        "traits": [
+            "WEAK_FIRE"
+        ],
+        "aiType": "AGGRESSIVE",
+        "imageKey": "ENEMY1"
+    },
+    "DRACKY": {
+        "templateId": 102,
+        "name": "DRACKY",
+        "side": "ENEMY",
+        "level": 1,
+        "exp": 4,
+        "baseStats": {
+            "hp": 12,
+            "mp": 10,
+            "attack": 4,
+            "defense": 2,
+            "magic": 0,
+            "speed": 8
+        },
+        "growthTable": {},
+        "statModifier": 1,
+        "skills": [
+            "ATTACK",
+            "SLEEP",
+            "POISON",
+            "PARALYZE"
+        ],
+        "traits": [
+            "RESIST_MAGIC"
+        ],
+        "aiType": "AGGRESSIVE",
+        "imageKey": "ENEMY2"
+    },
+    "GHOST": {
+        "templateId": 103,
+        "name": "GHOST",
+        "side": "ENEMY",
+        "level": 1,
+        "exp": 8,
+        "baseStats": {
+            "hp": 8,
+            "mp": 500,
+            "attack": 2,
+            "defense": 1,
+            "magic": 0,
+            "speed": 5
+        },
+        "growthTable": {},
+        "statModifier": 1,
+        "skills": [
+            "ATTACK",
+            "MERA",
+            "GIRA",
+            "IO",
+            "HYADO",
+            "BAGI"
+        ],
+        "traits": [],
+        "aiType": "AGGRESSIVE",
+        "imageKey": "ENEMY3"
+    },
+    "DRAGON": {
+        "templateId": 104,
+        "name": "DRAGON",
+        "side": "ENEMY",
+        "level": 1,
+        "exp": 24,
+        "baseStats": {
+            "hp": 100,
+            "mp": 20,
+            "attack": 20,
+            "defense": 20,
+            "magic": 20,
+            "speed": 5
+        },
+        "growthTable": {},
+        "statModifier": 1,
+        "skills": [
+            "ATTACK",
+            "ATK_UP_SMALL",
+            "ATK_UP_LARGE"
+        ],
+        "traits": [],
+        "aiType": "AGGRESSIVE",
+        "imageKey": "ENEMY4"
+    }
+}

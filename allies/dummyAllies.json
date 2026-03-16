@@ -1,0 +1,42 @@
+[
+    {
+        "id": 1,
+        "name": "Hero",
+        "side": "ALLY",
+        "baseStats": {
+            "hp": 20,
+            "attack": 6,
+            "defense": 4,
+            "magic": 0,
+            "speed": 20
+        },
+        "growthTable": {},
+        "traits": [
+            "WEAK_FIRE"
+        ],
+        "skills": [],
+        "level": 1,
+        "exp": 0,
+        "aiType": null
+    },
+    {
+        "id": 2,
+        "name": "Mage",
+        "side": "ALLY",
+        "baseStats": {
+            "hp": 12,
+            "attack": 4,
+            "defense": 2,
+            "magic": 6,
+            "speed": 10
+        },
+        "growthTable": {},
+        "traits": [
+            "RESIST_MAGIC"
+        ],
+        "skills": [],
+        "level": 1,
+        "exp": 0,
+        "aiType": null
+    }
+]

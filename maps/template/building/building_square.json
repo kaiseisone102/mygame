@@ -1,0 +1,38 @@
+{
+    "buildings": [
+        {
+            "id": "building_luxury_square_01",
+            "name": "豪華な建物",
+            "type": "BUILDING",
+            "w": 12,
+            "h": 10,
+            "entrance": [
+                {
+                    "x": 5,
+                    "y": 10
+                },
+                {
+                    "x": 6,
+                    "y": 10
+                }
+            ]
+        },
+        {
+            "id": "building_poor_square_01",
+            "name": "小さくて貧相な建物",
+            "type": "BUILDING",
+            "w": 6,
+            "h": 5,
+            "entrance": [
+                {
+                    "x": 2,
+                    "y": 5
+                },
+                {
+                    "x": 3,
+                    "y": 5
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,31 @@
+{
+  "tiles": [
+        { "x1": 1, "x2": 98, "y1": 1, "y2": 148, "type": "CAVEFLOOR" },
+        { "x1": 0, "x2": 99, "y1": 0, "y2": 0, "type": "CAVEWALL" },
+        { "x1": 0, "x2": 99, "y1": 149, "y2": 149, "type": "CAVEWALL" },
+        { "x1": 0, "x2": 0, "y1": 1, "y2": 148, "type": "CAVEWALL" },
+        { "x1": 99, "x2": 99, "y1": 1, "y2": 148, "type": "CAVEWALL" }
+    ],
+    "buildings": [
+        {
+            "id": "building_luxury_01",
+            "name": "豪華な建物",
+            "type": "BUILDING",
+            "x": 20,
+            "y": 20,
+            "w": 12,
+            "h": 10,
+            "entrance": [ {"x": 25, "y": 29}, {"x": 26, "y": 29} ]
+        },
+        {
+            "id": "building_poor_01",
+            "name": "小さくて貧相な建物",
+            "type": "BUILDING",
+            "x": 50,
+            "y": 50,
+            "w": 6,
+            "h": 5,
+            "entrance": [ {"x": 52, "y": 54}, {"x": 53, "y": 54} ]
+        }
+    ]
+}

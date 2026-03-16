@@ -1,0 +1,521 @@
+{
+    "ATTACK": {
+        "id": "attack",
+        "name": "こうげき",
+        "category": "ATTACK",
+        "cost": {
+            "mp": 0
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "ATK_DEF",
+                "power": 0
+            }
+        ]
+    },
+    "DOUBLE_ATTACK": {
+        "id": "double_attack",
+        "name": "二回攻撃",
+        "category": "ATTACK",
+        "cost": {
+            "mp": 0
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "ATK_RATE",
+                "power": 0,
+                "rate": 0.55
+            }
+        ]
+    },
+    "POWER_SLASH": {
+        "id": "power_slash",
+        "name": "渾身斬り",
+        "category": "TECHNIQUE",
+        "cost": {
+            "mp": 3
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "ATK_RATE",
+                "power": 0,
+                "rate": 1.8,
+                "element": "SLASH"
+            }
+        ]
+    },
+    "WHIRL_WIND": {
+        "id": "whirlwind",
+        "name": "なぎ払い",
+        "category": "TECHNIQUE",
+        "cost": {
+            "mp": 5
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "ATK_RATE",
+                "power": 0,
+                "rate": 1.1
+            }
+        ]
+    },
+    "BACK_STAB": {
+        "id": "backstab",
+        "name": "バックスタブ",
+        "category": "TECHNIQUE",
+        "cost": {
+            "mp": 4
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "ATK_RATE",
+                "power": 0,
+                "rate": 3
+            }
+        ]
+    },
+    "MERA": {
+        "id": "mera",
+        "name": "メラ",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 2
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "element": "FIRE",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "MAGIC",
+                "power": 12,
+                "element": "FIRE"
+            }
+        ]
+    },
+    "GIRA": {
+        "id": "gira",
+        "name": "ギラ",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 4
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "element": "FIRE",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "MAGIC",
+                "power": 18,
+                "element": "FIRE"
+            }
+        ]
+    },
+    "IO": {
+        "id": "io",
+        "name": "イオ",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 6
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "element": "IMPACT",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "MAGIC",
+                "power": 18,
+                "element": "IMPACT"
+            }
+        ]
+    },
+    "HYADO": {
+        "id": "hyado",
+        "name": "ヒャド",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 3
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "element": "ICE",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "MAGIC",
+                "power": 18,
+                "element": "ICE"
+            }
+        ]
+    },
+    "RAIDEIN": {
+        "id": "raidein",
+        "name": "ライデイン",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 8
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "element": "ELECTRICITY",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "MAGIC",
+                "power": 18,
+                "element": "ELECTRICITY"
+            }
+        ]
+    },
+    "BAGI": {
+        "id": "bagi",
+        "name": "バギ",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 5
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "element": "WIND",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "MAGIC",
+                "power": 18,
+                "element": "WIND"
+            }
+        ]
+    },
+    "HEAL": {
+        "id": "heal",
+        "name": "ヒール",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 3
+        },
+        "targetSide": "ALLY",
+        "targetType": "SINGLE_ALLY",
+        "effectScope": "SINGLE",
+        "element": "NONE",
+        "effects": [
+            {
+                "type": "HEAL",
+                "power": 30
+            }
+        ]
+    },
+    "HEAL_ALL": {
+        "id": "heal_all",
+        "name": "ヒールオール",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 6
+        },
+        "targetSide": "ALLY",
+        "targetType": "ALL_ALLIES",
+        "effectScope": "ALL",
+        "element": "NONE",
+        "effects": [
+            {
+                "type": "HEAL",
+                "power": 35
+            }
+        ]
+    },
+    "REVIVE": {
+        "id": "revive",
+        "name": "リザレクト",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 10
+        },
+        "targetSide": "ALLY",
+        "targetType": "SINGLE_ALLY",
+        "effectScope": "SINGLE",
+        "element": "NONE",
+        "effects": [
+            {
+                "type": "REVIVE",
+                "rate": 0.5
+            }
+        ]
+    },
+    "ATK_UP_SMALL": {
+        "id": "atk_up_small",
+        "name": "ちからため",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 2
+        },
+        "targetSide": "ALLY",
+        "targetType": "SINGLE_ALLY",
+        "effectScope": "SINGLE",
+        "effects": [
+            {
+                "type": "BUFF",
+                "buffId": "ATK",
+                "value": "SMALL",
+                "turns": 3
+            }
+        ]
+    },
+    "ATK_UP_LARGE": {
+        "id": "atk_up_large",
+        "name": "バイキルト",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 4
+        },
+        "targetSide": "ALLY",
+        "targetType": "SINGLE_ALLY",
+        "effectScope": "SINGLE",
+        "effects": [
+            {
+                "type": "BUFF",
+                "buffId": "ATK",
+                "value": "LARGE",
+                "turns": 3
+            }
+        ]
+    },
+    "DEF_UP": {
+        "id": "def_up",
+        "name": "スクルト",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 4
+        },
+        "targetSide": "ALLY",
+        "targetType": "ALL_ALLIES",
+        "effectScope": "ALL",
+        "effects": [
+            {
+                "type": "BUFF",
+                "buffId": "DEF",
+                "value": "SMALL",
+                "turns": 3
+            }
+        ]
+    },
+    "HASTE": {
+        "id": "haste",
+        "name": "ヘイスト",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 5
+        },
+        "targetSide": "ALLY",
+        "targetType": "ALL_ALLIES",
+        "effectScope": "ALL",
+        "effects": [
+            {
+                "type": "BUFF",
+                "buffId": "SPD",
+                "value": "SMALL",
+                "turns": 3
+            }
+        ]
+    },
+    "ATK_DOWN": {
+        "id": "atk_down",
+        "name": "ルカニ",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 4
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "effects": [
+            {
+                "type": "BUFF",
+                "buffId": "ATK",
+                "value": "-SMALL",
+                "turns": 3
+            }
+        ]
+    },
+    "SLOW": {
+        "id": "slow",
+        "name": "スロウ",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 4
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "effects": [
+            {
+                "type": "BUFF",
+                "buffId": "SPD",
+                "value": "-SMALL",
+                "turns": 3
+            }
+        ]
+    },
+    "SLEEP": {
+        "id": "sleep",
+        "name": "ラリホー",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 4
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "effects": [
+            {
+                "type": "STATUS",
+                "statusId": "SLEEP",
+                "chance": 0.6
+            }
+        ]
+    },
+    "POISON": {
+        "id": "poison",
+        "name": "ポイズン",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 3
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "effects": [
+            {
+                "type": "STATUS",
+                "statusId": "POISON",
+                "chance": 0.7
+            }
+        ]
+    },
+    "PARALYZE": {
+        "id": "paralyze",
+        "name": "パラライズ",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 5
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "effects": [
+            {
+                "type": "STATUS",
+                "statusId": "PARALYSIS",
+                "chance": 0.4
+            }
+        ]
+    },
+    "GUARD": {
+        "id": "guard",
+        "name": "ぼうぎょ",
+        "category": "TECHNIQUE",
+        "cost": {
+            "mp": 0
+        },
+        "targetSide": "SELF",
+        "targetType": "SELF",
+        "effectScope": "SINGLE",
+        "effects": []
+    },
+    "PROVOKE": {
+        "id": "provoke",
+        "name": "挑発",
+        "category": "TECHNIQUE",
+        "cost": {
+            "mp": 2
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "effects": [
+            {
+                "type": "BUFF",
+                "buffId": "AGGRO",
+                "value": 1,
+                "turns": 2
+            }
+        ]
+    },
+    "ESCAPE": {
+        "id": "escape",
+        "name": "にげる",
+        "category": "TECHNIQUE",
+        "cost": {
+            "mp": 0
+        },
+        "targetSide": "SELF",
+        "targetType": "SELF",
+        "effectScope": "SINGLE",
+        "element": "NONE",
+        "effects": []
+    },
+    "LIMIT_BREAK": {
+        "id": "limit_break",
+        "name": "リミットブレイク",
+        "category": "TECHNIQUE",
+        "cost": {
+            "mp": 0
+        },
+        "targetSide": "ENEMY",
+        "targetType": "ALL_ENEMIES",
+        "effectScope": "ALL",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "ATK_RATE",
+                "power": 0,
+                "rate": 1.8
+            }
+        ]
+    },
+    "GIGADEIN": {
+        "id": "gigadein",
+        "name": "ギガデイン",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 30
+        },
+        "targetSide": "ENEMY",
+        "targetType": "ALL_ENEMIES",
+        "effectScope": "ALL",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "MAGIC",
+                "power": 80,
+                "element": "ELECTRICITY"
+            }
+        ]
+    }
+}

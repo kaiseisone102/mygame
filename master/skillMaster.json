@@ -1,0 +1,554 @@
+{
+    "ATTACK": {
+        "id": "ATTACK",
+        "name": "こうげき",
+        "category": "ATTACK",
+        "cost": {
+            "mp": 0
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "ATK_DEF",
+                "power": 0
+            }
+        ],
+        "description": "物理単体攻撃。通常攻撃です。"
+    },
+    "DOUBLE_ATTACK": {
+        "id": "DOUBLE_ATTACK",
+        "name": "二回攻撃",
+        "category": "ATTACK",
+        "cost": {
+            "mp": 0
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "ATK_RATE",
+                "power": 0,
+                "rate": 0.55
+            }
+        ],
+        "description": "2回連続で攻撃する物理技。威力はやや低め。"
+    },
+    "POWER_SLASH": {
+        "id": "POWER_SLASH",
+        "name": "渾身斬り",
+        "category": "TECHNIQUE",
+        "cost": {
+            "mp": 3
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "ATK_RATE",
+                "power": 0,
+                "rate": 1.8,
+                "element": "SLASH"
+            }
+        ],
+        "description": "力を込めて斬る単体攻撃。斬撃属性。"
+    },
+    "WHIRL_WIND": {
+        "id": "WHIRL_WIND",
+        "name": "なぎ払い",
+        "category": "TECHNIQUE",
+        "cost": {
+            "mp": 5
+        },
+        "targetSide": "ENEMY",
+        "targetType": "ALL_ENEMY",
+        "effectScope": "ALL",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "ATK_RATE",
+                "power": 0,
+                "rate": 1.1
+            }
+        ],
+        "description": "範囲攻撃。敵全体に斬撃ダメージ。"
+    },
+    "BACK_STAB": {
+        "id": "BACK_STAB",
+        "name": "バックスタブ",
+        "category": "TECHNIQUE",
+        "cost": {
+            "mp": 4
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "ATK_RATE",
+                "power": 0,
+                "rate": 3
+            }
+        ],
+        "description": "背後からの強力な単体攻撃。"
+    },
+    "MERA": {
+        "id": "MERA",
+        "name": "メラ",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 2
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "element": "FIRE",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "MAGIC",
+                "power": 12,
+                "element": "FIRE"
+            }
+        ],
+        "description": "火属性の単体魔法攻撃。威力12。"
+    },
+    "GIRA": {
+        "id": "GIRA",
+        "name": "ギラ",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 4
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "element": "FIRE",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "MAGIC",
+                "power": 18,
+                "element": "FIRE"
+            }
+        ],
+        "description": "火属性の敵グループ魔法攻撃。威力18。"
+    },
+    "IO": {
+        "id": "IO",
+        "name": "イオ",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 6
+        },
+        "targetSide": "ENEMY",
+        "targetType": "ALL_ENEMY",
+        "effectScope": "ALL",
+        "element": "IMPACT",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "MAGIC",
+                "power": 18,
+                "element": "IMPACT"
+            }
+        ],
+        "description": "範囲型魔法攻撃。衝撃属性、威力18。"
+    },
+    "HYADO": {
+        "id": "HYADO",
+        "name": "ヒャド",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 3
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "element": "ICE",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "MAGIC",
+                "power": 18,
+                "element": "ICE"
+            }
+        ],
+        "description": "氷属性の単体魔法攻撃。威力18。"
+    },
+    "RAIDEIN": {
+        "id": "RAIDEIN",
+        "name": "ライデイン",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 8
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "element": "ELECTRICITY",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "MAGIC",
+                "power": 18,
+                "element": "ELECTRICITY"
+            }
+        ],
+        "description": "雷属性の単体魔法攻撃。威力18。"
+    },
+    "BAGI": {
+        "id": "BAGI",
+        "name": "バギ",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 5
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "element": "WIND",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "MAGIC",
+                "power": 18,
+                "element": "WIND"
+            }
+        ],
+        "description": "風属性の敵グループ魔法攻撃。威力18。"
+    },
+    "HEAL": {
+        "id": "HEAL",
+        "name": "ヒール",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 3
+        },
+        "targetSide": "ALLY",
+        "targetType": "SINGLE_ALLY",
+        "effectScope": "SINGLE",
+        "element": "NONE",
+        "effects": [
+            {
+                "type": "HEAL",
+                "power": 30
+            }
+        ],
+        "description": "単体を回復する魔法。HP30回復。"
+    },
+    "HEAL_ALL": {
+        "id": "HEAL_ALL",
+        "name": "ヒールオール",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 6
+        },
+        "targetSide": "ALLY",
+        "targetType": "ALL_ALLIES",
+        "effectScope": "ALL",
+        "element": "NONE",
+        "effects": [
+            {
+                "type": "HEAL",
+                "power": 35
+            }
+        ],
+        "description": "味方全体を回復する魔法。HP35回復。"
+    },
+    "REVIVE": {
+        "id": "REVIVE",
+        "name": "リザレクト",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 10
+        },
+        "targetSide": "ALLY",
+        "targetType": "SINGLE_ALLY",
+        "effectScope": "SINGLE",
+        "element": "NONE",
+        "effects": [
+            {
+                "type": "REVIVE",
+                "rate": 0.5
+            }
+        ],
+        "description": "戦闘不能の味方を復活させる魔法。成功率50％。"
+    },
+    "ATK_UP_SMALL": {
+        "id": "ATK_UP_SMALL",
+        "name": "ちからため",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 2
+        },
+        "targetSide": "ALLY",
+        "targetType": "SINGLE_ALLY",
+        "effectScope": "SINGLE",
+        "effects": [
+            {
+                "type": "BUFF",
+                "buffId": "ATK",
+                "value": "SMALL",
+                "turns": 3
+            }
+        ],
+        "description": "単体の攻撃力を小アップ。3ターン持続。"
+    },
+    "ATK_UP_LARGE": {
+        "id": "ATK_UP_LARGE",
+        "name": "バイキルト",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 4
+        },
+        "targetSide": "ALLY",
+        "targetType": "SINGLE_ALLY",
+        "effectScope": "SINGLE",
+        "effects": [
+            {
+                "type": "BUFF",
+                "buffId": "ATK",
+                "value": "LARGE",
+                "turns": 3
+            }
+        ],
+        "description": "単体の攻撃力を大アップ。3ターン持続。"
+    },
+    "DEF_UP": {
+        "id": "DEF_UP",
+        "name": "スクルト",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 4
+        },
+        "targetSide": "ALLY",
+        "targetType": "ALL_ALLIES",
+        "effectScope": "ALL",
+        "effects": [
+            {
+                "type": "BUFF",
+                "buffId": "DEF",
+                "value": "SMALL",
+                "turns": 3
+            }
+        ],
+        "description": "味方全体の防御力をアップ。3ターン持続。"
+    },
+    "HASTE": {
+        "id": "HASTE",
+        "name": "ヘイスト",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 5
+        },
+        "targetSide": "ALLY",
+        "targetType": "ALL_ALLIES",
+        "effectScope": "ALL",
+        "effects": [
+            {
+                "type": "BUFF",
+                "buffId": "SPD",
+                "value": "SMALL",
+                "turns": 3
+            }
+        ],
+        "description": "味方全体の素早さを上げるバフ。3ターン持続。"
+    },
+    "ATK_DOWN": {
+        "id": "ATK_DOWN",
+        "name": "ルカニ",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 4
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "effects": [
+            {
+                "type": "BUFF",
+                "buffId": "ATK",
+                "value": "-SMALL",
+                "turns": 3
+            }
+        ],
+        "description": "敵グループの攻撃力を下げる。3ターン持続。ルカニはATKを下げるのだ!!"
+    },
+    "SLOW": {
+        "id": "SLOW",
+        "name": "スロウ",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 4
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "effects": [
+            {
+                "type": "BUFF",
+                "buffId": "SPD",
+                "value": "-SMALL",
+                "turns": 3
+            }
+        ],
+        "description": "敵グループの素早さを下げる。3ターン持続。"
+    },
+    "SLEEP": {
+        "id": "SLEEP",
+        "name": "ラリホー",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 4
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "effects": [
+            {
+                "type": "STATUS",
+                "statusId": "SLEEP",
+                "chance": 0.6
+            }
+        ],
+        "description": "敵グループに眠りを付与する。成功率60％。"
+    },
+    "POISON": {
+        "id": "POISON",
+        "name": "ポイズン",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 3
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "effects": [
+            {
+                "type": "STATUS",
+                "statusId": "POISON",
+                "chance": 0.7
+            }
+        ],
+        "description": "敵グループに毒を付与する。成功率70％。"
+    },
+    "PARALYZE": {
+        "id": "PARALYZE",
+        "name": "パラライズ",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 5
+        },
+        "targetSide": "ENEMY",
+        "targetType": "SINGLE_ENEMY",
+        "effectScope": "SINGLE",
+        "effects": [
+            {
+                "type": "STATUS",
+                "statusId": "PARALYSIS",
+                "chance": 0.4
+            }
+        ],
+        "description": "単体に麻痺を付与する。成功率40％。"
+    },
+    "GUARD": {
+        "id": "GUARD",
+        "name": "ぼうぎょ",
+        "category": "TECHNIQUE",
+        "cost": {
+            "mp": 0
+        },
+        "targetSide": "SELF",
+        "targetType": "SELF",
+        "effectScope": "SINGLE",
+        "effects": [],
+        "description": "身を守り、防御を固める。"
+    },
+    "PROVOKE": {
+        "id": "PROVOKE",
+        "name": "挑発",
+        "category": "TECHNIQUE",
+        "cost": {
+            "mp": 2
+        },
+        "targetSide": "ENEMY",
+        "targetType": "GROUP_ENEMY",
+        "effectScope": "GROUP",
+        "effects": [
+            {
+                "type": "BUFF",
+                "buffId": "AGGRO",
+                "value": 1,
+                "turns": 2
+            }
+        ],
+        "description": "敵グループの攻撃を引き寄せる挑発。"
+    },
+    "ESCAPE": {
+        "id": "ESCAPE",
+        "name": "にげる",
+        "category": "TECHNIQUE",
+        "cost": {
+            "mp": 0
+        },
+        "targetSide": "SELF",
+        "targetType": "SELF",
+        "effectScope": "SINGLE",
+        "element": "NONE",
+        "effects": [
+            {
+                "type": "ESCAPE",
+                "chance": 0.7
+            }
+        ],
+        "description": "戦闘から逃げる。"
+    },
+    "LIMIT_BREAK": {
+        "id": "LIMIT_BREAK",
+        "name": "リミットブレイク",
+        "category": "TECHNIQUE",
+        "cost": {
+            "mp": 0
+        },
+        "targetSide": "ENEMY",
+        "targetType": "ALL_ENEMIES",
+        "effectScope": "ALL",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "ATK_RATE",
+                "power": 0,
+                "rate": 1.8
+            }
+        ],
+        "description": "敵全体に強力な攻撃を行うリミットブレイク。"
+    },
+    "GIGADEIN": {
+        "id": "GIGADEIN",
+        "name": "ギガデイン",
+        "category": "MAGIC",
+        "cost": {
+            "mp": 30
+        },
+        "targetSide": "ENEMY",
+        "targetType": "ALL_ENEMIES",
+        "effectScope": "ALL",
+        "effects": [
+            {
+                "type": "DAMAGE",
+                "formula": "MAGIC",
+                "power": 80,
+                "element": "ELECTRICITY"
+            }
+        ],
+        "description": "雷属性の全体魔法攻撃。威力80。"
+    }
+}
