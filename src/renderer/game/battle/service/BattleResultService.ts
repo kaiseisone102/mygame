@@ -44,6 +44,7 @@ export class BattleResultService {
             exp: a.exp,
             baseStats: a.baseStats,
             skills: a.skills,
+            traits: a.traits.map(t => t.id),
             buffs: a.buffs,
             statusEffects: a.statusEffects,
         }));
@@ -64,7 +65,7 @@ export class BattleResultService {
 
             // 仮ログ用
             const oldExp = ally.exp;
-            const oldStats = {...ally.baseStats};
+            const oldStats = { ...ally.baseStats };
 
             // 経験値加算
             ally.exp += distribution.gainedExp;
@@ -111,7 +112,7 @@ export class BattleResultService {
                     oldLevel,
                     newLevel: ally.level,
                     oldStats: statsBeforeThisLevel,
-                    newStats: {...ally.baseStats}
+                    newStats: { ...ally.baseStats }
                 });
             }
         }

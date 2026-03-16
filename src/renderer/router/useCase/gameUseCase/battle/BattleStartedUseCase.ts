@@ -37,7 +37,7 @@ export class BattleStartedUseCase {
         );
 
         // 3.Battler生成
-        const allies = createAllies();
+        const allies = createAllies(this.gameState.party);
         const enemies = templates.map(temp =>
             this.battlerFactory.createEnemy(temp)
         );

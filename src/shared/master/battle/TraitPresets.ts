@@ -5,6 +5,7 @@ import { BattlerPort } from "../../type/battle/port/BattlerPort";
 import { ElementId, SkillCategory } from "../../type/battle/skill/skillFormula";
 import { resistCategoryLogic } from "../../type/battle/trait/logic/resistCategoryLogic";
 import { resistElementLogic } from "../../type/battle/trait/logic/weakElementLogic";
+import { Trait } from "../../type/battle/trait/Trait";
 import { TraitType } from "../../type/battle/trait/TraitType";
 
 
@@ -62,3 +63,17 @@ export const TraitPresets = {
         }
     }
 } as const;
+
+/**
+ * TraitId から Trait オブジェクトを取得する
+ */
+export function getTraitById(id: TraitId): Trait {
+    // TraitPresets は TraitId をキーに持っているので直接引く
+    const trait = TraitPresets[id as keyof typeof TraitPresets];
+
+    if (!trait) {
+        throw new Error(`Trait with id ${id} not found in TraitPresets.`);
+    }
+
+    return trait as unknown as Trait;
+}

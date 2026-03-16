@@ -1,5 +1,6 @@
 // src/renderer/screens/router/WorldQueryBus.ts
 
+import { WorldTilePosition } from "../../shared/type/playerPosition/posType";
 import { GameConfig } from "../../shared/config/GameConfig";
 import { WorldQueryAsyncEvent, WorldQuerySyncEvent } from "../../shared/events/world/WorldQuerryEvent";
 import { TileQueryPort } from "../../shared/port/TileQueryPort";
@@ -7,8 +8,9 @@ import { SaveQueryService } from "../save/query/SaveQueryService";
 import { ScreenQueryService } from "../save/query/ScreenQueryService";
 import { ConfigRepository } from "../save/saveRepository";
 import { SlotViewModel } from "../screens/viewModel/SlotViewModel";
+import { WorldQueryPort } from "shared/port/WorldQueryPort";
 
-export class WorldQueryBus implements TileQueryPort {
+export class WorldQueryBus implements WorldQueryPort {
     constructor(
         private tileQuery: TileQueryPort,
         private screenQuery: ScreenQueryService,
@@ -24,9 +26,9 @@ export class WorldQueryBus implements TileQueryPort {
     //     return this.screenQuery.getVisibleEnemies();
     // }
 
-    getTileType(tx: number, ty: number) {
-        return this.tileQuery.getTileType(tx, ty);
-    }
+    getTileType(pos: WorldTilePosition) {
+        return this.tileQuery.getTileType(pos);
+    };
 
     // ===== Sync =====
     dispatch(event: WorldQuerySyncEvent) {

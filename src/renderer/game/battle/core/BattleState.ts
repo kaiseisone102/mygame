@@ -2,7 +2,7 @@
 
 import { BattlerSaveData } from "../../../../shared/data/BattlerSaveData";
 import { DEFAULT_PLAYER_BASE_STATS } from "../../../../shared/data/playerConstants";
-import { TraitId, TraitPresets } from "../../../../shared/master/battle/TraitPresets";
+import { getTraitById, TraitId, TraitPresets } from "../../../../shared/master/battle/TraitPresets";
 import { MagicId, TechniqueId } from "../../../../shared/master/battle/type/SkillPreset";
 import { BattleAction, BattlerSide } from "../../../../shared/type/battle/BattleAction";
 import { BattleResult, CommandMode } from "../../../../shared/type/battle/TargetType";
@@ -48,12 +48,30 @@ export const initialBattleState: BattleState = {
     mode: CommandMode.NULL,
 };
 
-export function createAllies(): Battler[] {
+export function createAllies(saveData?: BattlerSaveData[]): Battler[] {
+    // 1. 引数がある場合は、セーブデータを元に Battler インスタンスを生成
+    if (saveData && saveData.length > 0) {
+        return saveData.map(data => {
+            // TraitId[] を Trait[] に変換する必要がある場合、ここでマスターデータから参照します
+            // もし Battler コンストラクタ内で ID から実体を引いているならそのまま渡せます
+            const params: BattlerParams = {
+                ...data,
+                side: BattlerSide.ALLY,
+                growthTable: {},
+                // もし saveData の traits が ID 配列で、
+                // BattlerParams が Trait オブジェクト配列を求めているなら find が必要
+                traits: data.traits.map(id => getTraitById(id))
+            };
+            return new Battler(params);
+        });
+    }
+
     const allyData: BattlerParams[] = [
         {
             templateId: 1,
             instanceId: 1,
             name: "Hero",
+            level: 1,
             exp: 0,
             side: BattlerSide.ALLY,
             baseStats: { hp: 100, mp: 50, attack: 6, defense: 4, speed: 20 },

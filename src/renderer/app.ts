@@ -74,11 +74,12 @@ import { ForestTempleBuilder } from "./game/map/builder/map/ForestTempleBuilder"
 import { GraveCaveBuilder } from "./game/map/builder/map/GraveCaveBuilder";
 import { NoFeatureTownBuilder } from "./game/map/builder/map/NoFeatureTownBuilder";
 import { WorldMapBuilder } from "./game/map/builder/map/WorldMapBuilder";
+import { defaultGameConfig } from "../shared/config/GameConfig";
 
-console.log("window.saveGameAPI =", window.saveGameAPI);
+// console.log("window.saveGameAPI =", window.saveGameAPI);
 
-if (!window.saveGameAPI) { throw new Error("saveGameAPI not found (preload not loaded)") };
-if (!window.configAPI) { throw new Error("configAPI not found (preload not loaded)") };
+// if (!window.saveGameAPI) { throw new Error("saveGameAPI not found (preload not loaded)") };
+// if (!window.configAPI) { throw new Error("configAPI not found (preload not loaded)") };
 
 await loadAssets();
 
@@ -108,11 +109,17 @@ const interactionService = new InteractionService(messageRepo);
 
 const playerAssets = createPlayerAssets(key => ImageStore.get(key));
 
-const config = await window.configAPI.loadConfig();
+//const config = await window.configAPI.loadConfig();
 
-audioManager.setMasterVolume(config.masterVolume);
-audioManager.setBgmVolume(config.bgmVolume);
-audioManager.setSeVolume(config.seVolume);
+audioManager.setMasterVolume(
+    //config.masterVolume
+);
+audioManager.setBgmVolume(
+    //config.bgmVolume
+);
+audioManager.setSeVolume(
+    //config.seVolume
+);
 
 const battlerFactory = new BattlerFactory();
 
@@ -212,7 +219,8 @@ const initCtx: ScreenInitContext = {
     assets: { player: playerAssets },
     tileRenderer,
     gameState,
-    getConfig: () => config,
+    getConfig: () => defaultGameConfig//config
+    ,
     // 「Screen から Router への一方向ポート」
     emitWorld: (event) => worldRouter.dispatch(event),
     emitUI: (event) => uiRouter.dispatch(event),

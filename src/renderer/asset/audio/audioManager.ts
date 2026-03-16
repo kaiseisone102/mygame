@@ -3,9 +3,9 @@ class AudioManager {
     private bgm: HTMLAudioElement | null = null;
     private currentBgmSrc: string | null = null;
 
-    private masterVolume = 1.0;
+    private masterVolume = 0;
     private bgmVolume = 0;
-    private seVolume = 0.8;
+    private seVolume = 0;
 
     private bgmBaseVolume = 0;
 
@@ -153,16 +153,16 @@ class AudioManager {
     /* ======================
        setter / getter
     ====================== */
-    setMasterVolume(v: number) {
-        this.masterVolume = clamp(v);
+    setMasterVolume(v?: number) {
+       // this.masterVolume = clamp(v);
         this.applyBgmVolume();
     }
-    setBgmVolume(v: number) {
-        this.bgmVolume = clamp(v);
+    setBgmVolume(v?: number) {
+       // this.bgmVolume = clamp(v);
         this.applyBgmVolume();
     }
-    setSeVolume(v: number) {
-        this.seVolume = clamp(v);
+    setSeVolume(v?: number) {
+        //this.seVolume = clamp(v);
     }
 
     getVolumes() {

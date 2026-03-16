@@ -1,6 +1,7 @@
+import { WorldTilePosition } from "../type/playerPosition/posType";
 import { TileType } from "../type/tileType";
 
 // src/shared/port/WorldQueryPort.ts
 export interface WorldQueryPort {
-    getTileType(tx: number, ty: number): TileType;
+    getTileType(pos: WorldTilePosition): TileType;
 }

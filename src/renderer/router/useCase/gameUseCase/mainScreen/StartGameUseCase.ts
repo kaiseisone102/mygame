@@ -11,9 +11,9 @@ export class StartGameUseCase {
     ) { }
 
     execute(slotId: number, playerName?: string) {
-        const save = this.saveManager.load(slotId);
+        const hasSave = this.saveManager.load(slotId);
 
-        if (!save) {
+        if (!hasSave) {
             // 新規
             this.saveManager.createNew(slotId, playerName ?? "");
         }

@@ -186,7 +186,7 @@ export class SlotSelectScreenController implements MainScreenController, UseUIAx
                 type: "GET_SLOT_VIEW",
                 slotId: i,
             }) as SlotViewModel;
-            slot.textContent = slotView.label;
+            slot.textContent = slotView.label ?? undefined;
             slot.classList.toggle("empty", slotView.isEmpty);
 
             slotsBorder.appendChild(slot);
