@@ -1,0 +1,16 @@
+<> Code の所から Download Zip して VsCode にファイルを追加 & LiveServer をインストールして game.html を右クリックして Open with LiveServer
+↑　起動方法(改善予定) 
+
+移動
+上: wキー, 上矢印キー
+下: sキー, 下矢印キー
+右: dキー, 右矢印キー
+左: aキー, 左矢印キー
+
+アクションボタン
+決定: enterキー
+戻る: escapeキー
+
+その他
+仮マップ遷移: pキー
+インベントリ: iキー
