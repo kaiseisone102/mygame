@@ -1,5 +1,5 @@
-...\...\mygame> npx electron dist/main/main/main.js
-↑　起動方法 
+Branches の gh-pages のソースコードを <> Code の所から Download Zip して VsCode にファイルを追加 & LiveServer をインストールして game.html を右クリックして Open with LiveServer
+↑　起動方法(改善予定)
 
 移動
 上: wキー, 上矢印キー

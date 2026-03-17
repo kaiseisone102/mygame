@@ -11,13 +11,16 @@
         "build:preload": "tsc -p tsconfig.preload.json",
         "build:renderer": "vite build",
         "electron:build": "npm run build:preload && npm run build:main && npm run build:renderer && electron-builder",
-        "build": "npm run build:preload && npm run build:main && npm run build:renderer"
+        "build": "npm run build:preload && npm run build:main && npm run build:renderer",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d dist/renderer"
     },
     "devDependencies": {
         "@types/electron": "^1.4.38",
         "@types/node": "^24.10.1",
         "concurrently": "^9.2.1",
         "electron": "^39.2.4",
+        "gh-pages": "^6.3.0",
         "jsdom": "^27.4.0",
         "typescript": "~5.9.3",
         "vite": "^7.2.4",
