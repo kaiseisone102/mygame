@@ -56,7 +56,6 @@ type BattleEventGroup =
     | { type: "REQUEST_COMMAND", payload: BasicCommandPayload }
     | { type: "BATTLE_COMMAND_SELECTED", payload: CommandSelectedPayload }// UI操作
     | { type: "SKILL_SELECTED", payload: SelectedSkillPayload }
-    | { type: "ITEM_SELECTED", itemId: string }
     | { type: "PLAYER_COMMAND_SELECTED", input: BattleInput }
     | { type: "BATTLE_ITEM_SELECTED"; itemId: string }
     // ===== 戦闘確定段階 =====
@@ -64,7 +63,8 @@ type BattleEventGroup =
     // ===== 演出 =====
     | BattleVisualEvent
     // ===== ステータス更新 =====
-    | { type: "UPDATE_STATUS", allies: AlliesStatusPayload }
+    | { type: "SHOW_ALLIES_STATUS", allies: AlliesStatusPayload }
+    | { type: "UPDATE_ALLIE_STATUS", allies: AlliesStatusPayload }
     // ===== その他 =====
     | { type: "OPEN_BATTLE_LOG" }
     | { type: "SEND_MESSAGE" }

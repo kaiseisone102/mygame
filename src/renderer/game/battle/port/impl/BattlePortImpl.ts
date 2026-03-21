@@ -5,8 +5,8 @@ import { BattleManager } from "../../core/BattleManager";
 import { ItemPresetsById } from "../../../../../shared/master/battle/ItemPreset";
 import { SkillPreset } from "../../../../../shared/master/battle/type/SkillPreset";
 import { convertItemToSkill } from "../../../../../shared/master/item/convertItemToSkill";
-import { BattleActor } from "../../../../screens/battleScene/overlayScreen/SelectTargetOverlay";
 import { SkillItem } from "../../../../../renderer/screens/battleScene/overlayScreen/SkillSelectOverlay";
+import { BattleActor } from "../../../../../shared/type/battle/BattleAction";
 
 export class BattlePortImpl implements BattlePort {
 
@@ -28,7 +28,7 @@ export class BattlePortImpl implements BattlePort {
                 this.emitUI({
                     type: "REQUEST_COMMAND",
                     payload: {
-                        actorTemplateId: this.manager.currentActor.templateId,
+                        actorMasterId: this.manager.currentActor.actorMasterId,
                         actorInstanceId: this.manager.currentActor.instanceId,
                         actorName: this.manager.currentActor.name,
                         allies,
@@ -40,7 +40,7 @@ export class BattlePortImpl implements BattlePort {
         }
 
         // 🤖 AIの場合
-        return this.ai.decide(this.manager.currentActor.templateId, this.manager.currentActor.instanceId, this.getState());
+        return this.ai.decide(this.manager.currentActor.actorMasterId, this.manager.currentActor.instanceId, this.getState());
     }
     // 入力完了時に呼ばれる
     resolvePlayerInput(input: BattleInput) {

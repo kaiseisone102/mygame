@@ -130,7 +130,7 @@ export class ItemSelectOverLayInBattle implements OverlayScreen {
                     const itemId = String(el.dataset.itemId);
 
                     this.emitUI?.({
-                        type: "ITEM_SELECTED",
+                        type: "BATTLE_ITEM_SELECTED",
                         itemId: itemId
                     });
 

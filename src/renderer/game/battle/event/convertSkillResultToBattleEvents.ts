@@ -45,15 +45,6 @@ export function convertSkillResultToBattleEvents(results: SkillResult[]): Battle
                 });
                 break;
 
-            case SkillEffectKindId.BUFF:
-                events.push({
-                    type: BattleEventKind.BUFF_APPLIED,
-                    instanceId: result.instanceId,
-                    targetId: result.targetId,
-                    buffId: result.buffId,
-                });
-                break;
-
             case SkillEffectKindId.ESCAPE:
                 events.push({
                     type: BattleEventKind.ESCAPE,

@@ -1,5 +1,6 @@
 // src/renderer/screens/battleScene/BattleScene.ts
 
+import { RewardCalculator } from "../../../renderer/game/battle/logic/rewards/RewardCalculator";
 import { delay } from "../../../renderer/utils/delay";
 import { GameState } from "../../../shared/data/gameState";
 import { GrowTableJson } from "../../../shared/Json/growTable/growTableJson";
@@ -22,6 +23,7 @@ import { GetOverlayScreenType } from "../interface/overlay/OverLayScreens";
 import { MainScreen } from "../interface/screen/MainScreen";
 import { BattleBackgroundScreen } from "./mainScreen/BattleBackgroundScreen";
 import { BattleEnemyScreen } from "./mainScreen/BattleEnemyScreen";
+import { AlliesStatusOverlay } from "./overlayScreen/AlliesStatusOverlay";
 import { BattleBasicCommandOverlay } from "./overlayScreen/BattleBasicCommandOverlay";
 import { BattleLogOverlay } from "./overlayScreen/BattleLogOverlay";
 import { BattleTurnDisplayOverlay } from "./overlayScreen/BattleTurnDisplayOverlay";
@@ -64,6 +66,7 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
     private battleLog!: BattleLogOverlay;
     private battleTurnDisplay!: BattleTurnDisplayOverlay;
     private levelUpOverlay!: LevelUpOverlay;
+    private alliesStatusOverlay!: AlliesStatusOverlay;
 
     constructor(
         private gameState: GameState,
@@ -72,6 +75,7 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
         private initEnemyScreen: BattleEnemyScreen,
         private initBackgroundScreen: BattleBackgroundScreen,
         private overlays: GetOverlayScreenType,
+        private rewardCalculator: RewardCalculator
     ) { }
 
     init(root: HTMLElement, initCtx: ScreenInitContext): void {
@@ -91,6 +95,7 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
         this.battleLog = this.overlays[OverlayScreenType.BATTLE_LOG];
         this.battleTurnDisplay = this.overlays[OverlayScreenType.BATTLE_TURN_DISPLAY];
         this.levelUpOverlay = this.overlays[OverlayScreenType.LEVEL_UP_OVERLAY];
+        this.alliesStatusOverlay = this.overlays[OverlayScreenType.ALLIES_STATUS_OVERLAY];
     }
 
     // ----- ----- ----- ----- //
@@ -114,7 +119,8 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
         this.resultService = new BattleResultService(
             this.gameState,
             this.allyGrowTable,
-            this.manager
+            this.manager,
+            this.rewardCalculator
         );
 
         this.battleLog.show();
@@ -227,8 +233,9 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
     private cleanup() {
         this.screens.forEach(s => s.hide());
         this.battleLog.hide();
-        this.emitUI({ type: "POP_ALL_OVERLAY" });
         this.battleTurnDisplay.hide();
+        this.alliesStatusOverlay.hide();
+        this.emitUI({ type: "POP_ALL_OVERLAY" });
         this.eventQueue.clear();
         this.manager.reset();
     }

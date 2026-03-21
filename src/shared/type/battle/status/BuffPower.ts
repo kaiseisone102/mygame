@@ -5,3 +5,4 @@ export const BuffPower = {
     MEDIUM: 0.35,
     LARGE: 0.5,
 } as const;
+export type BuffPowerKey = keyof typeof BuffPower;

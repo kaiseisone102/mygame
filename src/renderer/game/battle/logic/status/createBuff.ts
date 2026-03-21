@@ -2,10 +2,8 @@
 
 import { BuffPresets } from "../../../../../shared/master/battle/BuffPreset";
 
-export function createBuff(
-    id: keyof typeof BuffPresets,
-    args: { value: number; turns: number }
-) {
+export function createBuff(id: keyof typeof BuffPresets, args: { value: number; turns: number }) {
+
     const preset = BuffPresets[id];
 
     return {

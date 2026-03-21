@@ -5,7 +5,7 @@ import { UIActionEvent, InputAxis } from "../../../../renderer/input/mapping/Inp
 import { ScreenInitContext } from "../../../../renderer/screens/interface/context/ScreenInitContext";
 import { OverlayScreen } from "../../../../renderer/screens/interface/overlay/OverLayScreens";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
-import { BaseStats } from "shared/data/playerConstants";
+import { BaseStats } from "../../../../shared/data/playerConstants";
 
 export type LevelUpPayload = {
     name: string;
@@ -133,7 +133,7 @@ export class LevelUpOverlay implements OverlayScreen<LevelUpPayload[]> {
             attack: "攻撃力", defense: "守備力",
             magic: "魔法力", speed: "素早さ",
             luck: "運の良さ", avoid: "回避率",
-            crtical: "会心率"
+            critical: "会心率"
         };
         return names[key] || key;
     }

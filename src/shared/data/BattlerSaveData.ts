@@ -1,13 +1,13 @@
 // src/renderer/game/battle/core/Battler.ts
 
-import { Buff } from "../../renderer/game/battle/logic/status/effects/buff";
+import { StatusInstance } from "../master/battle/StatusPreset";
 import { TraitId } from "../master/battle/TraitPresets";
+import { AiType } from "../master/battle/type/EnemyPreset ";
 import { SkillId } from "../master/battle/type/SkillPreset";
-import { StatusInstance } from "../type/battle/status/StatusInstance";
 import { BaseStats } from "./playerConstants";
 
 export type BattlerSaveData = {
-    templateId: number;
+    actorMasterId: number;
     instanceId: number;
     name: string;
     level: number;
@@ -15,6 +15,6 @@ export type BattlerSaveData = {
     baseStats: BaseStats;
     skills: SkillId[];
     traits: TraitId[];
-    buffs: Buff[];
     statusEffects: StatusInstance[];
+    aiType: AiType;
 };

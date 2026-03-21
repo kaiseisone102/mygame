@@ -2,9 +2,7 @@
 
 import { BattlePort } from "../../../../../renderer/game/battle/port/BattlePort";
 import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
-import { BattleActor } from "../../../../screens/battleScene/overlayScreen/SelectTargetOverlay";
-import { SkillId } from "../../../../../shared/master/battle/type/SkillPreset";
-import { CommandActionType } from "../../../../../shared/type/battle/TargetType";
+import { BattleInput } from "../../../../../shared/type/battle/BattleAction";
 
 export class BattleInputUseCase {
 
@@ -17,14 +15,4 @@ export class BattleInputUseCase {
         this.battlePort.resolvePlayerInput(input);
     }
 
-}
-
-export type BattleInput = {
-    commandId: CommandActionType;
-    actorTemplateId: number;
-    actorInstanceId: number;
-    actorName: string;
-    enemy: BattleActor[];
-    skillId: SkillId;
-    targetId: number;
 }

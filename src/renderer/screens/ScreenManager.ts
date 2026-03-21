@@ -80,8 +80,7 @@ export class ScreenManager implements ScreenPort, ScreenStateReader {
 
         const topOverlay = this.overlayStack.at(-1);
 
-        // 1フレーム分の入力を取得
-        const overlayCapturesInput = topOverlay?.capturesInput ?? false;
+       const overlayCapturesInput = topOverlay?.capturesInput ?? false;
 
         if (topOverlay?.capturesTextInput) {
             this.inputSystem.enableTextInput();
@@ -107,7 +106,7 @@ export class ScreenManager implements ScreenPort, ScreenStateReader {
             overlay.update?.(delta);
         }
 
-        // ========= Input dispatch =========
+        // ========= UI ACTION / AXIS dispatch =========
         if (topOverlay) {
             // --- UI AXIS ---
             topOverlay.handleUIAxes?.(frame.uiAxisIntents);
@@ -172,10 +171,10 @@ export class ScreenManager implements ScreenPort, ScreenStateReader {
         const current = this.overlayStack.at(-1);
         current?.pause?.();
 
-        const overlay = this.overlayRegistry[type];
+        const newOverlay = this.overlayRegistry[type];
 
-        this.overlayStack.push(overlay);
-        overlay.show(payload);
+        this.overlayStack.push(newOverlay);
+        newOverlay.show(payload);
 
         console.log("[Overlay PUSH]:| depth:", this.overlayStack.length, "| top:", this.overlayStack.at(-1)?.overlayId);
     }
@@ -185,7 +184,9 @@ export class ScreenManager implements ScreenPort, ScreenStateReader {
      */
     popOverlay() {
         const top = this.overlayStack.pop();
-        //this.inputSystem.reset();
+        
+        this.inputSystem.reset();
+        
         top?.hide?.();
 
         // 下に Overlay が残っていれば再表示（フォーカス復帰）

@@ -8,7 +8,7 @@ import { SaveQueryService } from "../save/query/SaveQueryService";
 import { ScreenQueryService } from "../save/query/ScreenQueryService";
 import { ConfigRepository } from "../save/saveRepository";
 import { SlotViewModel } from "../screens/viewModel/SlotViewModel";
-import { WorldQueryPort } from "shared/port/WorldQueryPort";
+import { WorldQueryPort } from "../../shared/port/WorldQueryPort";
 
 export class WorldQueryBus implements WorldQueryPort {
     constructor(

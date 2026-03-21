@@ -1,89 +1,57 @@
 // src/renderer/game/battle/core/Battler.ts
 
-import { StackRule } from "../../../../shared/type/battle/status/StackRule";
-import { BattlerPort } from "../../../../shared/type/battle/port/BattlerPort";
-import { StatusContext } from "../../../../shared/type/battle/status/context/statusContext";
-import { StatusEffect, StatusId } from "../../../../shared/type/battle/status/StatusEffect";
-import { Buff } from "../logic/status/effects/buff";
-import { BattlerSide, LevelGrowthTable } from "../../../../shared/type/battle/BattleAction";
-import { Trait } from "../../../../shared/type/battle/trait/Trait";
+import { SkillResult } from "../../../../shared/type/battle/result/SkillResult";
+import { BaseStats } from "../../../../shared/data/playerConstants";
+import { StatusId, StatusInstance, StatusPresets } from "../../../../shared/master/battle/StatusPreset";
 import { AiType } from "../../../../shared/master/battle/type/EnemyPreset ";
 import { SkillId } from "../../../../shared/master/battle/type/SkillPreset";
-import { StatusInstance } from "../../../../shared/type/battle/status/StatusInstance";
-import { StatusCategory } from "../../../../shared/type/battle/status/StatusCategory";
+import { BattlerSide, LevelGrowthTable } from "../../../../shared/type/battle/BattleAction";
 import { BattleEvent } from "../../../../shared/type/battle/event/BattleEvent";
 import { EventContext } from "../../../../shared/type/battle/event/EventContext";
-import { BuffPresets } from "../../../../shared/master/battle/BuffPreset";
+import { BattlerPort, IBattler } from "../../../../shared/type/battle/port/BattlerPort";
 import { StatusTickType } from "../../../../shared/type/battle/status/constants/statusConstant";
+import { Trait } from "../../../../shared/type/battle/trait/Trait";
 import { ImageKey } from "../../../../shared/type/ImageKey";
-import { BaseStats } from "../../../../shared/data/playerConstants";
-
-type LevelUpResult = {
-    level: number
-    gainedStats: Partial<BaseStats>
-}
-/* =====================
-  Battler 用ユーティリティ
-===================== */
-export interface BattlerWithStatus {
-    statusEffects: StatusEffect[];
-    buffs: Buff[];
-
-    addStatus(status: StatusEffect): void;
-    addBuff(buff: Buff): void;
-    removeStatus(id: string): void;
-    removeBuff(id: string): void;
-    decrementTurns(): void; // ターン経過で duration/turns 減らす
-}
-
-export type BattlerMethods = {
-    addStatus: (effect: StatusEffect) => void;
-    addBuff: (buff: Buff) => void;
-    onTurnStart: () => void;
-    canAct: () => boolean;
-    levelUp: () => void;
-    gainExp: (amount: number) => void;
-};
+import { GrowthManager, LevelUpResult } from "./GrowthManager";
+import { StatCalculator } from "./StatCalculator";
+import { StatusManager } from "./StatusManager";
 
 export interface BattlerParams {
-    templateId: number;// 種族ID
+    actorMasterId: number;// 種族ID
     instanceId: number;// 個体ID
     name: string;
     side: BattlerSide;
-    level?: number;
+    level: number;
     exp: number;
-    baseStats?: Partial<BaseStats>;
+    baseStats: Partial<BaseStats>;
     growthTable: LevelGrowthTable;
     statModifier?: number; // キャラ固有補正
     skills: SkillId[];
-    traits?: Trait[];
-    aiType?: AiType;
+    traits: Trait[];
+    aiType: AiType;
     imageKey?: ImageKey;
 }
 
 /**
  * Battler
  */
-export class Battler implements StatusContext, BattlerPort {
-    templateId: number;
+export class Battler implements BattlerPort, IBattler {
+
+    private statusManager: StatusManager;
+
+    private growthManager: GrowthManager;
+
+    actorMasterId: number;
     instanceId: number;
     name: string;
     side: BattlerSide;
 
-    level: number;
-    exp: number;
-
     baseStats!: BaseStats;
-
-    // alive は状態ではなく、計算結果 死亡条件は && で追加できる
-    get alive() { return this.baseStats.hp > 0 && !this.hasStatus(StatusId.DEAD) };
 
     // 習得スキル
     skills: SkillId[];     // skillId 配列
-    traits: Trait[]; // ← 個性
 
-    statusEffects: StatusInstance[] = [];
-    buffs: Buff[] = [];
+    traits: Trait[]; // ← 個性
 
     growthTable?: LevelGrowthTable;
     statModifier?: number;
@@ -93,13 +61,10 @@ export class Battler implements StatusContext, BattlerPort {
     imageKey?: ImageKey;
 
     constructor(params: BattlerParams) {
-        this.templateId = params.templateId;
+        this.actorMasterId = params.actorMasterId;
         this.instanceId = params.instanceId;
         this.name = params.name;
         this.side = params.side;
-
-        this.level = params.level ?? 1;
-        this.exp = params.exp ?? 0;
 
         this.initializeStats(params.baseStats ?? {});
 
@@ -109,7 +74,34 @@ export class Battler implements StatusContext, BattlerPort {
         this.statModifier = params.statModifier ?? 1;
         this.aiType = params.aiType ?? AiType.AGGRESSIVE;
         this.imageKey = params.imageKey ?? undefined;
+
+        this.statusManager = new StatusManager(this);
+
+        this.growthManager = new GrowthManager(params.level ?? 1, params.exp ?? 0, params.growthTable, params.statModifier ?? 1);
     }
+
+    get id(): string { return this.instanceId.toString(); }
+
+    get level() { return this.growthManager.level; }
+    get exp() { return this.growthManager.exp; }
+
+    get hp(): number { return this.baseStats.hp; }
+    get maxHp(): number { return this.baseStats.maxHp; }
+
+    // alive は状態ではなく、計算結果 死亡条件は && で追加できる
+    get alive() { return this.baseStats.hp > 0 && !this.hasStatus(StatusId.DEAD) };
+
+    // --- 最終的な能力値を取得するゲッター群 ---
+    /** 最終攻撃力 (バフ・特性・状態異常を反映) */
+    get attack(): number { return StatCalculator.calculate(this, "attack") };
+    /** 最終防御力 */
+    get defense(): number { return StatCalculator.calculate(this, "defense") };
+    /** 最終魔法力 */
+    get magic(): number { return StatCalculator.calculate(this, "magic") };
+    /** 最終素早さ */
+    get speed(): number { return StatCalculator.calculate(this, "speed") };
+
+    get statusEffects() { return this.statusManager.effects; }
 
     /* =====================
            ステータス操作
@@ -122,217 +114,82 @@ export class Battler implements StatusContext, BattlerPort {
         this.baseStats.mp = Math.min(this.baseStats.maxMp, Math.max(0, this.baseStats.mp + amount));
     }
 
-    addStatus(newStatus: StatusInstance) {
-
-        // 同カテゴリの既存状態
-        const sameCategory: StatusInstance[] = [];
-
-        for (const s of this.statusEffects) {
-            if (s.category === newStatus.category) {
-                sameCategory.push(s);
-            }
-        }
-
-        // 同カテゴリが存在する場合
-        if (sameCategory.length > 0) {
-
-            const strongest = sameCategory.reduce((a, b) =>
-                (a.priority ?? 0) >= (b.priority ?? 0) ? a : b
-            );
-
-            // 新しい状態が弱い or 同等なら無視
-            if ((newStatus.priority ?? 0) <= (strongest.priority ?? 0)) {
-                return;
-            }
-
-            // 強い状態が来た → 既存カテゴリ全削除
-            for (const s of sameCategory) {
-                s.onExpire?.(this);
-            }
-
-            this.statusEffects = this.statusEffects.filter(
-                s => s.category !== newStatus.category
-            );
-        }
-
-        // 同IDの状態（重複ルール）
-        const sameId = this.statusEffects.find(e => e.id === newStatus.id);
-
-        if (!sameId) {
-            this.statusEffects.push(newStatus);
-            newStatus.onApply?.(this);
-        } else {
-            switch (newStatus.stackRule) {
-                case StackRule.IGNORE:
-                    return;
-
-                case StackRule.REPLACE:
-                    sameId.onExpire?.(this);
-                    this.statusEffects = this.statusEffects.filter(e => e !== sameId);
-                    this.statusEffects.push(newStatus);
-                    newStatus.onApply?.(this);
-                    return;
-
-                case StackRule.EXTEND:
-                    if (sameId.duration > 0 && newStatus.duration > 0) {
-                        sameId.duration += newStatus.duration;
-                    }
-                    return;
-
-                case StackRule.STACK:
-                    this.statusEffects.push(newStatus);
-                    newStatus.onApply?.(this);
-                    return;
-            }
-        }
-
-        this.statusEffects.sort(
-            (a, b) => (b.order ?? 0) - (a.order ?? 0)
-        );
-    }
-
     addTrait(trait: Trait) {
         this.traits.push(trait);
     }
 
-    addBuff(buff: Buff) {
-        const existing = this.buffs.find(b => b.id === buff.id);
-        if (!existing) {
-            this.buffs.push({ ...buff });
-            return;
-        }
-
-        switch (buff.stackRule) {
-            case StackRule.IGNORE:
-                return;
-            case StackRule.REPLACE:
-                Object.assign(existing, buff);
-                return;
-            case StackRule.STACK:
-                existing.turns += buff.turns;
-                return;
-            case StackRule.EXTEND:
-                existing.turns += buff.turns;
-                return;
-        }
-    }
+    addStatus(status: StatusInstance) { this.statusManager.add(status); }
+    removeStatus(id: StatusId) { this.statusManager.remove(id); }
+    hasStatus(id: StatusId) { return this.statusManager.has(id); }
 
     /* =====================
       ターン開始処理
     ===================== */
-    onTurnStart() {
-        // ===== 状態異常処理 =====
-        // order順で処理
-        const effects = [...this.statusEffects].sort(
-            (a, b) => (b.order ?? 0) - (a.order ?? 0)
-        );
-        // ターン開始処理（毒など）
-        for (const effect of effects) {
-
-            if (effect.tickType === StatusTickType.TURN_START) {
-                effect.onTurnTick?.(this);
-            }
-
-        }
-
-        // expire 処理
-        this.statusEffects = this.statusEffects.filter(effect => {
-
-            if (effect.shouldExpire?.()) {
-                effect.onExpire?.(this);
-                return false;
-            }
-
-            if (effect.duration > 0) {
-                effect.duration--;
-                if (effect.duration === 0) {
-                    effect.onExpire?.(this);
-                    return false;
-                }
-            }
-
-            return true;
-        });
-
-        // ===== buff 処理 =====
-        this.buffs = this.buffs.filter(buff => {
-            if (buff.turns > 0) buff.turns--;
-            return buff.turns !== 0;
-        });
+    onTurnStart(): SkillResult[] {
+        // 全てのロジックをManager側で実行
+        const results = this.statusManager.processTurnTick(StatusTickType.TURN_START);
+        return results;
     }
 
-    onTurnEnd() {
-
-        const effects = [...this.statusEffects].sort(
-            (a, b) => (b.order ?? 0) - (a.order ?? 0)
-        );
-
-        for (const effect of effects) {
-
-            if (effect.tickType === StatusTickType.TURN_END) {
-                effect.onTurnTick?.(this);
-            }
-
-        }
-
+    onTurnEnd(): SkillResult[] {
+        // 終了タイミングの処理（リジェネなど）
+        const results = this.statusManager.processTurnTick(StatusTickType.TURN_END);
+        return results;
     }
 
     /* =====================
         行動可能判定
     ===================== */
     canAct(): boolean {
-        return !this.statusEffects.some(s => s.blocksAction);
+        // statusEffects をループし、それぞれの statusId からマスタデータを参照する
+        const isBlocked = this.statusEffects.some(s => {
+            const preset = StatusPresets[s.statusId];
+            return preset.blocksAction === true; // blocksAction が true なら行動不可
+        });
+
+        // 「行動不能な状態」が一つもなければ true
+        return !isBlocked;
     }
 
-    /* =====================
-       レベルアップ処理
-    ===================== */
-    private applyGrowth(
-        current: number,
-        growth: number | undefined,
-        modifier: number
-    ) {
-        return current + Math.floor((growth ?? 0) * modifier);
+    getStatus(id: StatusId): StatusInstance | undefined {
+        // IDが一致するインスタンスを返す
+        return this.statusEffects.find(instance => instance.statusId === id);
     }
 
-    levelUp(): LevelUpResult {
-        const nextLevel = this.level + 1;
-        const growth = this.growthTable?.[nextLevel];
-
-        if (!growth) return { level: this.level, gainedStats: this.baseStats }; // 最大レベルなら成長なし
-
-        const modifier = this.statModifier ?? 1;
-
-        this.baseStats.maxHp = this.applyGrowth(this.baseStats.maxHp, growth.hp, modifier);
-        this.baseStats.maxMp = this.applyGrowth(this.baseStats.maxMp, growth.mp, modifier);
-
-        this.baseStats.attack = this.applyGrowth(this.baseStats.attack, growth.attack, modifier);
-        this.baseStats.defense = this.applyGrowth(this.baseStats.defense, growth.defense, modifier);
-        this.baseStats.magic = this.applyGrowth(this.baseStats.magic, growth.magic, modifier);
-        this.baseStats.speed = this.applyGrowth(this.baseStats.speed, growth.speed, modifier);
-
-        this.level = nextLevel;
-
-        this.baseStats.hp = this.baseStats.maxHp; // レベルアップ時全回復なら明示
-        this.baseStats.mp = this.baseStats.maxMp;
-
-        return { level: nextLevel, gainedStats: growth }
+    hasAnyStatus(ids: StatusId[]): boolean {
+        // 指定された ID リストの中に statusId が含まれているか
+        return this.statusEffects.some(instance => ids.includes(instance.statusId));
     }
 
-    /* =====================
-        経験値処理
-    ===================== */
-    gainExp(amount: number) {
-        this.exp += amount;
+    emitEvent(event: BattleEvent, ctx: EventContext) {
+        for (const instance of this.statusEffects) {
+            // マスタデータから onEvent を取得して実行
+            const preset = StatusPresets[instance.statusId];
 
-        while (this.exp >= this.expToNextLevel()) {
-            this.exp -= this.expToNextLevel();
-            this.levelUp();
+            if (!preset) {
+                console.error(`StatusId "${instance.statusId}" が StatusPresets に見つかりません！`);
+                continue;
+            }
+
+            preset.onEvent?.(event, ctx);
         }
     }
 
+    /**
+     * 内部で汎用的にステータスを取得したい場合
+     */
+    getStat(stat: keyof BaseStats): number {
+        return StatCalculator.calculate(this, stat);
+    }
+
+    /** 経験値獲得 */
+    gainExp(amount: number): LevelUpResult[] {
+        return this.growthManager.gainExp(amount, this.baseStats);
+    }
+
+    /** 次のレベルまでの必要経験値 */
     expToNextLevel(): number {
-        return 100 * this.level;
+        return this.growthManager.getExpToNextLevel();
     }
 
     private initializeStats(base: Partial<BaseStats>) {
@@ -356,64 +213,5 @@ export class Battler implements StatusContext, BattlerPort {
             avoid: base.avoid ?? 5,
             critical: base.critical ?? 5,
         };
-    }
-
-    hasStatus(id: StatusId): boolean {
-        return this.statusEffects.some(status => status.id === id);
-    }
-
-    hasStatusCategory(category: StatusCategory): boolean {
-        return this.statusEffects.some(s => s.category === category);
-    }
-
-    getStatus(id: StatusId): StatusInstance | undefined {
-        return this.statusEffects.find(s => s.id === id) ?? undefined;
-    }
-
-    hasAnyStatus(ids: StatusId[]): boolean {
-        return this.statusEffects.some(s => ids.includes(s.id));
-    }
-
-    emitEvent(event: BattleEvent, ctx: EventContext) {
-
-        for (const status of this.statusEffects) {
-            status.onEvent?.(event, ctx);
-        }
-    }
-
-    getStat(stat: keyof BaseStats): number {
-
-        let value = this.baseStats[stat];
-
-        // buff
-        for (const buff of this.buffs) {
-
-            const preset = BuffPresets[buff.id];
-
-            if (!preset) continue;
-
-            if (preset.category === stat) continue;
-
-            value = preset.apply(value, buff.value);
-
-        }
-
-        // ===== Trait =====
-        for (const trait of this.traits) {
-
-            if (!trait.modifyStat) continue;
-
-            value = trait.modifyStat(stat, value);
-        }
-
-        // ===== Status =====
-        for (const status of this.statusEffects) {
-
-            if (!status.statModifier) continue;
-
-            value = status.statModifier(stat, value);
-        }
-
-        return value;
     }
 }

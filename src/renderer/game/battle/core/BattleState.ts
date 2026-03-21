@@ -1,5 +1,6 @@
 // src/renderer/game/battle/core/BattleState.ts
 
+import { AiType } from "../../../../shared/master/battle/type/EnemyPreset ";
 import { BattlerSaveData } from "../../../../shared/data/BattlerSaveData";
 import { DEFAULT_PLAYER_BASE_STATS } from "../../../../shared/data/playerConstants";
 import { getTraitById, TraitId, TraitPresets } from "../../../../shared/master/battle/TraitPresets";
@@ -53,13 +54,13 @@ export function createAllies(saveData?: BattlerSaveData[]): Battler[] {
     if (saveData && saveData.length > 0) {
         return saveData.map(data => {
             // TraitId[] を Trait[] に変換する必要がある場合、ここでマスターデータから参照します
-            // もし Battler コンストラクタ内で ID から実体を引いているならそのまま渡せます
+            // もし Battler コンストラクタ内で ID から実体を引いているならそのまま渡せます ありがとう
             const params: BattlerParams = {
                 ...data,
                 side: BattlerSide.ALLY,
                 growthTable: {},
                 // もし saveData の traits が ID 配列で、
-                // BattlerParams が Trait オブジェクト配列を求めているなら find が必要
+                // BattlerParams が Trait オブジェクト配列を求めているなら find が必要 ありがとう
                 traits: data.traits.map(id => getTraitById(id))
             };
             return new Battler(params);
@@ -68,7 +69,7 @@ export function createAllies(saveData?: BattlerSaveData[]): Battler[] {
 
     const allyData: BattlerParams[] = [
         {
-            templateId: 1,
+            actorMasterId: 1,
             instanceId: 1,
             name: "Hero",
             level: 1,
@@ -88,10 +89,11 @@ export function createAllies(saveData?: BattlerSaveData[]): Battler[] {
                 MagicId.HEAL_ALL,
                 MagicId.GIGADEIN
             ],
-            traits: [TraitPresets.WEAK_FIRE]
+            traits: [TraitPresets.WEAK_FIRE],
+            aiType: AiType.AGGRESSIVE
         },
         {
-            templateId: 2,
+            actorMasterId: 2,
             instanceId: 2,
             name: "Mage",
             level: 1,
@@ -124,7 +126,8 @@ export function createAllies(saveData?: BattlerSaveData[]): Battler[] {
 
                 MagicId.GIGADEIN
             ],
-            traits: [TraitPresets.RESIST_MAGIC]
+            traits: [TraitPresets.RESIST_MAGIC],
+            aiType: AiType.AGGRESSIVE
         },
     ];
 
@@ -132,73 +135,25 @@ export function createAllies(saveData?: BattlerSaveData[]): Battler[] {
 }
 
 /**
- * ダミー敵を作る
+ * 初期 BattleState を生成
  */
-function createDummyEnemies(): Battler[] {
-    const enemyData: BattlerParams[] = [
-        {
-            templateId: 101,
-            instanceId: 3,
-            name: "Slime うんこ",
-            exp: 0,
-            side: BattlerSide.ENEMY,
-            baseStats: { hp: 10, attack: 3, defense: 1, speed: 15 },
-            growthTable: {},
-            skills: [],
-            traits: [TraitPresets.WEAK_FIRE]
-        },
-        {
-            templateId: 102,
-            instanceId: 4,
-            name: "Slime B",
-            exp: 0,
-            side: BattlerSide.ENEMY,
-            baseStats: { hp: 12, attack: 4, defense: 2, speed: 8 },
-            growthTable: {},
-            skills: [],
-            traits: [TraitPresets.RESIST_MAGIC]
-        },
-        {
-            templateId: 103,
-            instanceId: 5,
-            name: "Slime C",
-            exp: 0,
-            side: BattlerSide.ENEMY,
-            baseStats: { hp: 8, attack: 2, defense: 1, speed: 5 },
-            growthTable: {},
-            skills: [],
-            traits: []
-        },
-    ];
-
-    return enemyData.map(params => new Battler(params));
-}
-
-/**
- * 初期 BattleState を生成（仮敵入り）
- */
-export function createInitialBattleState(): BattleState {
-    const allies = createAllies();
-    const enemies = createDummyEnemies();
-
-    const allBattlers = [...allies, ...enemies];
-
-    // 仮でID順で行動順を決める
-    const order = [...allBattlers].sort((a, b) => a.templateId - b.templateId).map(b => b.templateId);;
-
+export const createInitialBattleState = (): BattleState => {
     return {
-        ...initialBattleState,
-        allies,
-        enemies,
-        turn: 1,
-        currentActorId: order[0],
-        order,
+        turn: 0,
+        allies: [],
+        enemies: [],
+        currentActorId: -1,
+        order: [],
+        actionQueue: [],
+        result: BattleResult.NULL,
+        finished: false,
+        mode: CommandMode.NULL,
     };
-}
+};
 
 export function createInitialParty(): BattlerSaveData {
     return {
-        templateId: 1,
+        actorMasterId: 1,
         instanceId: 1,
         name: "Hero",
         level: 1,
@@ -217,7 +172,7 @@ export function createInitialParty(): BattlerSaveData {
             MagicId.GIGADEIN
         ],
         traits: [TraitId.WEAK_FIRE],
-        buffs: [],
-        statusEffects: []
+        statusEffects: [],
+        aiType: AiType.AGGRESSIVE
     }
 }

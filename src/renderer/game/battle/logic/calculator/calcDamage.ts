@@ -1,7 +1,7 @@
 import { Battler } from "../../core/Battler";
-import { SkillEffect } from "../../../../../shared/type/battle/skill/Skill";
 import { MagicFormulaId, PhysicalFormulaId, SkillEffectKindId } from "../../../../../shared/type/battle/skill/skillFormula";
 import { CalcDamageResult } from "../../../../../shared/type/battle/damage/DamageResult";
+import { SkillEffect } from "../../../../../shared/type/battle/skill/SkillEffect";
 
 export function calcDamage(
     attacker: Battler,

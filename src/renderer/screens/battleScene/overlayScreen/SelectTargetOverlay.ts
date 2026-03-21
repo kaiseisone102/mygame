@@ -10,14 +10,7 @@ import { CommandActionType } from "../../../../shared/type/battle/TargetType";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
 import { SkillId, TechniqueId } from "../../../../shared/master/battle/type/SkillPreset";
 import { CommandSelectedPayload } from "./BattleBasicCommandOverlay";
-
-
-export type BattleActor = {
-    templateId: number;
-    instanceId: number;
-    name: string;
-    alive: boolean;
-};
+import { BattleActor } from "../../../../shared/type/battle/BattleAction";
 
 export type SelectTargetPayload = {
     phaseSecond: CommandSelectedPayload;
@@ -42,7 +35,7 @@ export class SelectTargetOverlay implements SelectTargetOverlayScreen {
     private target!: HTMLElement;
     private commandItems: HTMLParagraphElement[] = [];
     private selectedIndex = 0;
-    private actorTemplateId: number = 0;
+    private actorMasterId: number = 0;
     private actorInstanceId: number = 0;
     private actorName: string = "";
     private targets: BattleActor[] = [];
@@ -86,7 +79,7 @@ export class SelectTargetOverlay implements SelectTargetOverlayScreen {
         this.selectedIndex = 0;
         this.screen.style.display = "block";
         this.commandId = payload.phaseSecond.commandId;
-        this.actorTemplateId = payload.phaseSecond.phaseBase.actorTemplateId;
+        this.actorMasterId = payload.phaseSecond.phaseBase.actorMasterId;
         this.actorInstanceId = payload.phaseSecond.phaseBase.actorInstanceId;
         this.actorName = payload.phaseSecond.phaseBase.actorName;
         const targets = payload.isTargetEnemy ? payload.phaseSecond.phaseBase.enemies : payload.phaseSecond.phaseBase.allies
@@ -168,7 +161,7 @@ export class SelectTargetOverlay implements SelectTargetOverlayScreen {
                         type: "PLAYER_COMMAND_SELECTED",
                         input: {
                             commandId: this.commandId,
-                            actorTemplateId: this.actorTemplateId,
+                            actorMasterId: this.actorMasterId,
                             actorInstanceId: this.actorInstanceId,
                             actorName: this.actorName,
                             enemy: this.targets,

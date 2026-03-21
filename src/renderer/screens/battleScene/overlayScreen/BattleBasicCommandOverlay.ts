@@ -7,14 +7,14 @@ import { WorldEvent } from "../../../router/WorldEvent";
 import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { BattleState } from "../../../game/battle/core/BattleState";
 import { BattleResult, CommandActionType } from "../../../../shared/type/battle/TargetType";
-import { BattleActor } from "./SelectTargetOverlay";
 import { OverlayScreen } from "../../interface/overlay/OverLayScreens";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
 import { SkillItem } from "./SkillSelectOverlay";
 import { BASIC_COMMANDS_DISPLAY } from "../../../../shared/data/constants";
+import { BattleActor } from "../../../../shared/type/battle/BattleAction";
 
 export type BasicCommandPayload = {
-    actorTemplateId: number;
+    actorMasterId: number;
     actorInstanceId: number;
     actorName: string,
     allies: BattleActor[],

@@ -1,10 +1,10 @@
 // src/shared/type/battle/skill/SkillEffect.ts
 
 import { BuffPresets } from "../../../master/battle/BuffPreset";
-import { StatusPresets } from "../../../master/battle/StatusPreset";
-import { StatusCategory } from "../status/StatusCategory";
-import { StatusId } from "../status/StatusEffect";
-import { Element, MagicFormulaId, PhysicalFormulaId, SkillEffectKindId } from "./skillFormula";
+import { StatusCategory, StatusId, StatusPresets } from "../../../master/battle/StatusPreset";
+import { BattlerPort } from "../port/BattlerPort";
+import { BuffPower } from "../status/BuffPower";
+import { DamageFormula, Element, MagicFormulaId, PhysicalFormulaId, SkillEffectKindId } from "./skillFormula";
 
 // SkillPreset の effects で利用
 export type SkillEffectKind =
@@ -18,11 +18,7 @@ export type SkillEffectKind =
         statusId: StatusId;
         status: StatusCategory
         chance: number; // 0~1
-    }
-    | {
-        type: typeof SkillEffectKindId.BUFF;
-        buffId: keyof typeof BuffPresets;
-        value: number;
+        value: keyof typeof BuffPower;
         turns: number;
     }
     | {
@@ -56,3 +52,29 @@ export type DamageEffect =
         power: number;
         element?: Element;
     };
+
+export type SkillEffect =
+    | {
+        type: typeof SkillEffectKindId.DAMAGE;
+        formula: DamageFormula;
+        power: number;         // 0 は攻撃威力に依存
+        rate?: number;        // ATK_RATE 用 
+        element?: Element;
+    }
+    | {
+        type: typeof SkillEffectKindId.HEAL;
+        power: number
+    }
+    | {
+        type: typeof SkillEffectKindId.STATUS; // ← 状態異常専用
+        statusId: keyof typeof StatusPresets;
+        status: StatusCategory;
+        chance: number; // 0~1
+    }
+    | {
+        type: typeof SkillEffectKindId.BUFF;
+        buffId: keyof typeof BuffPresets;
+        value: number;
+        turns: number;
+    }
+    | { type: "SPECIAL"; handler: (actor: BattlerPort, target: BattlerPort) => void };

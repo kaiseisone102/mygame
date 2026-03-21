@@ -1,5 +1,6 @@
 // src/renderer/screens/mainScreens/createMainScreens.ts
 
+import { RewardCalculator } from "../../../renderer/game/battle/logic/rewards/RewardCalculator";
 import { BattleManager } from "../../../renderer/game/battle/core/BattleManager";
 import { WorldManager } from "../../../renderer/game/map/WorldManager";
 import { GameState } from "../../../shared/data/gameState";
@@ -26,6 +27,7 @@ export function createMainScreens(
     worldManager: WorldManager,
     battleManager: BattleManager,
     overlayScreen: GetOverlayScreenType,
+    rewardCalculator: RewardCalculator
 ) {
     const battleEnemyScreen = new BattleEnemyScreen();
     const battleBackGrounScreen = new BattleBackgroundScreen();
@@ -41,6 +43,6 @@ export function createMainScreens(
         // 戦闘用シーン
         [MainScreenType.BATTLE_ENEMY_SCREEN]: battleEnemyScreen,
         [MainScreenType.BATTLE_BACKGROUND_SCREEN]: battleBackGrounScreen,
-        [MainScreenType.BATTLE_SCENE]: new BattleScene(gameState, allyGrowTable, battleManager, battleEnemyScreen, battleBackGrounScreen, overlayScreen)
+        [MainScreenType.BATTLE_SCENE]: new BattleScene(gameState, allyGrowTable, battleManager, battleEnemyScreen, battleBackGrounScreen, overlayScreen, rewardCalculator)
     } as const;
 }

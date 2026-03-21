@@ -294,8 +294,8 @@
         "effectScope": "SINGLE",
         "effects": [
             {
-                "type": "BUFF",
-                "buffId": "ATK",
+                "type": "STATUS",
+                "statusId": "ATK",
                 "value": "SMALL",
                 "turns": 3
             }
@@ -314,8 +314,8 @@
         "effectScope": "SINGLE",
         "effects": [
             {
-                "type": "BUFF",
-                "buffId": "ATK",
+                "type": "STATUS",
+                "statusId": "ATK",
                 "value": "LARGE",
                 "turns": 3
             }
@@ -334,8 +334,8 @@
         "effectScope": "ALL",
         "effects": [
             {
-                "type": "BUFF",
-                "buffId": "DEF",
+                "type": "STATUS",
+                "statusId": "DEF",
                 "value": "SMALL",
                 "turns": 3
             }
@@ -354,8 +354,8 @@
         "effectScope": "ALL",
         "effects": [
             {
-                "type": "BUFF",
-                "buffId": "SPD",
+                "type": "STATUS",
+                "statusId": "SPD",
                 "value": "SMALL",
                 "turns": 3
             }
@@ -374,8 +374,8 @@
         "effectScope": "GROUP",
         "effects": [
             {
-                "type": "BUFF",
-                "buffId": "ATK",
+                "type": "STATUS",
+                "statusId": "ATK",
                 "value": "-SMALL",
                 "turns": 3
             }
@@ -394,8 +394,8 @@
         "effectScope": "GROUP",
         "effects": [
             {
-                "type": "BUFF",
-                "buffId": "SPD",
+                "type": "STATUS",
+                "statusId": "SPD",
                 "value": "-SMALL",
                 "turns": 3
             }
@@ -484,8 +484,8 @@
         "effectScope": "GROUP",
         "effects": [
             {
-                "type": "BUFF",
-                "buffId": "AGGRO",
+                "type": "STATUS",
+                "statusId": "AGGRO",
                 "value": 1,
                 "turns": 2
             }

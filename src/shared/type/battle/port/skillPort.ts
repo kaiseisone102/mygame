@@ -1,6 +1,6 @@
 // src/shared/battle/port/SkillPort.ts
 export interface SkillPort {
-  id: string;
+  skillId: string;
   element?: string;
   category?: string;
 }

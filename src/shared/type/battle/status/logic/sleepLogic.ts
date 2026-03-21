@@ -1,9 +1,8 @@
 // src/shared/battle/status/logic/sleepLogic.ts
 
-import { StatusEffect } from "../StatusEffect";
 
 // 😴 sleepLogic
-export function sleepLogic(recoverRate: number): Pick<StatusEffect, "onBeforeAction" | "shouldExpire"> {
+export function sleepLogic(recoverRate: number) {
     return {
         // 行動不能か？
         onBeforeAction: () => false,

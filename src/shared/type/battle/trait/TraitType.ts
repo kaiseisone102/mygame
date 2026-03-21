@@ -3,7 +3,6 @@
 import { SkillPreset } from "../../../master/battle/type/SkillPreset";
 import { TargetSpecifier } from "../BattleAction";
 import { BattlerPort } from "../port/BattlerPort";
-import { Skill } from "../skill/Skill";
 import { CommandActionType } from "../TargetType";
 
 /**

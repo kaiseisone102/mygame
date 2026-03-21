@@ -104,7 +104,9 @@
             "ATK_UP_SMALL",
             "ATK_UP_LARGE"
         ],
-        "traits": [],
+        "traits": [
+            "RESIST_MAGIC"
+        ],
         "aiType": "AGGRESSIVE",
         "imageKey": "ENEMY4"
     }

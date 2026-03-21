@@ -1,21 +1,22 @@
 // src/renderer/game/battle/logic/skills/SkillExecutor.ts
 
-import { TraitRunner } from "../traits/TraitRunner";
+import { StatusCategory, StatusId, StatusPresets } from "../../../../../shared/master/battle/StatusPreset";
+import { getBuffPowerValue } from "../../../../../shared/master/battle/SkillRepository";
+import { SkillPreset } from "../../../../../shared/master/battle/type/SkillPreset";
+import { BattleEvent } from "../../../../../shared/type/battle/event/BattleEvent";
+import { SkillResult } from "../../../../../shared/type/battle/result/SkillResult";
+import { SkillEffectKindId } from "../../../../../shared/type/battle/skill/skillFormula";
 import { Battler } from "../../core/Battler";
 import { calcDamage } from "../calculator/calcDamage";
 import { createStatus } from "../status/createStatus";
-import { createBuff } from "../status/createBuff";
-import { SkillResult } from "../../../../../shared/type/battle/result/SkillResult";
-import { SkillEffectKindId } from "../../../../../shared/type/battle/skill/skillFormula";
-import { SkillPreset } from "../../../../../shared/master/battle/type/SkillPreset";
-import { BattleEvent } from "../../../../../shared/type/battle/event/BattleEvent";
+import { TraitRunner } from "../traits/TraitRunner";
 
 export class SkillExecutor {
     static execute(actor: Battler, skill: SkillPreset, targets: Battler[]): SkillResult[] {
         const results: SkillResult[] = [];
         const mpCost = skill.cost?.mp;
 
-        // MP消費
+        // MP消費(メソッドがあればそれを使うのが理想ですが、現状は直接代入でも可)
         if (mpCost != null) {
             const cost = TraitRunner.applyMpCost(mpCost, skill, actor.traits);
             actor.baseStats.mp = Math.max(0, actor.baseStats.mp - cost);
@@ -40,7 +41,8 @@ export class SkillExecutor {
                             target.traits
                         );
 
-                        target.baseStats.hp = Math.max(0, target.addHp(-final));
+                        // メソッドを使用し、HP減少を適用
+                        target.addHp(-final);
                         const killed = !target.alive;
 
                         target.emitEvent(BattleEvent.DAMAGE, {
@@ -54,8 +56,9 @@ export class SkillExecutor {
                             instanceId: actor.instanceId,
                             targetId: target.instanceId,
                             value: final,
-                            isCritical: base.isCritical, // calcDamageで返してもいい
-                            killed
+                            isCritical: base.isCritical,
+                            killed: killed,
+                            success: true // ダメージが発生したなら成功
                         });
                         break;
                     }
@@ -67,46 +70,70 @@ export class SkillExecutor {
                             [...actor.traits, ...target.traits]
                         );
 
-                        target.baseStats.hp = Math.min(target.baseStats.maxHp, target.baseStats.hp + final);
+                        target.addHp(final);
 
                         results.push({
                             kind: SkillEffectKindId.HEAL,
                             instanceId: actor.instanceId,
                             targetId: target.instanceId,
-                            value: final
+                            value: final,
+                            success: true
                         });
                         break;
                     }
 
                     case SkillEffectKindId.STATUS:
-
                         const chance = effect.chance ?? 1;
-
-                        if (Math.random() < chance) {
-                            target.addStatus(createStatus(effect.statusId, { source: actor, skill }))
-
+                        if (Math.random() >= chance) {
                             results.push({
                                 kind: SkillEffectKindId.STATUS,
-                                instanceId: actor.instanceId,
+                                instanceId: actor.actorMasterId,
+                                statusId: skill.id,
                                 targetId: target.instanceId,
-                                statusId: effect.statusId
+                                success: false
                             });
+                            break;
                         }
-                        break;
 
-                    case SkillEffectKindId.BUFF:
-                        target.addBuff(
-                            createBuff(effect.buffId, { value: effect.value, turns: effect.turns })
-                        );
+                        if (!effect.statusId) break;
+
+                        const preset = StatusPresets[effect.statusId as StatusId];
+                        const attribute = preset.category === StatusCategory.ATTACK || StatusCategory.DEFENSE || StatusCategory.MAGIC || StatusCategory.SPEED || StatusCategory.AGGRO ? preset.category : undefined; // "attack", "defense" 等のステータスキー
+
+                        // --- 1. バフ・デバフ（数値変化）がある場合の前後値記録 ---
+                        const buffValue = getBuffPowerValue(effect.value);
+                        let beforeValue = 0;
+                        let afterValue = 0;
+                        const isBuffDebuff = attribute && attribute in target.baseStats;
+
+                        if (isBuffDebuff) {
+                            // target.attack などの getter を通じて現在の最終値を取得
+                            beforeValue = (target as any)[attribute];
+                        }
+
+                        const instance = createStatus(effect.statusId as StatusId, actor, buffValue);
+                    
+                        target.addStatus(instance);
+
+                        // --- 3. 付与後の反映 ---
+                        if (isBuffDebuff) {
+                            afterValue = (target as any)[attribute];
+                        }
 
                         results.push({
-                            kind: SkillEffectKindId.BUFF,
+                            kind: SkillEffectKindId.STATUS,
                             instanceId: actor.instanceId,
                             targetId: target.instanceId,
-                            buffId: effect.buffId
+                            statusId: effect.statusId,
+                            // バフ系なら差分を、状態異常なら 0 や duration を入れる
+                            value: isBuffDebuff ? instance.value : (buffValue ?? 0),
+                            preValue: isBuffDebuff ? beforeValue : undefined,
+                            postValue: isBuffDebuff ? afterValue : undefined,
+                            attribute: attribute,
+                            success: true
                         });
                         break;
-                        
+
                     case SkillEffectKindId.ESCAPE:
 
                         const success = Math.random() < (effect.chance ?? 0.7);

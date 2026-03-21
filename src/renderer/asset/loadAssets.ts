@@ -63,5 +63,13 @@ export async function loadAssets() {
         ImageStore.load(ImageKey.ENEMY3, "assets/images/enemy/Enemy3.png"),
         ImageStore.load(ImageKey.ENEMY4, "assets/images/enemy/Enemy4.png"),
 
+        // ----- ステータスアイコン ----- //
+        ImageStore.load(ImageKey.CHARM, "assets/images/status/icon_status_charm.png"),
+        ImageStore.load(ImageKey.POISON, "assets/images/status/icon_status_poison.png"),
+        ImageStore.load(ImageKey.CONFUSION, "assets/images/status/icon_status_confusion.png"),
+        ImageStore.load(ImageKey.PARALYSIS, "assets/images/status/icon_status_paralysis.png"),
+        ImageStore.load(ImageKey.SLEEP, "assets/images/status/icon_status_sleep.png"),
+        ImageStore.load(ImageKey.STRONG_POISON, "assets/images/status/icon_status_strongPoison.png"),
+
     ]);
 }

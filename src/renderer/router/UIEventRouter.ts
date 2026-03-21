@@ -10,16 +10,15 @@ import { AppUIEvent } from "./AppUIEvents";
 import { GameUseCases } from "./useCase/gameUseCase/facade/GameUseCases";
 
 export class UIEventRouter implements UIEventPort {
-    emit(event: AppUIEvent) {
-        this.dispatch(event);
-    }
+
+    emit(event: AppUIEvent) { this.dispatch(event) };
+
     private gameUseCases!: GameUseCases;
-    constructor(
-        private screens: ScreenPort,
-    ) { }
-    setUseCases(useCases: GameUseCases) {
-        this.gameUseCases = useCases;
-    }
+
+    constructor(private screens: ScreenPort) { };
+
+    setUseCases(useCases: GameUseCases) { this.gameUseCases = useCases };
+
     dispatch(event: AppUIEvent) {
         switch (event.type) {
             case "OPEN_YES_NO": this.screens.openYesNo(event); break;
@@ -63,6 +62,7 @@ export class UIEventRouter implements UIEventPort {
                 this.screens.pushOverlay(OverlayScreenType.BATTLE_BASIC_COMMAND_OVERLAY, event.payload);
                 break;
             }
+
             case "BATTLE_COMMAND_SELECTED": {  // UI操作
                 switch (event.payload.commandId) {
                     case CommandActionType.ATTACK: // 攻撃対象選択用オーバーレイを表示
@@ -79,11 +79,11 @@ export class UIEventRouter implements UIEventPort {
                         break;
 
                     case CommandActionType.DEFENCE:
-                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorTemplateId: event.payload.phaseBase.actorTemplateId, actorInstanceId: event.payload.phaseBase.actorInstanceId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: TechniqueId.GUARD, targetId: event.payload.phaseBase.actorInstanceId });
+                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorMasterId: event.payload.phaseBase.actorMasterId, actorInstanceId: event.payload.phaseBase.actorInstanceId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: TechniqueId.GUARD, targetId: event.payload.phaseBase.actorInstanceId });
                         break;
 
                     case CommandActionType.ESCAPE:// すぐにコマンド処理を実行
-                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorTemplateId: event.payload.phaseBase.actorTemplateId, actorInstanceId: event.payload.phaseBase.actorInstanceId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: TechniqueId.ESCAPE, targetId: event.payload.phaseBase.actorInstanceId });
+                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorMasterId: event.payload.phaseBase.actorMasterId, actorInstanceId: event.payload.phaseBase.actorInstanceId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: TechniqueId.ESCAPE, targetId: event.payload.phaseBase.actorInstanceId });
                         break;
                 }
                 break;
@@ -95,7 +95,7 @@ export class UIEventRouter implements UIEventPort {
                         type: "PLAYER_COMMAND_SELECTED",
                         input: {
                             commandId: event.payload.phaseSec.commandId,
-                            actorTemplateId: event.payload.phaseSec.phaseBase.actorTemplateId,
+                            actorMasterId: event.payload.phaseSec.phaseBase.actorMasterId,
                             actorInstanceId: event.payload.phaseSec.phaseBase.actorInstanceId,
                             actorName: event.payload.phaseSec.phaseBase.actorName,
                             enemy: event.payload.phaseSec.phaseBase.enemies,
@@ -108,27 +108,29 @@ export class UIEventRouter implements UIEventPort {
                 this.screens.pushOverlay(OverlayScreenType.SELECT_TARGET_OVERLAY, { phaseSecond: event.payload.phaseSec, skill: event.payload.skillId, isTargetEnemy: event.payload.target.side === TargetSide.ENEMY ? true : false });
                 break;
 
+            case "BATTLE_ITEM_SELECTED":
+                const itemId = event.itemId;
 
-            // case "ITEM_SELECTED":
-            //     this.gameUseCases.battleInputUseCase.onItemSelected(event.itemId);
-            //     break;
+                const logOverlay = this.screens.getOverlayScreen(OverlayScreenType.BATTLE_LOG);
+                logOverlay?.addLog?.(`Player used item #${itemId}!`);
+                break;
 
             case "PLAYER_COMMAND_SELECTED": {
                 this.gameUseCases.battleInputUseCase.execute(event.input);
                 break;
             }
 
-            case "BATTLE_ITEM_SELECTED":
-                const targetId = event.itemId;
-
-                const logOverlay = this.screens.getOverlayScreen(OverlayScreenType.BATTLE_LOG);
-                logOverlay?.addLog?.(`Player used item #${targetId}!`);
+            case "SHOW_ALLIES_STATUS": {
+                const alliesStatusOverlay = this.screens.getOverlayScreen(OverlayScreenType.ALLIES_STATUS_OVERLAY);
+                alliesStatusOverlay.show(event.allies);
                 break;
+            }
 
-            case "UPDATE_STATUS":
+            case "UPDATE_ALLIE_STATUS": {
                 const alliesStatusOverlay = this.screens.getOverlayScreen(OverlayScreenType.ALLIES_STATUS_OVERLAY);
                 alliesStatusOverlay.updateStatus?.(event.allies);
                 break;
+            }
 
             case "ADD_BATTLE_LOG": {
                 this.gameUseCases.addBattleLogUseCase.execute(event.message);

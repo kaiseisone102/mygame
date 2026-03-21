@@ -49,6 +49,13 @@ export const ImageKey = {
     ENEMY2: "ENEMY2",
     ENEMY3: "ENEMY3",
     ENEMY4: "ENEMY4",
+    // ステータスアイコン
+    CHARM: "CHARM",
+    POISON: "POISON",
+    CONFUSION: "CONFUSION",
+    PARALYSIS: "PARALYSIS",
+    SLEEP: "SLEEP",
+    STRONG_POISON: "STRONG_POISON",
 
 } as const;
 export type ImageKey = typeof ImageKey[keyof typeof ImageKey];

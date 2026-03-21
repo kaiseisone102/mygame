@@ -5,6 +5,8 @@ import { GrowTableJson } from "../../../../shared/Json/growTable/growTableJson";
 import { BattleManager } from "../core/BattleManager";
 import { BattleResult } from "../../../../shared/type/battle/TargetType";
 import { LevelUpPayload } from "../../../screens/battleScene/overlayScreen/LevelUpOverlay";
+import { RewardCalculator } from "../logic/rewards/RewardCalculator";
+import { AiType } from "../../../../shared/master/battle/type/EnemyPreset ";
 
 export type ExpLog = {
     name: string;
@@ -24,7 +26,8 @@ export class BattleResultService {
     constructor(
         private gameState: GameState,
         private growTable: GrowTableJson,
-        private manager: BattleManager
+        private manager: BattleManager,
+        private rewardCalculator: RewardCalculator
     ) { }
 
     process(result: BattleResult): BattleResultProcess {
@@ -45,15 +48,15 @@ export class BattleResultService {
             baseStats: a.baseStats,
             skills: a.skills,
             traits: a.traits.map(t => t.id),
-            buffs: a.buffs,
             statusEffects: a.statusEffects,
+            aiType: a.aiType ?? AiType.AGGRESSIVE
         }));
 
         // GameState に反映
         this.gameState.applyBattleResult(alliesData);
 
         // --- 経験値分配 ---
-        const expDistribution = this.manager.calculateExpForAllies();
+        const expDistribution = this.rewardCalculator.calculateExpForAllies(state);
 
         for (const distribution of expDistribution) {
 

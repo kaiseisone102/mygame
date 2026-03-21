@@ -4,6 +4,7 @@
   バフ・デバフカテゴリ
 ===================== */
 
+// note: BuffCategory looks stats 
 export const BuffCategory = {
     ATTACK: "attack",
     DEFENSE: "defense",

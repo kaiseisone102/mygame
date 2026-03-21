@@ -28,11 +28,11 @@ export class AIActionResolver {
 
             return {
                 commandId: CommandActionType.ATTACK,
-                actorTemplateId: actor.templateId,
+                actorMasterId: actor.actorMasterId,
                 actorInstanceId: actor.instanceId,
                 actorName: actor.name,
                 skillId: TechniqueId.ATTACK,
-                target: target.instanceId
+                targetInstanceIds: [target.instanceId]
             };
         }
 
@@ -63,11 +63,11 @@ export class AIActionResolver {
 
                     bestAction = {
                         commandId: CommandActionType.ATTACK,
-                        actorTemplateId: actor.templateId,
+                        actorMasterId: actor.actorMasterId,
                         actorInstanceId: actor.instanceId,
                         actorName: actor.name,
                         skillId: skill.id,
-                        target: target.instanceId
+                        targetInstanceIds: [target.instanceId]
                     }
                 };
             }
@@ -75,11 +75,11 @@ export class AIActionResolver {
         // 何も選べなかったら防御
         return bestAction ?? {
             commandId: CommandActionType.DEFENCE,
-            actorTemplateId: actor.templateId,
+            actorMasterId: actor.actorMasterId,
             actorInstanceId: actor.instanceId,
             actorName: actor.name,
             skillId: TechniqueId.GUARD,
-            target: actor.instanceId
+            targetInstanceIds: [actor.instanceId]
         };
 
     }

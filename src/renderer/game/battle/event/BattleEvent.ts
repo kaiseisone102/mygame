@@ -33,6 +33,7 @@ export type BattleEvent =
         instanceId: number;
         targetId: number;
         buffId: string;
+        value: number;
         success?: boolean; // ミス用
     } | {
         type: typeof BattleEventKind.ESCAPE;

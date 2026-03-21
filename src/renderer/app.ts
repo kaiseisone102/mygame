@@ -75,6 +75,7 @@ import { GraveCaveBuilder } from "./game/map/builder/map/GraveCaveBuilder";
 import { NoFeatureTownBuilder } from "./game/map/builder/map/NoFeatureTownBuilder";
 import { WorldMapBuilder } from "./game/map/builder/map/WorldMapBuilder";
 import { defaultGameConfig } from "../shared/config/GameConfig";
+import { RewardCalculator } from "./game/battle/logic/rewards/RewardCalculator";
 
 // console.log("window.saveGameAPI =", window.saveGameAPI);
 
@@ -146,12 +147,14 @@ const gameState = new GameState(0);
 // バトルログ変換クラス
 const battleLogFormatter = new BattleLogFormatter();
 // BattleManager を生成
-const battleManager = new BattleManager(battleLogFormatter, skillRepository, overlayScreen);
+const battleManager = new BattleManager(battleLogFormatter, skillRepository);
 
 const zoneController = new ZoneController(NORM_SIZE);
 
+const rewardCalculator = new RewardCalculator();
+
 // MainScreen
-const mainScreens = createMainScreens(gameState, allyGrowTable, tileEffectService, worldManager, battleManager, overlayScreen);
+const mainScreens = createMainScreens(gameState, allyGrowTable, tileEffectService, worldManager, battleManager, overlayScreen, rewardCalculator);
 
 const inputState = new InputState();
 

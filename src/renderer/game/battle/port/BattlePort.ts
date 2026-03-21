@@ -1,11 +1,10 @@
 // src/renderer/game/battle/port/BattlePort.ts
 
-import { BattleInput } from "../../../../renderer/router/useCase/gameUseCase/battle/BattleInputUseCase";
-import { BattleState } from "../core/BattleState";
-import { CommandActionType } from "../../../../shared/type/battle/TargetType";
-import { SkillPreset, TechniqueId } from "../../../../shared/master/battle/type/SkillPreset";
-import { BattleActor } from "../../../screens/battleScene/overlayScreen/SelectTargetOverlay";
 import { SkillItem } from "../../../../renderer/screens/battleScene/overlayScreen/SkillSelectOverlay";
+import { SkillPreset, TechniqueId } from "../../../../shared/master/battle/type/SkillPreset";
+import { BattleActor, BattleInput } from "../../../../shared/type/battle/BattleAction";
+import { CommandActionType } from "../../../../shared/type/battle/TargetType";
+import { BattleState } from "../core/BattleState";
 
 export interface BattlePort {
 
@@ -17,20 +16,20 @@ export interface BattlePort {
 }
 
 export interface BattleAI {
-    decide(actorTemplateId: number, actorInstanceId: number, state: BattleState): Promise<BattleInput>;
+    decide(actorMasterId: number, actorInstanceId: number, state: BattleState): Promise<BattleInput>;
 }
 
 export class SimpleAI implements BattleAI {
 
-    async decide(actorTemplateId: number, actorInstanceId: number, state: BattleState): Promise<BattleInput> {
+    async decide(actorMasterId: number, actorInstanceId: number, state: BattleState): Promise<BattleInput> {
 
         const enemy = state.enemies.find(e => e.alive)!;
 
         return {
             commandId: CommandActionType.ATTACK,
-            actorTemplateId: actorTemplateId,
+            actorMasterId: actorMasterId,
             actorInstanceId: actorInstanceId,
-            actorName: `${actorTemplateId}`,
+            actorName: `${actorMasterId}`,
             enemy: [],
             skillId: TechniqueId.ATTACK,
             targetId: enemy.instanceId
