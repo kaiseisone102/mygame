@@ -21,20 +21,14 @@ export class SaveQueryService {
 
     /** UI 表示用のスロット情報を取得 */
     async getSlotView(slotId: number): Promise<SlotViewModel> {
-        const data = await this.saveManager.getSlotView(slotId);
-        if (data.isEmpty) {
-            return {
-                id: slotId,
-                label: "空きスロット",
-                isEmpty: true,
-            };
-        }
+        // rawData は { id, label, isEmpty, playerName?, level? }
+        const rawData = await this.saveManager.getSlotView(slotId);
+
+        // UI 側で計算したり整形したりする必要があるならここで行う
+        // 例: 「Lv」の表記揺れを防ぐ、未入力の名前を「ななし」にする等
         return {
-            id: slotId,
-            label: `${data.playerName} Lv:${data.level}`,
-            isEmpty: false,
-            level: data.level,
-            playerName: data.playerName,
+            ...rawData,
+            label: rawData.isEmpty ? "---- 空きスロット ----" : `${rawData.playerName} (Lv.${rawData.level})`,
         };
     }
 }

@@ -2,8 +2,8 @@
 
 import { ScreenInitContext } from "../context/ScreenInitContext";
 
-export interface BaseScreenController {
+export interface BaseScreenController<T = void> {
     init(root: HTMLElement, ctx: ScreenInitContext): void;
-    show(): void;
+    show(payload: T): void;
     hide(): void;
 }

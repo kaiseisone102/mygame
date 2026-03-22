@@ -1,0 +1,108 @@
+/* src/renderer/screens/mainScreens/screen/FieldCommandOverlay.css */
+
+/* 1. フォントの準備（あれば。なければインパクトのあるサンセリフで代用） */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@1,900&display=swap');
+
+#field-command-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* 背景を少し赤黒いグラデーションで覆う */
+    background: radial-gradient(circle at 70% 50%, rgba(211, 18, 18, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%);
+    z-index: 100;
+    overflow: hidden;
+    font-family: 'Roboto Condensed', 'Impact', sans-serif;
+}
+
+/* 2. コマンド容器：画面右側に斜めに配置 */
+#container {
+    position: absolute;
+    bottom: 10%;
+    right: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    transform: rotate(-5deg); /* 全体を少し傾ける */
+}
+
+/* 3. 各コマンドの基本スタイル */
+#container p {
+    margin: 0;
+    padding: 10px 40px;
+    font-size: 2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #fff;
+    background-color: #000;
+    cursor: pointer;
+    transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    /* P5特有の鋭利なカット（平行四辺形） */
+    clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+    
+    /* 影をつけて立体感を出す */
+    filter: drop-shadow(5px 5px 0px rgba(0,0,0,0.5));
+    min-width: 250px;
+    text-align: center;
+    position: relative;
+}
+
+/* 4. 未選択時のひっそりした状態 */
+#container p:not(.selected) {
+    transform: translateX(20px);
+    opacity: 0.8;
+}
+
+/* 5. 選択（selected）時のスタイル：ここが一番重要！ */
+#container p.selected {
+    background-color: #d31212; /* 鮮烈な赤 */
+    color: #fff;
+    transform: scale(1.15) translateX(-10px) rotate(2deg); /* 飛び出す感じ */
+    z-index: 10;
+    
+    /* 選択中のみギザギザなカットに変更 */
+    clip-path: polygon(5% 0%, 100% 10%, 95% 95%, 0% 85%);
+    
+    /* 白い外枠を擬似要素で作成 */
+    outline: 4px solid #fff;
+    outline-offset: -8px;
+    
+    /* 選択時のアニメーション（微振動） */
+    animation: p5-jitter 0.2s infinite ease-in-out;
+}
+
+/* 6. アイコンや装飾（必要なら） */
+#container p.selected::before {
+    content: "★";
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+}
+
+/* アニメーション：P5特有のガタガタした動き */
+@keyframes p5-jitter {
+    0% { transform: scale(1.15) translateX(-10px) rotate(2deg); }
+    50% { transform: scale(1.16) translateX(-12px) rotate(1.5deg); }
+    100% { transform: scale(1.15) translateX(-10px) rotate(2deg); }
+}
+
+/* 画面表示時のフェードイン */
+.overlay-base {
+    animation: p5-appear 0.3s ease-out forwards;
+}
+
+@keyframes p5-appear {
+    from {
+        opacity: 0;
+        transform: scale(1.1);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

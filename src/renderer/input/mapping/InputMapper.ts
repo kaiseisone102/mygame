@@ -80,8 +80,14 @@ export type CommonActionEvent = { action: CommonAction, type: ActionType };
 // 共通アクション (GAME/UI両方対象)
 export const CODE_TO_COMMON_ACTION: Record<string, CommonActionEvent | undefined> = {
     Enter: { action: CommonAction.CONFIRM, type: ActionType.PRESSED },
+    NumpadEnter: { action: CommonAction.CONFIRM, type: ActionType.PRESSED },
+
     Escape: { action: CommonAction.CANCEL, type: ActionType.PRESSED },
+    Backspace: { action: CommonAction.CANCEL, type: ActionType.PRESSED },
+
     Space: { action: CommonAction.INVENTORY, type: ActionType.PRESSED },
+    KeyI: { action: CommonAction.INVENTORY, type: ActionType.PRESSED },
+
     KeyP: { action: CommonAction.TEST_CHANGE_WORLD, type: ActionType.PRESSED },
     KeyO: { action: CommonAction.TEST_OPEN_OPTION, type: ActionType.PRESSED },
     KeyS: { action: CommonAction.SHOW_SAND_STORM_OVERLAY, type: ActionType.PRESSED },
@@ -95,8 +101,8 @@ export const CODE_TO_GAME_ACTION: Record<string, GameActionEvent | undefined> = 
 
 // UI専用アクション (ゲームには流さない)
 export const CODE_TO_UI_ACTION: Record<string, UIActionEvent | undefined> = {
-    KeyA: { action: UIAction.UI_ONLY_SOMETHING1, type: ActionType.PRESSED },
-    KeyS: { action: UIAction.UI_ONLY_SOMETHING2, type: ActionType.PRESSED },
+    KeyB: { action: UIAction.UI_ONLY_SOMETHING1, type: ActionType.PRESSED },
+    KeyN: { action: UIAction.UI_ONLY_SOMETHING2, type: ActionType.PRESSED },
 };
 
 

@@ -153,16 +153,16 @@ class AudioManager {
     /* ======================
        setter / getter
     ====================== */
-    setMasterVolume(v?: number) {
-       // this.masterVolume = clamp(v);
+    setMasterVolume(v: number) {
+        this.masterVolume = clamp(v);
         this.applyBgmVolume();
     }
-    setBgmVolume(v?: number) {
-       // this.bgmVolume = clamp(v);
+    setBgmVolume(v: number) {
+        this.bgmVolume = clamp(v);
         this.applyBgmVolume();
     }
-    setSeVolume(v?: number) {
-        //this.seVolume = clamp(v);
+    setSeVolume(v: number) {
+        this.seVolume = clamp(v);
     }
 
     getVolumes() {

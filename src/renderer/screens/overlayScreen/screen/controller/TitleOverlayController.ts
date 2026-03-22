@@ -1,16 +1,17 @@
-// src/renderer/screens/mainScreen/screen/TitleScreen.ts
+// src/renderer/screens/mainScreen/screen/TitleOverlayController.ts
 
 import { OverlayScreenType } from "../../../../../shared/type/screenType";
-import { audioManager } from "../../../../../renderer/asset/audio/audioManager";
-import { CommonAction, UIActionEvent } from "../../../../../renderer/input/mapping/InputMapper";
-import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
-import { ScreenInitContext } from "../../../../../renderer/screens/interface/context/ScreenInitContext";
-import { MainScreenController } from "../../../../../renderer/screens/interface/controller/MainScreenController";
-import { blinkText } from "../../../../../renderer/utils/blinkLoop";
-import { ImageStore } from "../../../../../renderer/asset/ImageStore";
+import { audioManager } from "../../../../asset/audio/audioManager";
+import { CommonAction, UIActionEvent } from "../../../../input/mapping/InputMapper";
+import { AppUIEvent } from "../../../../router/AppUIEvents";
+import { ScreenInitContext } from "../../../interface/context/ScreenInitContext";
+import { blinkText } from "../../../../utils/blinkLoop";
+import { ImageStore } from "../../../../asset/ImageStore";
 import { ImageKey } from "../../../../../shared/type/ImageKey";
+import { BaseScreenController } from "../../../../../renderer/screens/interface/controller/BaseScreenController";
 
-export class TitleScreenController implements MainScreenController {
+export class TitleOverlayController implements BaseScreenController<void> {
+
     private screen!: HTMLElement;
     private title!: HTMLElement;
     private pressEnter!: HTMLElement;
@@ -56,7 +57,7 @@ export class TitleScreenController implements MainScreenController {
         this.screen.append(this.title, this.pressEnter, this.right);
     }
 
-    show() {
+    show(payload: void) {
         this.screen.style.display = "block";
 
         // 点滅アニメーション開始（多重起動防止）
@@ -78,16 +79,12 @@ export class TitleScreenController implements MainScreenController {
             switch (e.action) {
                 case CommonAction.CONFIRM:
                     audioManager.playSE("assets/se/decide.mp3");
-                    this.emitUI?.({ type: "GO_SLOT_SELECT" });
-                    break;
-
-                case CommonAction.SHOW_SAND_STORM_OVERLAY:
-                    this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.SANDSTORMOVERLAY, payload: undefined })
+                    this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.SLOT_SELECT, payload: undefined });
                     break;
 
                 case CommonAction.CANCEL:
                     audioManager.playSE("assets/se/cancel.mp3");
-                    this.emitUI?.({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.OPTIONS, payload: undefined })
+                    this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.OPTIONS, payload: undefined });
                     break;
             }
         }

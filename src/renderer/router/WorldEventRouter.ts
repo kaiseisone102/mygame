@@ -14,11 +14,14 @@ import { MapId } from "../../shared/type/MapId";
  */
 export class WorldEventRouter {
 
+    private gameUseCases!: GameUseCases;
+
     constructor(
         private screens: ScreenPort,
         private gameState: GameState,
-        private gameUseCases: GameUseCases,
     ) { }
+
+    setUseCases(useCases: GameUseCases) { this.gameUseCases = useCases };
 
     dispatch(event: WorldEvent) {
         switch (event.type) {
@@ -26,13 +29,7 @@ export class WorldEventRouter {
                 this.gameUseCases.startGameFlowUseCase.execute();
                 break;
 
-            case "INIT_GAME_SCREEN_FINISHED":
-                this.screens.changeMain(MainScreenType.TITLE, undefined);
-                break;
-
-            case "AUTO_SAVE":
-                this.gameUseCases.saveGameUseCase.execute();
-                break;
+            case "INIT_GAME_SCREEN_FINISHED": break;
 
             case "CHANGE_WORLD":
                 if (!event.mapId) break;
@@ -42,8 +39,6 @@ export class WorldEventRouter {
             case "ITEM_COLLECTED":
                 this.gameUseCases.collectItemUseCase.execute(event.item);
                 break;
-
-            case "SAVE_CONFIG": this.gameUseCases.saveConfigUseCase.execute(event.config); break;
 
             case "ZONE_ENTERED_TOWN": {
                 const zoneId = event.zone.id;
@@ -89,7 +84,7 @@ export class WorldEventRouter {
                 break;
 
             case "BATTLE_FINISHED": {
-        
+
                 const ret = this.gameState.battleReturn;
                 if (!ret) break;
 
@@ -106,7 +101,7 @@ export class WorldEventRouter {
             }
 
             default:
-                console.warn("[EventRouter] Unknown event:");
+                console.warn("[EventRouter] Unknown event:", event);
                 break;
         }
     }

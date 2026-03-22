@@ -10,12 +10,15 @@ export class StartGameUseCase {
         private changeWorldUseCase: ChangeWorldUseCase,
     ) { }
 
-    execute(slotId: number, playerName?: string) {
-        const hasSave = this.saveManager.load(slotId);
+   async execute(slotId: number, playerName?: string) {
+        const hasSave = await this.saveManager.load(slotId);
 
         if (!hasSave) {
             // 新規
+            console.log("新規スタート")
             this.saveManager.createNew(slotId, playerName ?? "");
+        } else {
+            console.log("セーブデータあり")
         }
 
         // ゲーム開始世界へ

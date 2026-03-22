@@ -1,8 +1,8 @@
 // src/renderer/router/UIEventRouter.ts
 
-import { TargetSide } from "../../shared/type/battle/skill/skillFormula";
 import { UIEventPort } from "../../renderer/port/UIEventPort";
 import { TechniqueId } from "../../shared/master/battle/type/SkillPreset";
+import { TargetSide } from "../../shared/type/battle/skill/skillFormula";
 import { CommandActionType, TargetType } from "../../shared/type/battle/TargetType";
 import { MainScreenType, OverlayScreenType } from "../../shared/type/screenType";
 import { ScreenPort } from "../port/ScreenPort";
@@ -19,31 +19,31 @@ export class UIEventRouter implements UIEventPort {
 
     setUseCases(useCases: GameUseCases) { this.gameUseCases = useCases };
 
-    dispatch(event: AppUIEvent) {
+    async dispatch(event: AppUIEvent) {
         switch (event.type) {
             case "OPEN_YES_NO": this.screens.openYesNo(event); break;
 
-            case "INPUT_CONTROLL":
-                this.screens.lockInput(event.lock);
+            case "INPUT_CONTROLL": this.screens.lockInput(event.lock); break;
+
+            case "CHANGE_MAIN_SCREEN": this.screens.changeMain(event.screen, event.payload); break;
+
+            case "START_GAME": await this.gameUseCases.startGameUseCase.execute(event.slotId, event.playerName); break;
+
+            case "SAVE_GAME":
+                console.log("SAVE_GAME called");
+                await this.gameUseCases.saveGameUseCase.execute();
                 break;
 
-            case "CHANGE_MAIN_SCREEN": this.screens.changeMain(event.screen, undefined); break;
-
-            case "EXIT_TO_TITLE": this.gameUseCases.changeMainScreenUseCase.execute(MainScreenType.TITLE); break;
-
-            case "GO_SLOT_SELECT": this.gameUseCases.changeMainScreenUseCase.execute(MainScreenType.SLOT_SELECT); break;
-
-            case "SHOW_INPUT_NAME_OVERLAY":
-                this.screens.pushOverlay(OverlayScreenType.INPUT_NAME_OVERLAY, undefined);
-                const inputNameOverlay = this.screens.getOverlayScreen(OverlayScreenType.INPUT_NAME_OVERLAY);
-                inputNameOverlay?.setSlotId?.(event.slotId);
+            case "SAVE_CONFIG":
+                await this.gameUseCases.saveConfigUseCase.execute(event.config);
                 break;
 
-            case "START_GAME": this.gameUseCases.startGameUseCase.execute(event.slotId, event.playerName); break;
+            case "AUTO_SAVE":
+                console.log("AUTO_SAVE called")
+                await this.gameUseCases.saveGameUseCase.execute();
+                break;
 
-            case "SAVE_GAME": this.gameUseCases.saveGameUseCase.execute(); break;
-
-            case "SHOW_START_MESSAGE": this.gameUseCases.changeMainScreenUseCase.execute(MainScreenType.START_MESSAGE); break;
+            case "SHOW_START_MESSAGE": this.gameUseCases.changeMainScreenUseCase.execute(MainScreenType.START_MESSAGE, undefined); break;
 
             // インタラクト振り分け処理
             case "REQUEST_INTERACT": this.gameUseCases.interactUseCase.execute(event); break;

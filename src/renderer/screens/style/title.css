@@ -1,6 +1,7 @@
 /* src/renderer/styles/title.css */
 .titleScreen {
     display: block;
+    z-index: 10;
 }
 
 #title {

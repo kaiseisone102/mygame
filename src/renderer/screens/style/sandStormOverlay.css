@@ -6,6 +6,7 @@
     height: 100%;
     background: rgba(0,0,0,0.2); /* 砂嵐背景 */
     overflow: hidden;
+    z-index: 1;
 }
 
 /* 三日月 */

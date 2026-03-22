@@ -117,17 +117,36 @@
 
 /* 被弾時のシェイクアニメーション */
 .hp-shake {
-    animation: shake-red 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    animation: shake-red 0.4s cubic-bezier(.36, .07, .19, .97) both;
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
     perspective: 1000px;
 }
 
 @keyframes shake-red {
-    10%, 90% { transform: translate3d(-2px, 0, 0); color: #ff0000; }
-    20%, 80% { transform: translate3d(4px, 0, 0); }
-    30%, 50%, 70% { transform: translate3d(-6px, 0, 0); background-color: rgba(255, 0, 0, 0.2); }
-    40%, 60% { transform: translate3d(6px, 0, 0); }
+
+    10%,
+    90% {
+        transform: translate3d(-2px, 0, 0);
+        color: #ff0000;
+    }
+
+    20%,
+    80% {
+        transform: translate3d(4px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-6px, 0, 0);
+        background-color: rgba(255, 0, 0, 0.2);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(6px, 0, 0);
+    }
 }
 
 /* HPバー自体が赤く光るエフェクト */
@@ -152,6 +171,7 @@
     margin-top: 4px;
     padding-left: 4px;
     min-height: 24px;
+    max-height: 24px;
     /* アイコンがない時も高さを少し確保 */
 }
 
@@ -187,7 +207,7 @@
     filter: drop-shadow(0 0 2px rgba(255, 0, 85, 0.5));
 }
 
-/* ターン数バッジ（数字部分） */
+/* ターン数バッジ（数字部分と赤い枠一体） */
 .state-duration-badge {
     position: absolute;
     /* アイコンの clip-path に合わせて右下に配置 */
@@ -200,7 +220,12 @@
     background-color: #ff0055;
     /* ペルソナ風のビビッドな赤（または黒） */
 
-    padding: 0 4px;
+    display: flex;           /* Flexboxを有効化 */
+    align-items: center;     /* 垂直方向（上下）の真ん中 */
+    justify-content: center;/* 水平方向（左右）の真ん中 */
+
+    width: 14px;
+    height: 14px;
     border-radius: 2px;
     border: 1px solid #fff;
 
@@ -211,6 +236,7 @@
     box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.8);
     font-style: italic;
     /* 少し斜体にしてスピード感を出す */
+    clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
 
     transition: background-color 0.3s ease;
 }
@@ -248,24 +274,30 @@
 
 /* 死亡状態のスタイル */
 .ally-status.dead {
-    filter: grayscale(0.8) contrast(0.8); /* 全体的にグレーアウト */
+    filter: grayscale(0.8) contrast(0.8);
+    /* 全体的にグレーアウト */
     opacity: 0.7;
-    border-left-color: #555; /* 左ラインも暗く */
+    border-left-color: #555;
+    /* 左ラインも暗く */
     transition: all 0.5s ease;
 }
 
 .ally-status.dead .ally-name {
-    color: #ff4444; /* 名前を警告色に */
+    color: #ff4444;
+    /* 名前を警告色に */
     text-shadow: 2px 2px 0px #000;
-    text-decoration: line-through; /* 打消し線 */
+    text-decoration: line-through;
+    /* 打消し線 */
 }
 
 .ally-status.dead .ally-hp-bar {
-    background: #333 !important; /* バーを黒く */
+    background: #333 !important;
+    /* バーを黒く */
 }
 
 .ally-status.dead .ally-hp-text {
-    color: #ff0000; /* 0 / XX の数字を赤く */
+    color: #ff0000;
+    /* 0 / XX の数字を赤く */
 }
 
 /* 死亡時は光沢アニメーションを停止させる */

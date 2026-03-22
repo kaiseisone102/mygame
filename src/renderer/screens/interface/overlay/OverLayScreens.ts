@@ -3,16 +3,17 @@
 import { YesNoEvent } from "../../../../shared/events/ui/YesNoEvent";
 import { ScreenInitContext } from "../context/ScreenInitContext";
 import { InputAxis, UIActionEvent } from "../../../input/mapping/InputMapper";
-import { SelectTargetPayload, BattleActor } from "../../battleScene/overlayScreen/SelectTargetOverlay";
+import { SelectTargetPayload } from "../../battleScene/overlayScreen/SelectTargetOverlay";
 import { createOverlayScreens } from "../../overlayScreen/createOverlayScreens";
 import { createMainScreens } from "../../mainScreen/createMainScreens";
 import { MessageLogEvent } from "../../../../renderer/screens/overlayScreen/screen/MessageLogOverlay";
+import { BattleActor } from "../../../../shared/type/battle/BattleAction";
 
 // 必ず入力を奪う UI レイヤー
 export interface OverlayScreen<T = void> {
     readonly overlayId: string;
 
-    init(root: HTMLElement, ctx: ScreenInitContext): void;
+    init(root: HTMLElement, initCtx: ScreenInitContext): void;
     // 初期表示用メソッド
     show(payload: T): void;
     hide(): void;

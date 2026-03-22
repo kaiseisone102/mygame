@@ -61,6 +61,7 @@ export class ScreenManager implements ScreenPort, ScreenStateReader {
      * すべての画面を初期化
      */
     async initAllScreens() {
+        // mainScreen -> overlay の順に初期化しないと root 内がスカスカになる
         for (const screen of Object.values(this.mainScreens)) {
             await screen.init(this.root, this.ctx);
             await screen.hide();
@@ -80,7 +81,7 @@ export class ScreenManager implements ScreenPort, ScreenStateReader {
 
         const topOverlay = this.overlayStack.at(-1);
 
-       const overlayCapturesInput = topOverlay?.capturesInput ?? false;
+        const overlayCapturesInput = topOverlay?.capturesInput ?? false;
 
         if (topOverlay?.capturesTextInput) {
             this.inputSystem.enableTextInput();
@@ -184,9 +185,9 @@ export class ScreenManager implements ScreenPort, ScreenStateReader {
      */
     popOverlay() {
         const top = this.overlayStack.pop();
-        
+
         this.inputSystem.reset();
-        
+
         top?.hide?.();
 
         // 下に Overlay が残っていれば再表示（フォーカス復帰）

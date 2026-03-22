@@ -8,7 +8,7 @@ import { OverlayScreen } from "../../../../renderer/screens/interface/overlay/Ov
 import { OverlayScreenType } from "../../../../shared/type/screenType";
 import { ImageStore } from "../../../../renderer/asset/ImageStore";
 import { StatusId } from "../../../../shared/master/battle/StatusPreset";
-import { ImageKey } from "shared/type/ImageKey";
+import { ImageKey } from "../../../../shared/type/ImageKey";
 
 export interface AllyStatusData {
     instanceId: number;
@@ -18,11 +18,11 @@ export interface AllyStatusData {
     mp: number;
     maxMp: number;
     states: { id: StatusId, duration: number, imageKey: ImageKey }[];
-}
+};
 
 export interface AlliesStatusPayload {
     allies: AllyStatusData[];
-}
+};
 
 /**
  * AlliesStatusOverlay
@@ -223,9 +223,9 @@ export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
 
         // 【最重要】全ての比較が終わった後に、今回の payload をディープコピーして保存する
         // 参照を切り離すために map とスプレッド演算子を使用
-        this.allies = payload.allies.map(a => ({
-            ...a,
-            states: a.states.map(s => ({ ...s }))
+        this.allies = payload.allies.map(ally => ({
+            ...ally,
+            states: ally.states.map(state => ({ ...state }))
         }));
     }
 }

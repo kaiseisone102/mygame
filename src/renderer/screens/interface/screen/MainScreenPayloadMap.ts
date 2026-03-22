@@ -4,10 +4,11 @@ import { MainScreenType } from "../../../../shared/type/screenType"
 import { MainScreen } from "./MainScreen";
 import { BattleScenePayload } from "../../battleScene/BattleScene";
 import { BiomeId } from "../../../../shared/type/battle/enemy/BiomeId";
+import { TitleScenePayload } from "../../../../renderer/screens/mainScreen/screen/TitleScene";
 
 export type MainScreenPayloadMap = {
     [MainScreenType.INIT_GAME_SCREEN]: undefined;
-    [MainScreenType.TITLE]: undefined;
+    [MainScreenType.TITLE_SCENE]: undefined;
     [MainScreenType.SLOT_SELECT]: undefined;
     [MainScreenType.START_MESSAGE]: undefined;
     [MainScreenType.FOREST_TEMPLE]: undefined;

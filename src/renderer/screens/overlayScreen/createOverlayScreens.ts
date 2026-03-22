@@ -15,11 +15,17 @@ import { AlliesStatusOverlay } from "../battleScene/overlayScreen/AlliesStatusOv
 import { BattleTurnDisplayOverlay } from "../battleScene/overlayScreen/BattleTurnDisplayOverlay";
 import { LevelUpOverlay } from "../battleScene/overlayScreen/LevelUpOverlay";
 import { SandStormOverlay } from "./screen/SandStormOverlay";
+import { FieldCommandOverlay } from "./screen/FieldCommandOverlay";
+import { TitleOverlay } from "./screen/TitleOverlay";
+import { SlotSelectOverlay } from "./screen/SlotSelectOverlay";
 
 export function createOverlayScreens() {
     return {
         [OverlayScreenType.OPTIONS]: new OptionsOverlay(),
-        [OverlayScreenType.SANDSTORMOVERLAY]: new SandStormOverlay(),
+        [OverlayScreenType.FIELD_COMMAND]: new FieldCommandOverlay(),
+        [OverlayScreenType.SANDSTORM_OVERLAY]: new SandStormOverlay(),
+        [OverlayScreenType.TITLE_OVERLAY]: new TitleOverlay(),
+        [OverlayScreenType.SLOT_SELECT]: new SlotSelectOverlay(),
         [OverlayScreenType.INPUT_NAME_OVERLAY]: new InputNameOverlay(),
         [OverlayScreenType.YES_NO_OVERLAY]: new YesNoOverlay(),
         [OverlayScreenType.INVENTORY]: new InventoryOverlay(),

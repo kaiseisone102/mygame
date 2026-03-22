@@ -37,7 +37,8 @@ export class InitGameScreenController {
     private goToTitle() {
         this.ctx.emitUI({
             type: "CHANGE_MAIN_SCREEN",
-            screen: MainScreenType.TITLE,
+            screen: MainScreenType.TITLE_SCENE,
+            payload: undefined
         });
     }
 

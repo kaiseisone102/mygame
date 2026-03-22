@@ -16,7 +16,6 @@ export type WorldEvent =
     | { type: "ENTER_GAME_START_FLOW" }
     | { type: "INIT_GAME_SCREEN_FINISHED" }
     | { type: "ITEM_COLLECTED", item: ItemData }
-    | SaveEvent
     | BattleEventWorld
     | EnterZoneEvent
 

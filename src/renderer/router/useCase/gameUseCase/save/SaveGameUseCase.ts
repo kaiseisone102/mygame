@@ -4,7 +4,7 @@ import { SaveManager } from "../../../../../renderer/save/saveManager";
 export class SaveGameUseCase {
     constructor(private saveManager: SaveManager) {}
 
-    execute() {
-        this.saveManager.saveCurrent();
+   async execute() {
+       await this.saveManager.saveCurrent();
     }
 }

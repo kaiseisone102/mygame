@@ -1,10 +1,10 @@
-// src/renderer/screens/mainScreens/screen/slotSelectScreen.ts
+// src/renderer/screens/mainScreens/screen/SlotSelectOverlay.ts
 
-import { InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";
+import { InputAxis, UIActionEvent } from "../../../input/mapping/InputMapper";
 import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
-import { MainScreen } from "../../interface/screen/MainScreen";
-import { UseUIAxesScreen } from "../../interface/screen/UseUIAxesScreen";
-import { SlotSelectScreenController } from "./controller/SlotSelectScreenController";
+import { SlotSelectOverlayController } from "./controller/SlotSelectOverlayController";
+import { OverlayScreen } from "../../../../renderer/screens/interface/overlay/OverLayScreens";
+import { OverlayScreenType } from "../../../../shared/type/screenType";
 
 /**
  * SlotSelectScreen
@@ -18,18 +18,21 @@ import { SlotSelectScreenController } from "./controller/SlotSelectScreenControl
  * - Axis / Action ともに処理はするが
  *   「他の画面に流しても問題ない」ため return false
  */
-export class SlotSelectScreen implements MainScreen, UseUIAxesScreen {
-    private controller!: SlotSelectScreenController;
+export class SlotSelectOverlay implements OverlayScreen<void> {
+    readonly overlayId: string = OverlayScreenType.SLOT_SELECT;
+    readonly capturesInput: boolean = true;
+
+    private controller!: SlotSelectOverlayController;
 
     init(root: HTMLElement, initCtx: ScreenInitContext) {
-        this.controller = new SlotSelectScreenController;
+        this.controller = new SlotSelectOverlayController;
         this.controller.init(root, initCtx);
         this.hide();
         console.log("[SlotSelectScreen] done init")
     }
 
-    show() {
-        this.controller.show();
+    show(payload: undefined) {
+        this.controller.show(payload);
     }
 
     hide() {

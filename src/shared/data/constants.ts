@@ -1,6 +1,7 @@
 // src/shared/data/constants.ts
 
 import { CommandActionType } from "../type/battle/TargetType";
+import { FieldActionType } from "../type/field/FieldActionType";
 
 export const NORM_SIZE: number = 32;
 export const P_HIT_SIZE: number = NORM_SIZE * 0.8;
@@ -42,4 +43,13 @@ export const BASIC_COMMANDS_DISPLAY: { id: CommandActionType; label: string }[] 
     { id: CommandActionType.DEFENCE, label: "Defence" },
     { id: CommandActionType.ITEM, label: "Items" },
     { id: CommandActionType.ESCAPE, label: "Run" },
+];
+
+// フィールドコマンド
+export const FIELD_COMMANDS_DISPLAY: { id: FieldActionType; label: string }[] = [
+    { id: FieldActionType.ITEM, label: "Items" },
+    { id: FieldActionType.MAGIC, label: "Magic Spell" },
+    { id: FieldActionType.EQUIPMENT, label: "Equipment" },
+    { id: FieldActionType.SAVE, label: "Save Game" },
+    { id: FieldActionType.OPTION, label: "Options" },
 ];

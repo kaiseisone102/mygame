@@ -1,7 +1,7 @@
 // src/renderer/screens/mainScreens/createMainScreens.ts
 
-import { RewardCalculator } from "../../../renderer/game/battle/logic/rewards/RewardCalculator";
 import { BattleManager } from "../../../renderer/game/battle/core/BattleManager";
+import { RewardCalculator } from "../../../renderer/game/battle/logic/rewards/RewardCalculator";
 import { WorldManager } from "../../../renderer/game/map/WorldManager";
 import { GameState } from "../../../shared/data/gameState";
 import { GrowTableJson } from "../../../shared/Json/growTable/growTableJson";
@@ -15,9 +15,8 @@ import { ForestTempleScreen } from "./screen/ForestTempleScreen";
 import { GraveCaveScreen } from "./screen/GraveCaveScreen";
 import { InitGameScreen } from "./screen/InitGameScreen";
 import { NoFeatureTownScreen } from "./screen/NoFeatureTownScreen";
-import { SlotSelectScreen } from "./screen/SlotSelectScreen";
 import { StartMessageScreen } from "./screen/StartMessageScreen";
-import { TitleScreen } from "./screen/TitleScreen";
+import { TitleScene } from "./screen/TitleScene";
 import { WorldMapScreen } from "./screen/WorldMapScreen";
 
 export function createMainScreens(
@@ -33,8 +32,7 @@ export function createMainScreens(
     const battleBackGrounScreen = new BattleBackgroundScreen();
     return {
         [MainScreenType.INIT_GAME_SCREEN]: new InitGameScreen(),
-        [MainScreenType.TITLE]: new TitleScreen(),
-        [MainScreenType.SLOT_SELECT]: new SlotSelectScreen(),
+        [MainScreenType.TITLE_SCENE]: new TitleScene(overlayScreen),
         [MainScreenType.START_MESSAGE]: new StartMessageScreen(),
         [MainScreenType.FOREST_TEMPLE]: new ForestTempleScreen(gameState, tileEffectService, worldManager),
         [MainScreenType.WORLD_MAP]: new WorldMapScreen(gameState, tileEffectService, worldManager),

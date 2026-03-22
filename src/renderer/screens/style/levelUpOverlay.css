@@ -1,253 +1,138 @@
-/* ============================= */
-/* LevelUpOverlay 基本設定       */
-/* ============================= */
+/* src/renderer/screens/battleScene/overlayScreen/LevelUpOverlay.css */
+
 .LevelUpOverlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none;
-    /* 初期は非表示 */
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85); /* 背景を暗くして集中させる */
+    display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.75);
-    overflow: hidden;
     z-index: 1000;
-    pointer-events: all;
-    font-family: "Futura", "Arial Black", sans-serif;
-    color: "white";
-    font-size: "24px";
-    text-align: "center";
+    overflow: hidden;
+    font-family: 'Arial Black', sans-serif;
 }
 
-/* ============================= */
-/* 背景の赤ラインアニメーション  */
-/* ============================= */
+/* 画面を斜めに横切る赤い背景帯 */
 .LevelUpOverlay::before {
     content: "";
     position: absolute;
-    top: -50%;
-    left: -50%;
     width: 200%;
-    height: 200%;
-    background: repeating-linear-gradient(45deg,
-            rgba(255, 0, 0, 0.3),
-            rgba(255, 0, 0, 0.3) 20px,
-            transparent 20px,
-            transparent 40px);
-    animation: slideLines 2s linear infinite;
+    height: 300px;
+    background: #d31212; /* 怪盗レッド */
+    transform: rotate(-10deg) skew(-10deg);
     z-index: 0;
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    animation: p5-slide-in 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-@keyframes slideLines {
-    0% {
-        transform: translate(0, 0);
-    }
-
-    100% {
-        transform: translate(40px, 40px);
-    }
-}
-
-/* ============================= */
-/* レベルアップメッセージ        */
-/* ============================= */
 .LevelUpOverlayMessage {
     position: relative;
     z-index: 1;
-    color: #fff;
-    font-size: 36px;
-    font-weight: bold;
-    text-align: center;
-    text-shadow: 2px 2px 0 #ff0000, -2px -2px 0 #ff0000, 0 0 10px #ff0000;
-    transform: scale(0.8) rotate(-5deg);
-    animation: levelUpPop 0.6s ease-out forwards,
-        levelUpBounce 0.6s ease-out;
+    width: 80%;
+    max-width: 900px;
+    color: white;
+    transform: rotate(-3deg); /* 全体を少し傾ける */
 }
 
-/* 数字部分を強調 */
-.LevelUpOverlayMessage .levelNumber {
-    color: #ffeb3b;
-    text-shadow: 2px 2px 4px #ff9800;
-}
-
-/* ============================= */
-/* レベルアップ拡大・回転アニメ  */
-/* ============================= */
-@keyframes levelUpPop {
-    0% {
-        opacity: 0;
-        transform: scale(0.5) rotate(-10deg);
-    }
-
-    50% {
-        opacity: 1;
-        transform: scale(1.3) rotate(10deg);
-    }
-
-    100% {
-        opacity: 1;
-        transform: scale(1) rotate(0deg);
-    }
-}
-
-/* 跳ねるアニメーション */
-@keyframes levelUpBounce {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    25% {
-        transform: translateY(-15px);
-    }
-
-    50% {
-        transform: translateY(5px);
-    }
-
-    75% {
-        transform: translateY(-8px);
-    }
-}
-
-/* ============================= */
-/* ステータス表のコンテナ        */
-/* ============================= */
-.statsContainer {
-    margin-top: 20px;
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.6);
-    border-top: 3px solid #ff0000;
-    border-bottom: 3px solid #ff0000;
-    width: 320px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* 各ステータス行 */
-.statRow {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 18px;
-    margin-bottom: 8px;
-    text-shadow: 1px 1px 2px #000;
-    opacity: 0;
-    animation: statEntry 0.4s ease-out forwards;
-}
-
-/* ステータスが上から順に表示されるディレイ */
-.statRow:nth-child(1) {
-    animation-delay: 0.5s;
-}
-
-.statRow:nth-child(2) {
-    animation-delay: 0.6s;
-}
-
-.statRow:nth-child(3) {
-    animation-delay: 0.7s;
-}
-
-.statRow:nth-child(4) {
-    animation-delay: 0.8s;
-}
-
-.statRow:nth-child(5) {
-    animation-delay: 0.9s;
-}
-
-.statRow:nth-child(6) {
-    animation-delay: 1.0s;
-}
-
-.statRow:nth-child(7) {
-    animation-delay: 1.1s;
-}
-
-.statName {
-    color: #aaa;
-    text-align: left;
-    flex: 1;
-}
-
-.statValues {
-    color: #fff;
-    font-family: "Courier New", Courier, monospace;
-    font-weight: bold;
-    margin: 0 10px;
-}
-
-.statDiff {
-    color: #00ff00;
-    width: 60px;
-    text-align: right;
-    font-weight: bold;
-}
-
-/* ステータス行の出現アニメーション */
-@keyframes statEntry {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* キャラクター名とレベル遷移の調整 */
+/* キャラクター名：大きく強調 */
 .characterName {
-    font-size: 24px;
-    margin-bottom: 10px;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #fff;
+    background: #000;
+    display: inline-block;
+    padding: 10px 50px;
+    margin-bottom: 20px;
+    clip-path: polygon(0 0, 100% 0, 90% 100%, 5% 100%);
+    box-shadow: 8px 8px 0px #fff;
+    animation: p5-pop 0.3s forwards;
 }
 
+/* レベル表示 */
 .levelTransition {
-    font-size: 42px;
-    margin-bottom: 10px;
+    font-size: 2.5rem;
+    margin-left: 20px;
+    margin-bottom: 30px;
+    text-shadow: 4px 4px 0px #000;
 }
 
 .newLevel {
-    color: #ffeb3b;
-    font-size: 54px;
+    font-size: 5rem;
+    color: #d31212;
+    background: #fff;
+    padding: 0 20px;
+    margin-left: 10px;
+    clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+    display: inline-block;
 }
 
-/* ============================= */
-/* CONFIRM メッセージ            */
-/* ============================= */
+/* ステータスコンテナ：格子状ではなくバラバラに配置されている風 */
+.statsContainer {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    padding: 30px;
+    border-left: 15px solid #fff;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.statRow {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    border-bottom: 2px solid rgba(255,255,255,0.3);
+    padding: 5px 0;
+    transition: transform 0.2s;
+}
+
+.statRow:hover {
+    transform: scale(1.05) translateX(10px);
+    background: rgba(211, 18, 18, 0.5);
+}
+
+.statName {
+    flex: 1;
+    font-weight: bold;
+}
+
+.statValues {
+    margin: 0 20px;
+}
+
+.statDiff {
+    color: #00ff00; /* 上昇値は緑、または赤地に白文字など */
+    font-weight: 900;
+    background: #000;
+    padding: 2px 8px;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* PRESS ENTER: 点滅させる */
 .confirmText {
-    display: block;
-    margin-top: 20px;
-    font-size: 20px;
-    color: #ff0000;
-    animation: blinkConfirm 1s step-start infinite,
-        slideConfirm 1s ease-in-out infinite alternate;
+    margin-top: 40px;
+    text-align: right;
+    font-size: 1.8rem;
+    letter-spacing: 5px;
+    animation: p5-blink 0.8s infinite;
+    color: #fff;
+    text-transform: uppercase;
 }
 
-@keyframes blinkConfirm {
-
-    0%,
-    50% {
-        opacity: 1;
-    }
-
-    51%,
-    100% {
-        opacity: 0;
-    }
+/* アニメーション */
+@keyframes p5-slide-in {
+    from { transform: translateX(-100%) rotate(-10deg); }
+    to { transform: translateX(0) rotate(-10deg); }
 }
 
-@keyframes slideConfirm {
-    0% {
-        transform: translateY(0);
-    }
+@keyframes p5-pop {
+    0% { transform: scale(0.5) rotate(5deg); opacity: 0; }
+    80% { transform: scale(1.1) rotate(-3deg); }
+    100% { transform: scale(1) rotate(-3deg); opacity: 1; }
+}
 
-    100% {
-        transform: translateY(-5px);
-    }
+@keyframes p5-blink {
+    0%, 100% { opacity: 1; transform: translateX(0); }
+    50% { opacity: 0.3; transform: translateX(-10px); }
 }

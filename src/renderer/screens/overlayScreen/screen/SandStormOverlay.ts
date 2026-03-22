@@ -7,7 +7,7 @@ import { OverlayScreenType } from "../../../../shared/type/screenType";
 
 export class SandStormOverlay implements OverlayScreen<void> {
 
-    readonly overlayId: string = OverlayScreenType.SANDSTORMOVERLAY;
+    readonly overlayId: string = OverlayScreenType.SANDSTORM_OVERLAY;
     readonly capturesInput: boolean = false;
 
     private screen!: HTMLElement;
@@ -15,7 +15,7 @@ export class SandStormOverlay implements OverlayScreen<void> {
 
     init(root: HTMLElement, ctx: ScreenInitContext): void {
         this.screen = document.createElement("div");
-        this.screen.classList = "sand-Storm-Overlay";
+        this.screen.id = "sand-Storm-Overlay";
         root.appendChild(this.screen);
 
         this.crescent = document.createElement("div");

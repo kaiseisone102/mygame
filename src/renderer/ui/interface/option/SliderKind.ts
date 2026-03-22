@@ -1,5 +1,6 @@
-// src/renderer/ui/sliders/sliderTypes.ts
+// src/renderer/ui/interface/option/sliderTypes.ts
 export type SliderKind = "master" | "bgm" | "se";
+
 export interface SliderUI {
     kind: SliderKind; 
     input: HTMLInputElement;

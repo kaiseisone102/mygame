@@ -23,7 +23,7 @@ import { NORM_SIZE } from "../../../shared/data/constants";
 import { GameState } from "../../../shared/data/gameState";
 import { WorldPxPosition } from "../../../shared/type/playerPosition/posType";
 import { AppDirection, PlayerMotionType, PlayerState } from "../../../shared/type/PlayerState";
-import { OverlayScreenType } from "../../../shared/type/screenType";
+import { MainScreenType, OverlayScreenType } from "../../../shared/type/screenType";
 import { ZonePx } from "../../../shared/type/ZonePx";
 import { ScreenInitContext } from "../interface/context/ScreenInitContext";
 import { MainScreenController } from "../interface/controller/MainScreenController";
@@ -50,8 +50,8 @@ export abstract class BaseWorldScreenController implements MainScreenController 
     protected cameraController!: CameraController;
     protected worldRenderer!: WorldRenderer;
 
-    protected emitWorld?: (event: WorldEvent) => void;
-    protected emitUI?: (event: AppUIEvent) => void;
+    protected emitWorld!: (event: WorldEvent) => void;
+    protected emitUI!: (event: AppUIEvent) => void;
 
     protected lastPlayerState: PlayerState = {
         type: PlayerMotionType.IDLE,
@@ -243,19 +243,19 @@ export abstract class BaseWorldScreenController implements MainScreenController 
 
                     break;
                 case "TEST_CHANGE_WORLD":
-                    this.emitWorld?.({ type: "CHANGE_WORLD", mapId: this.worldManager.testNextMap() });
+                    this.emitWorld({ type: "CHANGE_WORLD", mapId: this.worldManager.testNextMap() });
                     break;
 
                 case "TEST_OPEN_OPTION":
-                    this.emitUI?.({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.OPTIONS, payload: undefined })
+                    this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.OPTIONS, payload: undefined })
                     break;
 
                 case "CANCEL":
-                    this.emitUI?.({ type: "GO_SLOT_SELECT" });
+                    this.emitUI({ type: "CHANGE_MAIN_SCREEN", screen: MainScreenType.TITLE_SCENE, payload: undefined });
                     break;
 
                 case "INVENTORY":
-                    this.emitUI?.({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.INVENTORY, payload: undefined })
+                    this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.FIELD_COMMAND, payload: undefined })
                     break;
             }
         }

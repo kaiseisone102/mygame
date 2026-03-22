@@ -3,6 +3,7 @@ import { app } from "electron";
 import * as fs from "fs";
 import * as path from "path";
 import { GameConfig, defaultGameConfig, } from "../../shared/config/GameConfig";
+import { sanitizeData } from "../../shared/utils/Sanitizer";
 const configPath = path.join(
     app.getPath("userData"),
     "config.json"
@@ -25,8 +26,10 @@ export function loadConfig(): GameConfig {
 }
 
 export function saveConfig(config: GameConfig) {
+    const cleanConfig = sanitizeData(config);
+
     fs.writeFileSync(
         configPath,
-        JSON.stringify(config, null, 2)
+        JSON.stringify(cleanConfig, null, 2)
     );
 }

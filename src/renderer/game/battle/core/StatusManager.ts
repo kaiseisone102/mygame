@@ -123,6 +123,7 @@ export class StatusManager {
                     success: true,
                     statusId: instance.statusId
                 } as DamageResult);
+                
             } else if (hpDiff < 0) {
                 // 回復が発生した場合 (リジェネなど)
                 results.push({

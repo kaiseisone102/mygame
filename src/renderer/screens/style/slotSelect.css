@@ -1,39 +1,139 @@
-/* src/renderer/styles/slotSelect.css */
-.slotSelectScreen {
-    position: relative;/* 親が position: relative(子の基準), 子が position: absolute */
-    width: 100vw;
-    height: 100vh;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+/* src/renderer/screens/mainScreens/screen/controller/SlotSelectOverlay.css */
+
+/* 画面全体のレイアウト */
+#slotSelectScreen {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(211, 18, 18, 0.3) 0%, rgba(0, 0, 0, 0.9) 100%);
+    overflow: hidden;
+    font-family: 'Arial Black', sans-serif;
+    /* インパクトのあるフォント */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
+/* スロットを囲むボーダー（斜めに配置） */
 #slotsBorder {
-    position: absolute;
-    width: 150px;
-    height: 200px;
-    top: 10%;
-    left: 20%;
-    transform: translateX(-50%);
-    background-color: black;
-    outline: 3px solid white;   /* 枠線 */
-    outline-offset: -6px;
-    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    margin: 10% 0 0 20%;
+    /* スロットボーダー同士の間隔 **/
+    gap: 40px;
+    transform: rotate(-7deg) skew(-5deg);
+    /* P5らしい斜め配置 */
+    width: 60%;
+    max-width: 800px;
 }
-/* 縦位置だけ変える */
-#slot1 { top: 25%; }
-#slot2 { top: 50%; }
-#slot3 { top: 75%; }
-/* スロット共通 */
+
+/* 各スロットの基本スタイル */
 .slot {
-    color: white;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
+    /* スロットボーダーとスロット文字の距離 **/
+    padding: 20px 40px;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #fff;
+    background-color: #000;
+    border: 2px solid #fff;
+    text-transform: uppercase;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* 鋭いカット（平行四辺形） */
+    clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+
+    box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.5);
 }
+
+/* 2番目、3番目のスロットをさらに右にずらす */
+.slot:nth-child(2) {
+    margin-left: 60px;
+}
+
+.slot:nth-child(3) {
+    margin-left: 100px;
+}
+
+/* 空きスロット（少しグレーに） */
+.slot.empty {
+    color: #888;
+    font-style: italic;
+}
+
+/* 選択中のスロット：赤く光り、飛び出す */
 .slot.selected {
-    color: blueviolet;
+    background-color: #d31212;
+    color: #fff;
+    transform: scale(1.3) translateX(15px);
+    border-color: #fff;
+    z-index: 5;
+    animation: slot-jitter 0.15s infinite alternate;
 }
+
+/* スロット内のテキストに少しノイズ的な影 */
+.slot.selected::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 4px solid #fff;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+/* カーソル（アニメーションする画像） */
 .slotCursor {
     position: absolute;
-    width: 64px;      /* 画像サイズに合わせる */
-    height: 64px;
+    width: 120px;
+    /* 気持ち大きめに */
+    height: auto;
+    z-index: 100;
     pointer-events: none;
+    /* 位置更新をスムーズにする */
+    transition: top 0.12s ease-out, left 0.12s ease-out;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+
+    /* translate(横移動, 縦移動) で右下にずらし、rotate で時計回りに傾ける */
+    transform: translate(15px, 10px) rotate(15deg);
+}
+
+/* 背景の装飾（P5風の黒い帯を流す） */
+#slotSelectScreen::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -10%;
+    width: 120%;
+    height: 40px;
+    background: #000;
+    transform: rotate(25deg);
+    opacity: 0.5;
+    z-index: 0;
+}
+
+/* アニメーション：震えるような動き */
+@keyframes slot-jitter {
+    0% {
+        transform: scale(1.3) translateX(15px) rotate(0.5deg);
+    }
+
+    100% {
+        transform: scale(1.3) translateX(17px) rotate(-0.5deg);
+    }
+}
+
+/* スロットのフェードイン */
+@keyframes slot-appear {
+    from {
+        opacity: 0;
+        transform: translateX(-100px) skew(-20deg);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0) skew(-5deg);
+    }
+}
+
+.slot {
+    animation: slot-appear 0.3s ease-out forwards;
 }

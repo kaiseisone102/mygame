@@ -6,7 +6,11 @@ import { InputNameOverlayController } from "./controller/InputNameOverlayControl
 import { OverlayScreen } from "../../interface/overlay/OverLayScreens";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
 
-export class InputNameOverlay implements OverlayScreen {
+export type InputNamePayload = {
+    slotId: number
+};
+
+export class InputNameOverlay implements OverlayScreen<InputNamePayload> {
     readonly overlayId: string = OverlayScreenType.INPUT_NAME_OVERLAY;
 
     readonly capturesInput = true;
@@ -21,8 +25,8 @@ export class InputNameOverlay implements OverlayScreen {
         console.log("[InputNameScreen] done init")
     }
 
-    show() {
-        this.controller.show();
+    show(payload: InputNamePayload) {
+        this.controller.show(payload);
     }
 
     hide() {

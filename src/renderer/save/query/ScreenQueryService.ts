@@ -22,6 +22,6 @@ export class ScreenQueryService {
     }
 
     getTileType(tx: number, ty: number): TileType {
-        return this.tileQuery.getTileType(tx, ty);
+        return this.tileQuery.getTileType({ tx, ty });
     }
 }

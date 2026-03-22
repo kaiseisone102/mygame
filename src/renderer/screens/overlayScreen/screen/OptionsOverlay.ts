@@ -27,7 +27,7 @@ import { OptionsOverlayController } from "./controller/OptionsOverlayController"
 export class OptionsOverlay implements OverlayScreen {
     readonly overlayId: string = OverlayScreenType.OPTIONS;
     /** この画面が入力をキャプチャするか */
-    readonly capturesInput: true = true;
+    readonly capturesInput: boolean = true;
 
     private controller!: OptionsOverlayController;
 

@@ -6,8 +6,10 @@ import { ScreenInitContext } from "../../../interface/context/ScreenInitContext"
 import { UIScreenController } from "../../../interface/controller/UIScreenController";
 import { WorldEvent } from "../../../../router/WorldEvent";
 import { DEFAULT_PLAYER_NAME } from "../../../../../shared/data/playerConstants";
+import { InputNamePayload } from "../InputNameOverlay";
+import { BaseScreenController } from "renderer/screens/interface/controller/BaseScreenController";
 
-export class InputNameOverlayController implements UIScreenController {
+export class InputNameOverlayController implements BaseScreenController<InputNamePayload> {
 
     private container!: HTMLElement;
     private display!: HTMLElement;
@@ -44,7 +46,8 @@ export class InputNameOverlayController implements UIScreenController {
         this.updateDisplay();
     }
 
-    show() {
+    show(payload: InputNamePayload) {
+        this.slotId = payload.slotId;
         this.container.style.display = "block";
     }
 
@@ -109,7 +112,7 @@ export class InputNameOverlayController implements UIScreenController {
                     this.emitUI({
                         type: "OPEN_YES_NO",
                         message: "名前入力をやめますか？",
-                        onYes: () => this.emitUI({ type: "GO_SLOT_SELECT" }),
+                        onYes: () => { this.emitUI({ type: "POP_OVERLAY" }); this.emitUI({ type: "POP_OVERLAY" }) },
                         onNo: () => this.emitUI({ type: "POP_OVERLAY" }),
                     });
                     break;

@@ -1,16 +1,17 @@
-// src/renderer/screens/mainScreens/screen/controller/SlotSelectScreenController.ts
+// src/renderer/screens/mainScreens/screen/controller/SlotSelectOverlayController.ts
 
-import { WorldQueryAsyncEvent } from "../../../../../shared/events/world/WorldQuerryEvent";
-import { audioManager } from "../../../../../renderer/asset/audio/audioManager";
-import { InputAxis, UIActionEvent } from "../../../../../renderer/input/mapping/InputMapper";
-import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
-import { ScreenInitContext } from "../../../../../renderer/screens/interface/context/ScreenInitContext";
-import { MainScreenController } from "../../../../../renderer/screens/interface/controller/MainScreenController";
-import { UseUIAxesScreenController } from "../../../../../renderer/screens/interface/controller/UseUIAxesScreenController";
-import { SlotViewModel } from "../../../../../renderer/screens/viewModel/SlotViewModel";
+import { BaseScreenController } from "../../../../../renderer/screens/interface/controller/BaseScreenController";
 import { GameConfig } from "../../../../../shared/config/GameConfig";
+import { WorldQueryAsyncEvent } from "../../../../../shared/events/world/WorldQuerryEvent";
+import { OverlayScreenType } from "../../../../../shared/type/screenType";
+import { audioManager } from "../../../../asset/audio/audioManager";
+import { InputAxis, UIActionEvent } from "../../../../input/mapping/InputMapper";
+import { AppUIEvent } from "../../../../router/AppUIEvents";
+import { ScreenInitContext } from "../../../interface/context/ScreenInitContext";
+import { SlotViewModel } from "../../../viewModel/SlotViewModel";
 
-export class SlotSelectScreenController implements MainScreenController, UseUIAxesScreenController {
+export class SlotSelectOverlayController implements BaseScreenController<void> {
+
     private screen!: HTMLElement;
     private emitUI!: (event: AppUIEvent) => void;
     private queryAsync!: (event: WorldQueryAsyncEvent) => Promise<SlotViewModel | GameConfig>;
@@ -29,11 +30,11 @@ export class SlotSelectScreenController implements MainScreenController, UseUIAx
     /** リサイズ時はカーソル再計算 */
     private onResize = () => { this.cursorDirty = true };
 
-    async init(root: HTMLElement, initCtx: ScreenInitContext) {
+    init(root: HTMLElement, initCtx: ScreenInitContext) {
         this.emitUI = initCtx.emitUI;
         this.queryAsync = initCtx.queryAsync;
 
-        this.screen = await this.createScreen();
+        this.screen = this.createScreen();
         root.appendChild(this.screen);
 
         this.cursor = this.createCursor();
@@ -44,9 +45,9 @@ export class SlotSelectScreenController implements MainScreenController, UseUIAx
         this.setSelectedSlot(this.selectedSlotId);
     }
 
-    show() {
+    async show(payload: undefined) {
         this.screen.style.display = "block";
-        this.refreshSlots();
+        await this.refreshSlots();
         this.setSelectedSlot(this.selectedSlotId);
 
         this.cursorDirty = true;
@@ -82,33 +83,26 @@ export class SlotSelectScreenController implements MainScreenController, UseUIAx
         for (const e of events) {
             switch (e.action) {
                 case "CONFIRM":
-                    console.log("[SlotSelectScreen] CONFIRM slot", this.selectedSlotId);
+                    console.log("[SlotSelectScreen] CONFIRM slot", this.selectedSlotId + 1);
                     audioManager.playSE("assets/se/decide.mp3");
 
                     const slotView = await this.queryAsync({
                         type: "GET_SLOT_VIEW",
                         slotId: this.selectedSlotId + 1,
                     }) as SlotViewModel;
+
                     if (slotView.isEmpty) {
                         // 新規
-                        this.emitUI({
-                            type: "SHOW_INPUT_NAME_OVERLAY",
-                            slotId: slotView.id,
-                        });
+                        this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.INPUT_NAME_OVERLAY, payload: { slotId: slotView.id } });
                     } else {
                         // 既存
-                        this.emitUI({
-                            type: "START_GAME",
-                            slotId: slotView.id,
-                            playerName: slotView.playerName,
-                        });
+                        this.emitUI({ type: "START_GAME", slotId: slotView.id, playerName: slotView.playerName, });
                     }
                     break;
 
                 case "CANCEL":
-                    console.log("[SlotSelectScreen] CANCEL → EXIT_TO_TITLE");
                     audioManager.playSE("assets/se/cancel.mp3");
-                    this.emitUI?.({ type: "EXIT_TO_TITLE" });
+                    this.emitUI({ type: "POP_OVERLAY" });
                     break;
             }
         }
@@ -155,13 +149,21 @@ export class SlotSelectScreenController implements MainScreenController, UseUIAx
         const rect = target.getBoundingClientRect();
         const screenRect = this.screen.getBoundingClientRect();
 
-        this.cursor.style.top = `${rect.top - screenRect.top + rect.height + this.cursor.height / 16}px`;
-        this.cursor.style.left = `${rect.left - screenRect.left - this.cursor.width}px`;
+        // 1. Vertical (Top): スロットのTop位置に合わせる 
+        // (スロットの高さの中央に合わせる場合は + rect.height/2 - cursor.height/2)
+        const topPos = rect.top - screenRect.top + (rect.height / 2) - (this.cursor.height / 2);
+
+        // 2. Horizontal (Left): スロットの左端から、カーソル幅分だけ左に離す
+        // (-10px ほど調整して少し食い込ませるのがペルソナ風)
+        const leftPos = rect.left - screenRect.left - this.cursor.width + 10;
+
+        this.cursor.style.top = `${topPos}px`;
+        this.cursor.style.left = `${leftPos}px`;
     }
 
     /* ===================== DOM ===================== */
 
-    private async createScreen(): Promise<HTMLElement> {
+    private createScreen(): HTMLElement {
         this.screen = document.createElement("div");
         this.screen.id = "slotSelectScreen";
 
@@ -174,20 +176,7 @@ export class SlotSelectScreenController implements MainScreenController, UseUIAx
             slot.classList.add("slot");
             slot.id = `slot${i}`;
 
-            const slotViewRaw = this.queryAsync({
-                type: "GET_SLOT_VIEW",
-                slotId: i,
-            });
-
-            // const slotView: SlotViewModel = (slotViewRaw && 'label' in (slotViewRaw as any))
-            //     ? (slotViewRaw as SlotViewModel)
-            //     : { id: i, label: "空きスロット", isEmpty: true };
-            const slotView = await this.queryAsync({
-                type: "GET_SLOT_VIEW",
-                slotId: i,
-            }) as SlotViewModel;
-            slot.textContent = slotView.label ?? undefined;
-            slot.classList.toggle("empty", slotView.isEmpty);
+            slot.textContent = "---";
 
             slotsBorder.appendChild(slot);
         }
@@ -195,20 +184,25 @@ export class SlotSelectScreenController implements MainScreenController, UseUIAx
         return this.screen;
     }
 
-    private refreshSlots() {
-        this.slotElements.forEach((el, idx) => {
-            const slotViewRaw = this.queryAsync({
-                type: "GET_SLOT_VIEW",
-                slotId: idx + 1,
-            });
+    private async refreshSlots() {
+        // 3つのスロットを並列で取得
+        const promises = [1, 2, 3].map(id =>
+            this.queryAsync({ type: "GET_SLOT_VIEW", slotId: id }) as Promise<SlotViewModel>
+        );
 
-            const slotView: SlotViewModel = (slotViewRaw && 'label' in (slotViewRaw as any))
-                ? (slotViewRaw as unknown as SlotViewModel)
-                : { id: idx + 1, label: "空きスロット", isEmpty: true };
+        const results = await Promise.all(promises);
+
+        // DOMへの反映
+        results.forEach((slotView, idx) => {
+            const el = this.slotElements[idx];
+            if (!el) return;
 
             el.textContent = slotView.label;
             el.classList.toggle("empty", slotView.isEmpty);
         });
+
+        // カーソルの再計算が必要ならフラグを立てる
+        this.cursorDirty = true;
     }
 
     private createCursor(): HTMLImageElement {

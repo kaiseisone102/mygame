@@ -1,9 +1,5 @@
 /* src/renderer/styles/prolouge.css */
-body { 
-    background: #222;
-    color: #fff;
-    font-family: monospace;
-}
+
 #logBox { 
     width: 600px;
     padding: 20px;

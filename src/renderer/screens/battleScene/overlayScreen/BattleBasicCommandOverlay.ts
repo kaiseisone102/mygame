@@ -49,6 +49,7 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BasicCommandPayl
     private command!: HTMLElement;
     private nameTag!: HTMLElement;
     private commandItems: HTMLParagraphElement[] = [];
+  
     private selectedIndex = 0;
     private actorName: string = "";
     private enabled = true;
@@ -58,7 +59,6 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BasicCommandPayl
     private emitWorld!: (event: WorldEvent) => void;
     private emitUI!: (event: AppUIEvent) => void;
 
-    private ctx!: ScreenInitContext;
     private battleState!: BattleState;
 
     constructor() { }
@@ -69,9 +69,8 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BasicCommandPayl
     init(root: HTMLElement, initCtx: ScreenInitContext) {
         console.log("[BattleBasicCommandOverlay] init");
 
-        this.ctx = initCtx;
-        this.emitWorld = this.ctx.emitWorld
-        this.emitUI = this.ctx.emitUI;
+        this.emitWorld = initCtx.emitWorld
+        this.emitUI = initCtx.emitUI;
 
         // 画面全体
         this.screen = document.createElement("div");

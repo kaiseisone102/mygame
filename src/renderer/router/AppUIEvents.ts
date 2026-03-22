@@ -1,23 +1,24 @@
 // src/renderer/router/AppUIEvent.ts
 
-import { BattleAction } from "../../shared/type/battle/BattleAction";
+import { MainScreenPayloadMap } from "../../renderer/screens/interface/screen/MainScreenPayloadMap";
+import { AlliesStatusPayload } from "../../renderer/screens/battleScene/overlayScreen/AlliesStatusOverlay";
+import { BasicCommandPayload, CommandSelectedPayload } from "../../renderer/screens/battleScene/overlayScreen/BattleBasicCommandOverlay";
+import { OverlayPayloadMap } from "../../renderer/screens/interface/overlay/overlayPayloadMap";
+import { BattleAction, BattleInput } from "../../shared/type/battle/BattleAction";
+import { WorldPxPosition } from "../../shared/type/playerPosition/posType";
 import { PlayerState } from "../../shared/type/PlayerState";
-import { MainScreenType } from "../../shared/type/screenType";
+import { BattleEvent } from "../game/battle/event/BattleEvent";
 import { ItemData } from "../game/map/talkNPC/ItemData";
 import { NpcData } from "../game/map/talkNPC/NPCData";
 import { SignData } from "../game/map/talkNPC/SignData";
-import { BattleEvent } from "../game/battle/event/BattleEvent";
-import { BattleInput } from "./useCase/gameUseCase/battle/BattleInputUseCase";
-import { WorldPxPosition } from "../../shared/type/playerPosition/posType";
-import { OverlayPayloadMap } from "../../renderer/screens/interface/overlay/overlayPayloadMap";
-import { BasicCommandPayload, CommandSelectedPayload } from "../../renderer/screens/battleScene/overlayScreen/BattleBasicCommandOverlay";
 import { SelectedSkillPayload } from "../screens/battleScene/overlayScreen/SkillSelectOverlay";
-import { AlliesStatusPayload } from "../../renderer/screens/battleScene/overlayScreen/AlliesStatusOverlay";
+import { SaveEvent } from "../../shared/events/save/SaveEvents";
 
 export type AppUIEvent =
     | { type: "OPEN_YES_NO"; message: string; onYes: () => void; onNo: () => void; }
+
     // 画面遷移
-    | { type: "CHANGE_MAIN_SCREEN", screen: MainScreenType }
+    | ChangeMainScreenEvent
 
     // 入力ロック
     | { type: "INPUT_CONTROLL", lock: boolean }
@@ -39,6 +40,8 @@ export type AppUIEvent =
 
     // Overlay
     | UIOverlayEvent
+
+    | SaveEvent
 
     // 動的イベント
     | { type: "REQUEST_INTERACT", playerState: PlayerState, playerPos: WorldPxPosition, npcs: NpcData[], signs: SignData[], items: ItemData[] }
@@ -69,6 +72,7 @@ type BattleEventGroup =
     | { type: "OPEN_BATTLE_LOG" }
     | { type: "SEND_MESSAGE" }
 
+
 type UIOverlayEvent =
     | PushOverlayEvent
     | { type: "POP_OVERLAY" }
@@ -77,6 +81,14 @@ type UIOverlayEvent =
 type BattleVisualEvent =
     | { type: "BATTLE_EVENT_QUEUE"; event: BattleEvent }
     | { type: "ADD_BATTLE_LOG"; message: string };
+
+type ChangeMainScreenEvent = {
+    [K in keyof MainScreenPayloadMap]: {
+        type: "CHANGE_MAIN_SCREEN",
+        screen: K,
+        payload: MainScreenPayloadMap[K]
+    }
+}[keyof MainScreenPayloadMap];
 
 type PushOverlayEvent = {
     [K in keyof OverlayPayloadMap]: { // OverlayPayloadMap が void なら payload 禁止

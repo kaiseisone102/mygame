@@ -1,24 +1,40 @@
 // src/main/save/saveFile.ts
+
 import { app } from "electron";
 import * as fs from "fs";
 import * as path from "path";
 import type { SaveData } from "../../shared/save/SaveData";
+import { sanitizeData } from "../../shared/utils/Sanitizer";
 
-const saveDir = path.join(app.getPath("userData"), "save");
+function getSaveDir() {
+    const dir = path.join(app.getPath("userData"), "save");
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+    return dir;
+}
 
 // 保存フォルダ作成
-if (!fs.existsSync(saveDir)) {
-    fs.mkdirSync(saveDir, { recursive: true });
+if (!fs.existsSync(getSaveDir())) {
+    fs.mkdirSync(getSaveDir(), { recursive: true });
 }
 
 // スロットごとのファイルパス
 function saveFilePath(slotId: number) {
-    return path.join(saveDir, `saveSlot${slotId}.json`);
+    return path.join(getSaveDir(), `saveSlot${slotId}.json`);
 }
 
 // 保存
 export function saveSlot(slotId: number, data: SaveData) {
-    fs.writeFileSync(saveFilePath(slotId), JSON.stringify(data, null, 2), "utf-8");
+    const filePath = path.join(getSaveDir(), `saveSlot${slotId}.json`);
+
+    const cleanData = sanitizeData(data);
+
+    fs.writeFileSync(
+        filePath,
+        JSON.stringify(cleanData, null, 2),
+        "utf-8"
+    );
 }
 
 // 読み込み
