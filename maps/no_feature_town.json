@@ -53,7 +53,20 @@
             },
             "direction": "DOWN",
             "image": "OMAENO_SHIWAZA_DATANO_KA",
+            "roles": ["TALK"],
             "messageId": "FOREST_KEEPER_GO_AHEAD"
+        },
+        {
+            "id": "ITEM_SHOP_NPC_01",
+            "pos": {
+                "tx": 12,
+                "ty": 10
+            },
+            "direction": "DOWN",
+            "image": "OMAENO_SHIWAZA_DATANO_KA",
+            "roles": ["TALK", "SHOP"],
+            "messageId": "WELCOME_TO_MY_SHOP",
+            "shopId": "BASIC_ITEM_SHOP"
         }
     ],
     "signs": [
