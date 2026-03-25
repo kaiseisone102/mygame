@@ -1,18 +1,18 @@
 // src/renderer/router/AppUIEvent.ts
 
-import { MainScreenPayloadMap } from "../../renderer/screens/interface/screen/MainScreenPayloadMap";
+import { SkillSelectedPayload } from "../../shared/type/payload/battle";
 import { AlliesStatusPayload } from "../../renderer/screens/battleScene/overlayScreen/AlliesStatusOverlay";
 import { BasicCommandPayload, CommandSelectedPayload } from "../../renderer/screens/battleScene/overlayScreen/BattleBasicCommandOverlay";
 import { OverlayPayloadMap } from "../../renderer/screens/interface/overlay/overlayPayloadMap";
-import { BattleAction, BattleInput } from "../../shared/type/battle/BattleAction";
+import { MainScreenPayloadMap } from "../../renderer/screens/interface/screen/MainScreenPayloadMap";
+import { SaveEvent } from "../../shared/events/save/SaveEvents";
+import { BattleAction, combatCommandInput } from "../../shared/type/battle/BattleAction";
 import { WorldPxPosition } from "../../shared/type/playerPosition/posType";
 import { PlayerState } from "../../shared/type/PlayerState";
 import { BattleEvent } from "../game/battle/event/BattleEvent";
 import { ItemData } from "../game/map/talkNPC/ItemData";
 import { NpcData } from "../game/map/talkNPC/NPCData";
 import { SignData } from "../game/map/talkNPC/SignData";
-import { SelectedSkillPayload } from "../screens/battleScene/overlayScreen/SkillSelectOverlay";
-import { SaveEvent } from "../../shared/events/save/SaveEvents";
 
 export type AppUIEvent =
     | { type: "OPEN_YES_NO"; message: string; onYes: () => void; onNo: () => void; }
@@ -58,8 +58,8 @@ type BattleEventGroup =
     // ===== UI段階 =====
     | { type: "REQUEST_COMMAND", payload: BasicCommandPayload }
     | { type: "BATTLE_COMMAND_SELECTED", payload: CommandSelectedPayload }// UI操作
-    | { type: "SKILL_SELECTED", payload: SelectedSkillPayload }
-    | { type: "PLAYER_COMMAND_SELECTED", input: BattleInput }
+    | { type: "SKILL_SELECTED", payload: SkillSelectedPayload }
+    | { type: "PLAYER_COMMAND_SELECTED", input: combatCommandInput }
     | { type: "BATTLE_ITEM_SELECTED"; itemId: string }
     // ===== 戦闘確定段階 =====
     | { type: "BATTLE_ACTION_DECIDED", action: BattleAction }// 戦闘的に確定

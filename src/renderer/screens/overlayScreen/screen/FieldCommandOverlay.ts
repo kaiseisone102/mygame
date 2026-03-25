@@ -1,7 +1,8 @@
 // src/renderer/screens/mainScreens/screen/FieldCommandOverlay.ts
 
+import { FieldMagicPayload, SkillItem } from "../../../../shared/type/payload/battle";
 import { audioManager } from "../../../../renderer/asset/audio/audioManager";
-import { InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";
+import { CommonAction, InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";
 import { AppUIEvent } from "../../../../renderer/router/AppUIEvents";
 import { WorldEvent } from "../../../../renderer/router/WorldEvent";
 import { ScreenInitContext } from "../../../../renderer/screens/interface/context/ScreenInitContext";
@@ -9,8 +10,9 @@ import { OverlayScreen } from "../../../../renderer/screens/interface/overlay/Ov
 import { FIELD_COMMANDS_DISPLAY } from "../../../../shared/data/constants";
 import { FieldActionType } from "../../../../shared/type/field/FieldActionType";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
+import { SkillRepository } from "../../../../shared/master/battle/SkillRepository";
 
-export class FieldCommandOverlay implements OverlayScreen<void> {
+export class FieldCommandOverlay implements OverlayScreen<FieldMagicPayload[]> {
     readonly overlayId: string = OverlayScreenType.FIELD_COMMAND;
     readonly capturesInput: boolean = true;
 
@@ -18,11 +20,15 @@ export class FieldCommandOverlay implements OverlayScreen<void> {
     private container!: HTMLElement;
     private commandItems: HTMLParagraphElement[] = [];
 
+    private payload!: FieldMagicPayload[];
+
     private selectedIndex = 0;
     private lastIndex = 0;
 
     private emitWorld!: (event: WorldEvent) => void;
     private emitUI!: (event: AppUIEvent) => void;
+
+    constructor(private skillRepo: SkillRepository) { }
 
     init(root: HTMLElement, initCtx: ScreenInitContext): void {
         console.log("[FieldCommandOverlay] init");
@@ -55,8 +61,9 @@ export class FieldCommandOverlay implements OverlayScreen<void> {
         this.hide();
     };
 
-    show(payload: void): void {
+    show(payload: FieldMagicPayload[]): void {
         this.screen.style.display = "block";
+        this.payload = payload;
 
         this.selectedIndex = 0;
         this.updateCommandUI();
@@ -75,14 +82,46 @@ export class FieldCommandOverlay implements OverlayScreen<void> {
     handleUIActions(actions: UIActionEvent[]): boolean {
         for (const a of actions) {
             switch (a.action) {
-                case "CONFIRM": {
+                case CommonAction.CONFIRM: {
                     audioManager.playSE("assets/se/decide.mp3");
 
                     const commandId = FIELD_COMMANDS_DISPLAY[this.selectedIndex].id;
 
                     switch (commandId) {
                         case FieldActionType.ITEM:
+                            break;
+
                         case FieldActionType.MAGIC:
+                            // 例：とりあえずパーティの先頭（主人公）の魔法Payloadを渡す場合
+                            // 本来はここで「誰の魔法を見ますか？」というキャラ選択を挟むのが理想
+                            const firstActorPayload = this.payload[0];
+
+                            const playerSkill: SkillItem[] = firstActorPayload.skillIds.map(id => {
+                                const master = this.skillRepo.get(id);
+                                // SkillPreset から SkillItem への詰め替え
+                                return {
+                                    skillId: master.id,
+                                    name: master.name,
+                                    description: master.description,
+                                    mpCost: master.cost?.mp ?? 0,
+                                    target: {
+                                        // SkillPreset の targetType と targetSide をそのまま流用
+                                        type: master.targetType,
+                                        side: master.targetSide
+                                    }
+                                };
+                            })
+                                .filter((skill): skill is SkillItem => skill !== undefined);
+
+                            this.emitUI({
+                                type: "PUSH_OVERLAY", overlay: OverlayScreenType.SKILL_SELECT_OVERLAY,
+                                payload: {
+                                    actorInstanceId: firstActorPayload.actorInstanceId,
+                                    skillItems: playerSkill, // 詳細データが入った配列
+                                    allies: firstActorPayload.allies,   // ターゲット選択用の全員名簿
+                                    enemies: []
+                                }
+                            })
                             break;
 
                         case FieldActionType.EQUIPMENT:
@@ -98,9 +137,10 @@ export class FieldCommandOverlay implements OverlayScreen<void> {
                     }
                     return true;
                 }
-                case "CANCEL":
+                case CommonAction.CANCEL:
+                case CommonAction.INVENTORY:
                     audioManager.playSE("assets/se/cancel.mp3");
-                    this.emitUI({ type: "POP_OVERLAY" });
+                    this.emitUI({ type: "POP_ALL_OVERLAY" });
                     return true;
             }
         }

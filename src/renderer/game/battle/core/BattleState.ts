@@ -2,7 +2,7 @@
 
 import { AiType } from "../../../../shared/master/battle/type/EnemyPreset ";
 import { BattlerSaveData } from "../../../../shared/data/BattlerSaveData";
-import { DEFAULT_PLAYER_BASE_STATS } from "../../../../shared/data/playerConstants";
+import { DEFAULT_PLAYER_BASE_STATS, DEFAULT_PLAYER_NAME } from "../../../../shared/data/playerConstants";
 import { getTraitById, TraitId, TraitPresets } from "../../../../shared/master/battle/TraitPresets";
 import { MagicId, TechniqueId } from "../../../../shared/master/battle/type/SkillPreset";
 import { BattleAction, BattlerSide } from "../../../../shared/type/battle/BattleAction";
@@ -38,7 +38,7 @@ export const initialBattleState: BattleState = {
     allies: [],
     enemies: [],
 
-    currentActorId: 0,
+    currentActorId: -1,
     order: [],
 
     actionQueue: [],
@@ -47,6 +47,13 @@ export const initialBattleState: BattleState = {
     finished: false,
 
     mode: CommandMode.NULL,
+};
+
+/**
+ * 初期 BattleState を生成
+ */
+export const createInitialBattleState = (): BattleState => {
+    return initialBattleState;
 };
 
 export function createAllies(saveData?: BattlerSaveData[]): Battler[] {
@@ -67,6 +74,7 @@ export function createAllies(saveData?: BattlerSaveData[]): Battler[] {
         });
     }
 
+    // セーブデータがない時の保険
     const allyData: BattlerParams[] = [
         {
             actorMasterId: 1,
@@ -76,19 +84,8 @@ export function createAllies(saveData?: BattlerSaveData[]): Battler[] {
             exp: 0,
             side: BattlerSide.ALLY,
             baseStats: { hp: 100, mp: 50, attack: 6, defense: 4, speed: 20 },
+            skillIds: [],
             growthTable: {},
-            skills: [
-                TechniqueId.DOUBLE_ATTACK,
-                TechniqueId.POWER_SLASH,
-                TechniqueId.WHIRL_WIND,
-
-
-                MagicId.HASTE,
-
-                MagicId.ATK_DOWN,
-                MagicId.HEAL_ALL,
-                MagicId.GIGADEIN
-            ],
             traits: [TraitPresets.WEAK_FIRE],
             aiType: AiType.AGGRESSIVE
         },
@@ -100,32 +97,8 @@ export function createAllies(saveData?: BattlerSaveData[]): Battler[] {
             exp: 0,
             side: BattlerSide.ALLY,
             baseStats: { hp: 80, mp: 80, attack: 4, defense: 2, magic: 20, speed: 10 },
+            skillIds: [],
             growthTable: {},
-            skills: [
-                MagicId.MERA,
-                MagicId.GIRA,
-                MagicId.IO,
-                MagicId.HYADO,
-                MagicId.RAIDEIN,
-                MagicId.BAGI,
-                MagicId.HEAL,
-                MagicId.HEAL_ALL,
-                MagicId.REVIVE,
-
-                MagicId.ATK_UP_SMALL,
-                MagicId.ATK_UP_LARGE,
-                MagicId.DEF_UP,
-                MagicId.HASTE,
-
-                MagicId.ATK_DOWN,
-                MagicId.SLOW,
-
-                MagicId.SLEEP,
-                MagicId.POISON,
-                MagicId.PARALYZE,
-
-                MagicId.GIGADEIN
-            ],
             traits: [TraitPresets.RESIST_MAGIC],
             aiType: AiType.AGGRESSIVE
         },
@@ -134,45 +107,53 @@ export function createAllies(saveData?: BattlerSaveData[]): Battler[] {
     return allyData.map(p => new Battler(p));
 }
 
-/**
- * 初期 BattleState を生成
- */
-export const createInitialBattleState = (): BattleState => {
-    return {
-        turn: 0,
-        allies: [],
-        enemies: [],
-        currentActorId: -1,
-        order: [],
-        actionQueue: [],
-        result: BattleResult.NULL,
-        finished: false,
-        mode: CommandMode.NULL,
-    };
-};
-
-export function createInitialParty(): BattlerSaveData {
-    return {
-        actorMasterId: 1,
-        instanceId: 1,
-        name: "Hero",
-        level: 1,
-        exp: 0,
-        baseStats: DEFAULT_PLAYER_BASE_STATS,
-        skills: [
-            TechniqueId.DOUBLE_ATTACK,
-            TechniqueId.POWER_SLASH,
-            TechniqueId.WHIRL_WIND,
+export function createInitialParty(): BattlerSaveData[] {
+    return [
+        {
+            actorMasterId: 1,
+            instanceId: 1,
+            name: DEFAULT_PLAYER_NAME,
+            level: 1,
+            exp: 0,
+            baseStats: DEFAULT_PLAYER_BASE_STATS,
+            skillIds: [
+                TechniqueId.DOUBLE_ATTACK,
+                TechniqueId.POWER_SLASH,
+                TechniqueId.WHIRL_WIND,
 
 
-            MagicId.HASTE,
+                MagicId.HASTE,
 
-            MagicId.ATK_DOWN,
-            MagicId.HEAL_ALL,
-            MagicId.GIGADEIN
-        ],
-        traits: [TraitId.WEAK_FIRE],
-        statusEffects: [],
-        aiType: AiType.AGGRESSIVE
-    }
+                MagicId.ATK_DOWN,
+                MagicId.HEAL_ALL,
+                MagicId.GIGADEIN
+            ],
+            traits: [TraitId.WEAK_FIRE],
+            statusEffects: [],
+            aiType: AiType.AGGRESSIVE
+        },
+        {
+            actorMasterId: 2,
+            instanceId: 2,
+            name: DEFAULT_PLAYER_NAME,
+            level: 1,
+            exp: 0,
+            baseStats: DEFAULT_PLAYER_BASE_STATS,
+            skillIds: [
+                TechniqueId.DOUBLE_ATTACK,
+                TechniqueId.POWER_SLASH,
+                TechniqueId.WHIRL_WIND,
+
+
+                MagicId.HASTE,
+
+                MagicId.ATK_DOWN,
+                MagicId.HEAL_ALL,
+                MagicId.GIGADEIN
+            ],
+            traits: [TraitId.WEAK_FIRE],
+            statusEffects: [],
+            aiType: AiType.AGGRESSIVE
+        },
+    ]
 }

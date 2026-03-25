@@ -51,7 +51,7 @@ export class StartMessageScreenController implements MainScreenController {
                         });
                     } else {
                         // 名前入力画面へ
-                        this.ctx.emitUI?.({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.INPUT_NAME_OVERLAY, payload: undefined });
+                        this.ctx.emitUI?.({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.INPUT_NAME_OVERLAY, payload: { slotId: this.slotId } });
                     }
                     break;
                 case "CANCEL":

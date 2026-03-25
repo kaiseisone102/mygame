@@ -182,10 +182,10 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
 
             if (battleResult !== BattleResult.NULL) {
 
-                if (battleResult === BattleResult.WIN) {
+                // Distribute EXP to ally, check for level-ups
+                const resultData = this.resultService.process(battleResult);
 
-                    // Distribute EXP to ally, check for level-ups
-                    const resultData = this.resultService.process(battleResult);
+                if (battleResult === BattleResult.WIN) {
 
                     await this.battleLog.playExpLogs(resultData.expLogs);
                     await delay(1000);

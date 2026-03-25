@@ -13,8 +13,8 @@ import { MapBuilder } from "../interface/MapBuilder";
 
 export class ForestTempleBuilder implements MapBuilder {
 
-    constructor(private buildingSquare: BuildingSquare){};
-    
+    constructor(private buildingSquare: BuildingSquare) { };
+
     build(): BaseWorldDefinition {
 
         const world = new World(30, 35, WORLD_DEFAULT_TILE[MapCategory.TOWN]);
@@ -33,16 +33,16 @@ export class ForestTempleBuilder implements MapBuilder {
         addObjectBlock(objectLayer, ObjectType.TREE, 2, 18, 5, 4);
         addObject(objectLayer, ObjectType.THRONE, 15, 7);
 
-                if (this.buildingSquare) {
-        
-                    const luxuryHouse = this.buildingSquare.buildings.find(
-                        b => b.id === BuildingSquareId.BUILDING_LUXURY_SQUARE_01
-                    );
-        
-                    if (luxuryHouse) {
-                        placeBuildingSquare(world, 12, 20, luxuryHouse);
-                    }
-                }
+        if (this.buildingSquare) {
+
+            const luxuryHouse = this.buildingSquare.buildings.find(
+                b => b.id === BuildingSquareId.BUILDING_LUXURY_SQUARE_01
+            );
+
+            if (luxuryHouse) {
+                placeBuildingSquare(world, 12, 20, luxuryHouse);
+            }
+        }
 
         return { world, objectLayer };
     }

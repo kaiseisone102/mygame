@@ -36,9 +36,10 @@ export async function loadAssets() {
         ImageStore.load(ImageKey.PLAYER_RIGHT_0, "assets/walkingPlayer/right_0.png"),
 
         // ----- zone ------ // 
-        // 建物 
-        ImageStore.load(ImageKey.TOWN_ICON, "assets/images/zone/building/town.png"),
-        // 敵
+        // 侵入
+        ImageStore.load(ImageKey.TOWN_ICON, "assets/images/zone/entry/town.png"),
+           ImageStore.load(ImageKey.CAVE, "assets/images/zone/entry/cave.png"),
+      // 敵
         ImageStore.load(ImageKey.ENEMY_ICON, "assets/images/zone/enemy/enemy1.png"),
         // エリア
         ImageStore.load(ImageKey.AREA_ICON, "assets/images/zone/area/skipArea.png"),

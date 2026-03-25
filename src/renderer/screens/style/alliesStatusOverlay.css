@@ -11,10 +11,10 @@
     /* 四角くシャープに */
     border: 2px solid #fff;
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-    z-index: 1000;
     font-family: "Arial", sans-serif;
     color: #fff;
     min-width: 220px;
+    z-index: 500;
 }
 
 .ally-status {
@@ -220,9 +220,12 @@
     background-color: #ff0055;
     /* ペルソナ風のビビッドな赤（または黒） */
 
-    display: flex;           /* Flexboxを有効化 */
-    align-items: center;     /* 垂直方向（上下）の真ん中 */
-    justify-content: center;/* 水平方向（左右）の真ん中 */
+    display: flex;
+    /* Flexboxを有効化 */
+    align-items: center;
+    /* 垂直方向（上下）の真ん中 */
+    justify-content: center;
+    /* 水平方向（左右）の真ん中 */
 
     width: 14px;
     height: 14px;

@@ -5,36 +5,18 @@ import { InputAxis, UIActionEvent } from "../../../input/mapping/InputMapper";
 import { AppUIEvent } from "../../../router/AppUIEvents";
 import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { OverlayScreen } from "../../interface/overlay/OverLayScreens";
-import { SkillId } from "../../../../shared/master/battle/type/SkillPreset";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
-import { CommandSelectedPayload } from "./BattleBasicCommandOverlay";
+import { MenuGridNavigator } from "../../../../renderer/ui/utils/GridSelector";
+import { SkillSelectPayload, SkillItem } from "../../../../shared/type/payload/battle";
 
-export type SelectedSkillPayload = {
-    phaseSec: CommandSelectedPayload,
-    skillId: SkillId,
-    target: {
-        type: string,
-        side: string
-    };
-};
-
-export type SkillItem = {
-    skillId: SkillId;
-    name: string;
-    description: string;
-    mpCost: number;
-    target: {
-        type: string,
-        side: string
-    };
-};
-
-export class SkillSelectOverlay implements OverlayScreen<CommandSelectedPayload> {
+export class SkillSelectOverlay implements OverlayScreen<SkillSelectPayload> {
     readonly capturesInput: true = true;
     readonly overlayId: string = OverlayScreenType.SKILL_SELECT_OVERLAY;
 
-    private payload!: CommandSelectedPayload;
-    private skills: SkillItem[] = [];
+    private navigator = new MenuGridNavigator(12, 2);
+
+    private payload!: SkillSelectPayload;
+    private skillItems: SkillItem[] = [];
 
     private screen!: HTMLElement;
     private items: HTMLElement[] = [];
@@ -70,12 +52,12 @@ export class SkillSelectOverlay implements OverlayScreen<CommandSelectedPayload>
         this.screen.appendChild(mpCost);
     }
 
-    show(payload: CommandSelectedPayload): void {
+    show(payload: SkillSelectPayload): void {
         this.screen.style.display = "block";
         this.payload = payload;
 
         // スキル配列を保持
-        this.skills = payload.phaseBase.skills || [];
+        this.skillItems = payload.skillItems || [];
 
         this.currentPage = 0;
 
@@ -91,118 +73,29 @@ export class SkillSelectOverlay implements OverlayScreen<CommandSelectedPayload>
     pause(): void { }
 
     handleUIAxes(axes: InputAxis[]): boolean {
-        const cols = 2;
-        const rows = Math.ceil(this.items.length / cols);
-        const totalPages = Math.ceil(this.skills.length / this.skillsPerPage);
-
         for (const axis of axes) {
+            const result = this.navigator.handleMove(
+                axis as any,
+                { selectedIndex: this.selectedIndex, currentPage: this.currentPage },
+                this.skillItems.length,
+                (targetPage) => {
+                    // ページが変わる「前」に、そのページのアイテム数を教える必要がある
+                    const start = targetPage * this.skillsPerPage;
+                    const end = start + this.skillsPerPage;
+                    return this.skillItems.slice(start, end).length;
+                }
+            );
 
-            let row = Math.floor(this.selectedIndex / cols);
-            let col = this.selectedIndex % cols;
-
-            switch (axis) {
-
-                case "UP":
-                    let newRow = row - 1;
-                    if (newRow < 0) newRow = rows - 1;
-
-                    let newIndex = newRow * cols + col;
-
-                    if (newIndex >= this.items.length) {
-                        newIndex = Math.max(newIndex - cols, 0);
-                    };
-
-                    this.selectedIndex = newIndex;
-                    this.updateCursor();
-                    audioManager.playSE("assets/se/cursorMove.mp3");
-                    return true;
-
-                case "DOWN":
-                    row = (row + 1) % rows;
-                    break;
-
-                case "LEFT":
-
-                    if (col === 0) {
-                        // 左端 → 前ページ
-                        const prevRow = row;
-
-                        if (this.currentPage > 0) {
-                            this.prevPage();
-                        } else {
-                            this.currentPage = totalPages - 1;
-                            this.renderPage();
-                        };
-
-                        const newRows = Math.ceil(this.items.length / cols);
-                        row = Math.min(prevRow, newRows - 1);
-                        col = 1;
-
-                    } else {
-                        col = 0;
-                    }
-
-                    break;
-
-                case "RIGHT":
-
-                    if (col === 1) {
-
-                        const prevRow = row;
-
-                        if (this.currentPage < totalPages - 1) {
-                            this.nextPage();
-                        } else {
-                            this.currentPage = 0;
-                            this.renderPage();
-                        };
-
-                        const newRows = Math.ceil(this.items.length / cols);
-                        row = Math.min(prevRow, newRows - 1);
-                        col = 0;
-
-                    } else {
-
-                        if (this.items.length === 1) {
-
-                            const prevRow = row;
-
-                            if (this.currentPage < totalPages - 1) {
-                                this.nextPage();
-                            } else {
-                                this.currentPage = 0;
-                                this.renderPage();
-                            }
-
-                            const newRows = Math.ceil(this.items.length / cols);
-                            row = Math.min(prevRow, newRows - 1);
-                            col = 0;
-
-                        } else if (this.selectedIndex + 1 >= this.items.length) {
-
-                            this.selectedIndex = this.selectedIndex - 1
-                            this.updateCursor()
-                            return true
-
-                        }
-
-                        col = 1;
-                    }
-
-                    break;
+            if (result.currentPage !== this.currentPage) {
+                this.currentPage = result.currentPage;
+                this.renderPage();
             }
+            this.selectedIndex = result.selectedIndex;
 
-            this.selectedIndex = row * cols + col;
+            this.updateCursor();
+            audioManager.playSE("assets/se/cursorMove.mp3");
+        }
 
-            if (this.selectedIndex >= this.items.length) {
-                this.selectedIndex = this.items.length - 1;
-            };
-        };
-        if (this.selectedIndex < 0) this.selectedIndex = 0;
-        if (this.selectedIndex >= this.items.length) this.selectedIndex = this.items.length - 1;
-
-        this.updateCursor();
-        audioManager.playSE("assets/se/cursorMove.mp3");
         return true;
     }
 
@@ -211,10 +104,15 @@ export class SkillSelectOverlay implements OverlayScreen<CommandSelectedPayload>
             switch (e.action) {
                 case "CONFIRM": {
                     const start = this.currentPage * this.skillsPerPage;
-                    const selectedSkill = this.skills[start + this.selectedIndex];
+                    const selectedSkill = this.skillItems[start + this.selectedIndex];
                     this.emitUI({
                         type: "SKILL_SELECTED",
-                        payload: { phaseSec: this.payload, skillId: selectedSkill.skillId, target: selectedSkill.target }
+                        payload: {
+                            skillId: selectedSkill.skillId,
+                            allies: this.payload.allies,
+                            enemies: this.payload.enemies,
+                            target: selectedSkill.target
+                        }
                     });
                     audioManager.playSE("assets/se/decide.mp3");
                     break;
@@ -243,21 +141,9 @@ export class SkillSelectOverlay implements OverlayScreen<CommandSelectedPayload>
         this.items.forEach(item => item.classList.remove("selected"));
         if (this.items[this.selectedIndex]) {
             this.items[this.selectedIndex].classList.add("selected");
-            const skill = this.skills[start + this.selectedIndex];
+            const skill = this.skillItems[start + this.selectedIndex];
             this.updateDescriptionAndCost(skill);
         }
-    }
-
-    private nextPage() {
-        const totalPages = Math.ceil(this.skills.length / this.skillsPerPage);
-        this.currentPage = (this.currentPage + 1) % totalPages;
-        this.renderPage();
-    }
-
-    private prevPage() {
-        const totalPages = Math.ceil(this.skills.length / this.skillsPerPage);
-        this.currentPage = (this.currentPage - 1 + totalPages) % totalPages;
-        this.renderPage();
     }
 
     private renderPage() {
@@ -267,12 +153,12 @@ export class SkillSelectOverlay implements OverlayScreen<CommandSelectedPayload>
 
         const start = this.currentPage * this.skillsPerPage;
         const end = start + this.skillsPerPage;
-        const pageSkills = this.skills.slice(start, end);
+        const pageSkills = this.skillItems.slice(start, end);
 
-        pageSkills.forEach(skill => {
+        pageSkills.forEach(skillItems => {
             const item = document.createElement("div");
             item.className = "magic-item";
-            item.textContent = skill.name;
+            item.textContent = skillItems.name;
             listArea.appendChild(item);
             this.items.push(item);
         });

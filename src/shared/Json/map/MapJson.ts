@@ -13,43 +13,33 @@ export interface MapJson {
     environment?: EnvironmentJson;
 }
 
-export interface ZoneJson {
-    id: string;
-    pos: WorldTilePosition;
-    tw: number;
-    th: number;
-    block: boolean;
-    type: keyof typeof ZoneType;
-    image?: keyof typeof ImageKey;
-}
-
-export interface NpcJson {
+export interface EventZoneObject {
     id: string;
     pos: WorldTilePosition;
     tw?: number;
     th?: number;
+    image?: keyof typeof ImageKey;
+}
+
+export interface ZoneJson {
+    block: boolean;
+    type: keyof typeof ZoneType;
+}
+
+export interface NpcJson extends EventZoneObject {
     direction: string;
-    image: keyof typeof ImageKey;
-    messageId: string;
+    roles: string[];
+    messageId?: string;
+    shopId?: string;
 }
 
-export interface SignJson {
-    id: string;
-    pos: WorldTilePosition;
-    tw?: number,
-    th?: number,
+export interface SignJson extends EventZoneObject {
     facing: string;
-    image: keyof typeof ImageKey;
     messageId: string;
 }
 
-export interface ItemJson {
-    id: string;
-    pos: WorldTilePosition;
-    tw: number;
-    th: number;
+export interface ItemJson extends EventZoneObject {
     type: string;
-    image: keyof typeof ImageKey;
 }
 
 export interface EnvironmentJson {

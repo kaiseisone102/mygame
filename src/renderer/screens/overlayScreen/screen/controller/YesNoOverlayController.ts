@@ -1,6 +1,7 @@
 // src/renderer/screens/overlayScreens/screen/controller/YesNoOverlayController.ts
 
-import { InputAxis, UIActionEvent } from "../../../../../renderer/input/mapping/InputMapper";
+import { AppDirection } from "../../../../../shared/type/PlayerState";
+import { CommonAction, InputAxis, UIActionEvent } from "../../../../../renderer/input/mapping/InputMapper";
 import { ScreenInitContext } from "../../../../../renderer/screens/interface/context/ScreenInitContext";
 import { YesNoEvent } from "../../../../../shared/events/ui/YesNoEvent";
 
@@ -80,18 +81,17 @@ export class YesNoOverlayController implements YesNoOverlayController {
         for (const axis of axes) {
 
             switch (axis) {
-                case "UP":
-                case "RIGHT":
-                    this.selectedIndex = Math.max(0, this.selectedIndex - 1);
+                case AppDirection.UP:
+                case AppDirection.RIGHT:
+                    if (this.selectedIndex === 0) this.selectedIndex = 1;
+                    else this.selectedIndex = Math.max(0, this.selectedIndex - 1);
                     this.updateSelection();
                     break;
 
-                case "DOWN":
-                case "LEFT":
-                    this.selectedIndex = Math.min(
-                        this.choices.length - 1,
-                        this.selectedIndex + 1
-                    );
+                case AppDirection.DOWN:
+                case AppDirection.LEFT:
+                    if (this.selectedIndex === 1) this.selectedIndex = 0;
+                    else this.selectedIndex = Math.min(this.choices.length - 1, this.selectedIndex + 1);
                     this.updateSelection();
                     break;
 
@@ -101,14 +101,14 @@ export class YesNoOverlayController implements YesNoOverlayController {
 
     UIActions(events: UIActionEvent[]) {
         for (const e of events) {
-            if (e.action === "CONFIRM") {
+            if (e.action === CommonAction.CONFIRM) {
                 if (this.selectedIndex === 0) {
                     this.onYes();
                 } else {
                     this.onNo?.();
                 }
             }
-            if (e.action === "CANCEL") {
+            if (e.action === CommonAction.CANCEL) {
                 this.onNo?.();
             }
         }

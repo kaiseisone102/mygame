@@ -1,13 +1,14 @@
 // src/renderer/screens/overlayScreens/screen/controller/OptionsOverlayController.ts
 
-import { SliderKind, SliderUI } from "renderer/ui/interface/option/SliderKind";
+import { SliderKind, SliderUI } from "../../../../../renderer/ui/interface/option/SliderKind";
 import { audioManager } from "../../../../../renderer/asset/audio/audioManager";
 import { InputAxis, UIActionEvent } from "../../../../../renderer/input/mapping/InputMapper";
 import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
 import { WorldEvent } from "../../../../../renderer/router/WorldEvent";
 import { ScreenInitContext } from "../../../../../renderer/screens/interface/context/ScreenInitContext";
 import { GameConfig } from "../../../../../shared/config/GameConfig";
-import { BaseScreenController } from "renderer/screens/interface/controller/BaseScreenController";
+import { BaseScreenController } from "../../../../../renderer/screens/interface/controller/BaseScreenController";
+import { AppDirection } from "../../../../../shared/type/PlayerState";
 
 export class OptionsOverlayController implements BaseScreenController {
     private screen!: HTMLElement;
@@ -76,20 +77,20 @@ export class OptionsOverlayController implements BaseScreenController {
 
         for (const axis of axes) {
             switch (axis) {
-                case "UP":
+                case AppDirection.UP:
                     this.activeIndex = (this.activeIndex - 1 + count) % count;
                     this.updateFocusUI();
                     audioManager.playSE("assets/se/cursorMove.mp3");
                     break;
-                case "DOWN":
+                case AppDirection.DOWN:
                     this.activeIndex = (this.activeIndex + 1) % count;
                     this.updateFocusUI();
                     audioManager.playSE("assets/se/cursorMove.mp3");
                     break;
-                case "LEFT":
+                case AppDirection.LEFT:
                     this.changeSlider(this.sliders[this.activeIndex], -STEP);
                     break;
-                case "RIGHT":
+                case AppDirection.RIGHT:
                     this.changeSlider(this.sliders[this.activeIndex], STEP);
                     break;
             }

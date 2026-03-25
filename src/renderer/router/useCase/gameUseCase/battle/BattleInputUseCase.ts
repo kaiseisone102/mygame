@@ -2,7 +2,7 @@
 
 import { BattlePort } from "../../../../../renderer/game/battle/port/BattlePort";
 import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
-import { BattleInput } from "../../../../../shared/type/battle/BattleAction";
+import { BattleInput, combatCommandInput } from "../../../../../shared/type/battle/BattleAction";
 
 export class BattleInputUseCase {
 
@@ -11,7 +11,7 @@ export class BattleInputUseCase {
         private emitUI: (e: AppUIEvent) => void
     ) { }
 
-    execute(input: BattleInput) {
+    execute(input: combatCommandInput) {
         this.battlePort.resolvePlayerInput(input);
     }
 

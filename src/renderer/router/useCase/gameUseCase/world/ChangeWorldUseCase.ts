@@ -10,6 +10,7 @@ import { mapIdToMainScreen } from "../../../../../shared/events/world/mapIdToMai
 import { MapId } from "../../../../../shared/type/MapId";
 import { EncounterUseCase } from "../battle/EncounterUseCase";
 import { ChangeMainScreenUseCase } from "../screen/ChangeMainUseCase";
+import { WorldTilePosition } from "../../../../../shared/type/playerPosition/posType";
 
 export class ChangeWorldUseCase {
     constructor(
@@ -30,14 +31,14 @@ export class ChangeWorldUseCase {
      * - スクリーン内部の World / ObjectLayer / Zones 更新
      * - 画面切替
      */
-    async execute(mapId: MapId) {
+    async execute(mapId: MapId, pos?: WorldTilePosition) {
 
         const mapJson = await this.mapRepository.load(mapId);
         const worldDef = this.factory.create(mapId, mapJson);
 
         // preserve def while same map
         this.worldManager.setWorld(worldDef);
-        this.gameState.setWorld(mapId);
+        this.gameState.setWorld(mapId, pos);
 
         this.zoneController.clear();
 
@@ -47,6 +48,6 @@ export class ChangeWorldUseCase {
 
         this.encounterUseCase.reset();
         // switch BGM and main screen
-        this.changeMain.execute(screenType);
+        this.changeMain.execute(screenType, undefined);
     }
 }

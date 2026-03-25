@@ -8,6 +8,7 @@ export type SkillPreset = {
     id: SkillId; // 識別用
     name: string; // UI用
 
+    occation: SkillOccasion;
     category: SkillCategory;
     cost?: {
         mp?: number;
@@ -70,3 +71,15 @@ export const MagicId = {
 export type MagicId = typeof MagicId[keyof typeof MagicId];
 
 export type SkillId = TechniqueId | MagicId;
+
+/**
+ * スキルが使用可能なシチュエーション
+ */
+export const SkillOccasion = {
+    ALWAYS: "ALWAYS",       // どこでも（戦闘・フィールド両方）
+    BATTLE_ONLY: "BATTLE_ONLY", // 戦闘中のみ（攻撃魔法など）
+    FIELD_ONLY: "FIELD_ONLY",   // フィールドのみ（リレミトなど）
+    NEVER: "NEVER",         // 使用不可（パッシブスキルなど）
+} as const;
+
+export type SkillOccasion = typeof SkillOccasion[keyof typeof SkillOccasion];

@@ -1,28 +1,30 @@
 // src/renderer/screens/overlayScreens/ItemScreens.ts
 
+import { SkillRepository } from "../../../shared/master/battle/SkillRepository";
 import { OverlayScreenType } from "../../../shared/type/screenType";
-import { InventoryOverlay } from "./screen/InventoryOverlay";
-import { YesNoOverlay } from "./screen/YesNoOverlay";
-import { OptionsOverlay } from "./screen/OptionsOverlay";
-import { SelectTargetOverlay } from "../battleScene/overlayScreen/SelectTargetOverlay";
-import { MessageLogOverlay } from "./screen/MessageLogOverlay";
-import { BattleLogOverlay } from "../battleScene/overlayScreen/BattleLogOverlay";
-import { ItemSelectOverLayInBattle } from "../battleScene/overlayScreen/ItemSelectOverLayInBattle";
-import { BattleBasicCommandOverlay } from "../battleScene/overlayScreen/BattleBasicCommandOverlay";
-import { InputNameOverlay } from "./screen/InputNameOverlay";
-import { SkillSelectOverlay } from "../battleScene/overlayScreen/SkillSelectOverlay";
 import { AlliesStatusOverlay } from "../battleScene/overlayScreen/AlliesStatusOverlay";
+import { BattleBasicCommandOverlay } from "../battleScene/overlayScreen/BattleBasicCommandOverlay";
+import { BattleLogOverlay } from "../battleScene/overlayScreen/BattleLogOverlay";
 import { BattleTurnDisplayOverlay } from "../battleScene/overlayScreen/BattleTurnDisplayOverlay";
+import { ItemSelectOverLayInBattle } from "../battleScene/overlayScreen/ItemSelectOverLayInBattle";
 import { LevelUpOverlay } from "../battleScene/overlayScreen/LevelUpOverlay";
-import { SandStormOverlay } from "./screen/SandStormOverlay";
+import { SelectTargetOverlay } from "../battleScene/overlayScreen/SelectTargetOverlay";
+import { SkillSelectOverlay } from "../battleScene/overlayScreen/SkillSelectOverlay";
 import { FieldCommandOverlay } from "./screen/FieldCommandOverlay";
-import { TitleOverlay } from "./screen/TitleOverlay";
+import { InputNameOverlay } from "./screen/InputNameOverlay";
+import { InventoryOverlay } from "./screen/InventoryOverlay";
+import { MessageLogOverlay } from "./screen/MessageLogOverlay";
+import { OptionsOverlay } from "./screen/OptionsOverlay";
+import { SandStormOverlay } from "./screen/SandStormOverlay";
+import { ShopOverlay } from "./screen/ShopOverlay";
 import { SlotSelectOverlay } from "./screen/SlotSelectOverlay";
+import { TitleOverlay } from "./screen/TitleOverlay";
+import { YesNoOverlay } from "./screen/YesNoOverlay";
 
-export function createOverlayScreens() {
+export function createOverlayScreens(skillRepo: SkillRepository) {
     return {
         [OverlayScreenType.OPTIONS]: new OptionsOverlay(),
-        [OverlayScreenType.FIELD_COMMAND]: new FieldCommandOverlay(),
+        [OverlayScreenType.FIELD_COMMAND]: new FieldCommandOverlay(skillRepo),
         [OverlayScreenType.SANDSTORM_OVERLAY]: new SandStormOverlay(),
         [OverlayScreenType.TITLE_OVERLAY]: new TitleOverlay(),
         [OverlayScreenType.SLOT_SELECT]: new SlotSelectOverlay(),
@@ -38,5 +40,6 @@ export function createOverlayScreens() {
         [OverlayScreenType.ALLIES_STATUS_OVERLAY]: new AlliesStatusOverlay(),
         [OverlayScreenType.BATTLE_TURN_DISPLAY]: new BattleTurnDisplayOverlay(),
         [OverlayScreenType.LEVEL_UP_OVERLAY]: new LevelUpOverlay(),
+        [OverlayScreenType.SHOP]: new ShopOverlay(),
     } as const;
 }

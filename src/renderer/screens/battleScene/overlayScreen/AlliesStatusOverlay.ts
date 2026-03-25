@@ -7,18 +7,7 @@ import { ScreenInitContext } from "../../../../renderer/screens/interface/contex
 import { OverlayScreen } from "../../../../renderer/screens/interface/overlay/OverLayScreens";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
 import { ImageStore } from "../../../../renderer/asset/ImageStore";
-import { StatusId } from "../../../../shared/master/battle/StatusPreset";
-import { ImageKey } from "../../../../shared/type/ImageKey";
-
-export interface AllyStatusData {
-    instanceId: number;
-    name: string;
-    hp: number;
-    maxHp: number;
-    mp: number;
-    maxMp: number;
-    states: { id: StatusId, duration: number, imageKey: ImageKey }[];
-};
+import { AllyStatusData } from "../../../../shared/type/ally/AllyStatusData";
 
 export interface AlliesStatusPayload {
     allies: AllyStatusData[];
@@ -30,16 +19,22 @@ export interface AlliesStatusPayload {
  */
 export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
     readonly overlayId: string = OverlayScreenType.ALLIES_STATUS_OVERLAY;
-
     readonly capturesInput: boolean = false;
 
     private screen!: HTMLElement;
+    private isVisible: boolean = false;
     private emitWorld!: (event: WorldEvent) => void;
     private emitUI!: (event: AppUIEvent) => void;
-    private ctx!: ScreenInitContext;
 
     /** battler id をキーにした DOM 参照 */
-    private allyElements: Map<number, { hpEl: HTMLElement; mpEl: HTMLElement, hpTextEl: HTMLElement, mpTextEl: HTMLElement, statesEl: HTMLElement }> = new Map();
+    private allyElements: Map<number, {
+        container: HTMLElement; // 親コンテナも保持
+        hpEl: HTMLElement;
+        mpEl: HTMLElement;
+        hpTextEl: HTMLElement;
+        mpTextEl: HTMLElement;
+        statesEl: HTMLElement;
+    }> = new Map();
 
     /** 表示中の味方リスト */
     private allies: AllyStatusData[] = [];
@@ -48,9 +43,8 @@ export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
 
     /** 初期化 */
     init(root: HTMLElement, initCtx: ScreenInitContext) {
-        this.ctx = initCtx;
-        this.emitWorld = this.ctx.emitWorld;
-        this.emitUI = this.ctx.emitUI;
+        this.emitWorld = initCtx.emitWorld;
+        this.emitUI = initCtx.emitUI;
 
         this.screen = document.createElement("div");
         this.screen.id = "allies-status-overlay";
@@ -61,67 +55,11 @@ export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
 
     /** 表示 */
     show(payload: AlliesStatusPayload) {
-        this.screen.innerHTML = ""; // 前回の内容をクリア
+        this.isVisible = true;
         this.screen.style.display = "block";
-      
-        payload.allies.forEach(ally => {
-            const container = document.createElement("div");
-            container.className = "ally-status";
 
-            const nameEl = document.createElement("div");
-            nameEl.textContent = ally.name;
-            nameEl.className = "ally-name";
-
-            // HPバー
-            const hpContainer = document.createElement("div");
-            hpContainer.className = "ally-hp-container";
-
-            const hpBar = document.createElement("div");
-            hpBar.className = "ally-hp-bar";
-            hpBar.style.width = `${(ally.hp / ally.maxHp) * 100}%`;
-
-            const hpText = document.createElement("div");
-            hpText.className = "ally-hp-text";
-            hpText.textContent = `${ally.hp} / ${ally.maxHp}`;
-
-            hpContainer.appendChild(hpBar);
-            hpContainer.appendChild(hpText);
-
-            // MPバー
-            const mpContainer = document.createElement("div");
-            mpContainer.className = "ally-mp-container";
-
-            const mpBar = document.createElement("div");
-            mpBar.className = "ally-mp-bar";
-            mpBar.style.width = `${(ally.mp / ally.maxMp) * 100}%`;
-
-            const mpText = document.createElement("div");
-            mpText.className = "ally-mp-text";
-            mpText.textContent = `${ally.mp} / ${ally.maxMp}`;
-
-            mpContainer.appendChild(mpBar);
-            mpContainer.appendChild(mpText);
-
-            // 状態異常コンテナ
-            const statesContainer = document.createElement("div");
-            statesContainer.className = "ally-states-container";
-
-            container.appendChild(nameEl);
-            container.appendChild(hpContainer);
-            container.appendChild(mpContainer);
-            container.appendChild(statesContainer);
-
-            this.screen.appendChild(container);
-
-            // DOM参照を保存して更新用に
-            this.allyElements.set(ally.instanceId, {
-                hpEl: hpBar,
-                mpEl: mpBar,
-                hpTextEl: hpText,
-                mpTextEl: mpText,
-                statesEl: statesContainer
-            });
-        });
+        // 既存の要素とpayloadに乖離がある（人数が変わった等）場合はリフレッシュ
+        // 基本的には updateStatus 内で差分更新する
         this.updateStatus(payload);
     }
 
@@ -143,6 +81,26 @@ export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
     }
 
     updateStatus(payload: AlliesStatusPayload): void {
+        // --- 1. 表示中かつデータがあるかチェック ---
+        if (!this.isVisible || !payload.allies) return;
+
+        // --- 2. 必要なDOM要素の過不足を調整 (差分生成) ---
+        // payloadにあるが、DOMがない場合は新規作成
+        payload.allies.forEach(ally => {
+            if (!this.allyElements.has(ally.instanceId)) {
+                this.createAllyElement(ally);
+            }
+        });
+
+        // payloadにないが、DOMがある場合は削除（パーティ脱退など）
+        for (const [id, el] of this.allyElements.entries()) {
+            if (!payload.allies.find(a => a.instanceId === id)) {
+                el.container.remove();
+                this.allyElements.delete(id);
+            }
+        }
+
+        // --- 3. 各要素のデータ更新 ---
         // 生存している味方の HP/MP を DOM に反映
         payload.allies.forEach(newAlly => {
             const el = this.allyElements.get(newAlly.instanceId);
@@ -172,12 +130,12 @@ export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
             // 演出判定 (oldAlly が存在する場合のみ HP 減少をチェック)
             const isDamaged = oldAlly && newAlly.hp < oldAlly.hp;
             if (isDamaged) {
-                const container = el.hpEl.parentElement;
-                if (container) {
-                    container.classList.remove("hp-shake");
-                    void container.offsetWidth;
-                    container.classList.add("hp-shake");
-                    setTimeout(() => container.classList.remove("hp-shake"), 400);
+                const barContainer = el.hpEl.parentElement;
+                if (barContainer) {
+                    barContainer.classList.remove("hp-shake");
+                    void barContainer.offsetWidth;
+                    barContainer.classList.add("hp-shake");
+                    setTimeout(() => barContainer.classList.remove("hp-shake"), 400);
                 }
                 el.hpEl.classList.add("damaged");
                 setTimeout(() => el.hpEl.classList.remove("damaged"), 400);
@@ -186,7 +144,7 @@ export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
             // 表示用のHP (0未満なら0にする)
             const displayHp = Math.max(0, newAlly.hp);
             const hpRatio = Math.max(0, displayHp / newAlly.maxHp);
-            
+
             // 表示用のMP (MPも念のため)
             const displayMp = Math.max(0, newAlly.mp);
             const mpRatio = Math.max(0, displayMp / newAlly.maxMp);
@@ -227,5 +185,48 @@ export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
             ...ally,
             states: ally.states.map(state => ({ ...state }))
         }));
+    }
+
+    private createAllyElement(ally: AllyStatusData): void {
+        const container = document.createElement("div");
+        container.className = "ally-status";
+
+        const nameEl = document.createElement("div");
+        nameEl.textContent = ally.name;
+        nameEl.className = "ally-name";
+
+        // HPバー
+        const hpContainer = document.createElement("div");
+        hpContainer.className = "ally-hp-container";
+        const hpBar = document.createElement("div");
+        hpBar.className = "ally-hp-bar";
+        const hpText = document.createElement("div");
+        hpText.className = "ally-hp-text";
+        hpContainer.append(hpBar, hpText);
+
+        // MPバー
+        const mpContainer = document.createElement("div");
+        mpContainer.className = "ally-mp-container";
+        const mpBar = document.createElement("div");
+        mpBar.className = "ally-mp-bar";
+        const mpText = document.createElement("div");
+        mpText.className = "ally-mp-text";
+        mpContainer.append(mpBar, mpText);
+
+        // 状態異常
+        const statesContainer = document.createElement("div");
+        statesContainer.className = "ally-states-container";
+
+        container.append(nameEl, hpContainer, mpContainer, statesContainer);
+        this.screen.appendChild(container);
+
+        this.allyElements.set(ally.instanceId, {
+            container,
+            hpEl: hpBar,
+            mpEl: mpBar,
+            hpTextEl: hpText,
+            mpTextEl: mpText,
+            statesEl: statesContainer
+        });
     }
 }

@@ -9,11 +9,11 @@ import { ZoneController } from "../../renderer/game/map/zone/ZoneController";
 
 export interface ScreenPort {
     changeMain<K extends keyof MainScreenInstanceMap>(type: K, payload: MainScreenPayloadMap[K]): void;
-    pushOverlay<K extends keyof OverlayPayloadMap>(type: K, payload: OverlayPayloadMap[K]): void;
+    pushOverlay<K extends keyof OverlayPayloadMap>(type: K, payload: OverlayPayloadMap[K]): Promise<void>;
     popOverlay(): void;
     popAllOverlay(): void;
     openYesNo(event: YesNoEvent): void;
-    setWorld(screen: MainScreenType, def: WorldDefinition,zoneController: ZoneController): void;
+    setWorld(screen: MainScreenType, def: WorldDefinition, zoneController: ZoneController): void;
     getOverlayScreen<K extends keyof OverlayInstanceMap>(type: K): OverlayInstanceMap[K];
     getMainScreen<K extends keyof MainScreenInstanceMap>(type: K): MainScreenInstanceMap[K];
     isOverlayOpen(type: OverlayScreenType): boolean;

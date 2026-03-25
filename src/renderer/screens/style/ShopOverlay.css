@@ -1,0 +1,192 @@
+/* src/renderer/screens/overlayScreen/screen/ShopOverlay.css */
+
+:root {
+    /* 1画面に表示したい個数 */
+    --display-count: 6;
+    /* アイテム間の隙間（お好みで調整） */
+    --item-gap: 1%;
+    --zonai-green: #a5dfc5;
+}
+
+/* font-size: clamp(最小, 推奨, 最大)**/
+#shop-Overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40%;
+    height: 80%;
+
+    background: rgba(5, 12, 10, 0.9);
+    color: #e2dfd0;
+
+    padding: 2% 3%;
+
+    border: 1px solid #3d5245;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8),
+        inset 0 0 15px rgba(165, 223, 197, 0.1);
+    font-family: "serif", "Noto Serif JP", serif;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    z-index: 100;
+}
+
+/* ゾナウ風の装飾枠（擬似要素） */
+#shop-Overlay::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border: 1px solid rgba(165, 223, 197, 0.2);
+    pointer-events: none;
+}
+
+/* SHOPタイトル */
+.shop-title {
+    /* 高さを固定 */
+    flex: 0 0 auto;
+
+    font-size: 1.2rem;
+    letter-spacing: 0.4em;
+    color: #a5dfc5;
+    border-bottom: 1px solid rgba(165, 223, 197, 0.4);
+
+    padding-bottom: 1%;
+    margin-bottom: 2%;
+    text-align: center;
+}
+
+/* リストコンテナ */
+#shop-item-list {
+    /* 残りのスペースをすべて使う */
+    flex: 1 1 auto;
+    margin-top: 6%;
+    overflow: hidden;
+    padding-right: 5px;
+    scroll-behavior: smooth;
+    display: flex;
+    flex-direction: column;
+}
+
+/* アイテム行の基本 */
+.shop-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    /* ここがポイント！
+       (100% / 表示個数) から 隙間分を引くことで、
+       親の高さが変わっても常に「指定した個数」が収まります。
+    */
+    height: calc(100% / var(--display-count) - var(--item-gap));
+    margin-bottom: var(--item-gap);
+
+    padding: 0 5%;
+    box-sizing: border-box;
+    /* borderを含めた高さ計算にする */
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid transparent;
+    position: relative;
+    transition: 0.1s ease-in-out;
+}
+
+/* 選択（フォーカス）時のスタイル */
+.shop-item.selected {
+    background: rgba(165, 223, 197, 0.1);
+    border: 1px solid #a5dfc5;
+    box-shadow: 0 0 10px rgba(165, 223, 197, 0.3);
+    transform: scale(1.02);
+}
+
+/* 選択時の左側のポインター代わり */
+.shop-item.selected::before {
+    content: "▶";
+    position: absolute;
+    left: 1.5%;
+    color: #a5dfc5;
+    font-size: 0.8rem;
+}
+
+/* アイテム名 */
+.item-name {
+    font-size: clamp(0.9rem, 2vh, 1.2rem);
+    font-weight: bold;
+}
+
+/* 右側（価格と説明） */
+.item-info-sub {
+    text-align: right;
+}
+
+.item-price {
+    font-size: clamp(0.8rem, 1.8vh, 1.1rem);
+    color: #ffeb3b;
+}
+
+.item-price small {
+    font-size: 0.6rem;
+    margin-left: 4px;
+    color: #a5dfc5;
+}
+
+.item-desc {
+    font-size: 0.7rem;
+    color: #999;
+    white-space: nowrap;
+    max-width: 50%;
+}
+
+/* スクロールバー（ゾナウ風） */
+#shop-item-list::-webkit-scrollbar {
+    width: 2px;
+}
+
+#shop-item-list::-webkit-scrollbar-thumb {
+    background: #a5dfc5;
+}
+
+/* ShopOverlay.css に追加 */
+
+.scroll-indicator {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #a5dfc5;
+    /* ゾナウグリーン */
+    font-size: 1.2rem;
+    text-shadow: 0 0 10px rgba(165, 223, 197, 0.8);
+    transition: opacity 0.2s ease;
+    z-index: 10;
+    pointer-events: none;
+    /* ティアキン風の浮遊アニメーション */
+    animation: zonai-pulse 2s infinite ease-in-out;
+}
+
+.scroll-indicator.up {
+    top: 10%;
+    /* タイトルのすぐ下あたり */
+}
+
+.scroll-indicator.down {
+    bottom: 4%;
+    /* リストのすぐ下 */
+}
+
+/* ゾナウエネルギーが脈打つようなアニメーション */
+@keyframes zonai-pulse {
+
+    0%,
+    100% {
+        opacity: 0.4;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-5px);
+        /* 少し上に浮く */
+    }
+}

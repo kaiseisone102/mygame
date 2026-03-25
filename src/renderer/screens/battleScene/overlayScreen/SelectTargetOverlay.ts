@@ -1,20 +1,20 @@
 // src/renderer/screens/battleScene/overlayScreen/AttackTargetOverlay.ts
 
+import { SkillId, TechniqueId } from "../../../../shared/master/battle/type/SkillPreset";
+import { BattleActor } from "../../../../shared/type/battle/BattleAction";
+import { CommandActionType } from "../../../../shared/type/battle/TargetType";
+import { OverlayScreenType } from "../../../../shared/type/screenType";
 import { audioManager } from "../../../asset/audio/audioManager";
 import { InputAxis, UIActionEvent } from "../../../input/mapping/InputMapper";
 import { AppUIEvent } from "../../../router/AppUIEvents";
 import { WorldEvent } from "../../../router/WorldEvent";
 import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { SelectTargetOverlayScreen } from "../../interface/overlay/OverLayScreens";
-import { CommandActionType } from "../../../../shared/type/battle/TargetType";
-import { OverlayScreenType } from "../../../../shared/type/screenType";
-import { SkillId, TechniqueId } from "../../../../shared/master/battle/type/SkillPreset";
-import { CommandSelectedPayload } from "./BattleBasicCommandOverlay";
-import { BattleActor } from "../../../../shared/type/battle/BattleAction";
 
 export type SelectTargetPayload = {
-    phaseSecond: CommandSelectedPayload;
-    skill?: SkillId;
+    allies: BattleActor[];
+    enemies: BattleActor[];
+    skillId: SkillId;
     isTargetEnemy: boolean;
 };
 
@@ -41,7 +41,7 @@ export class SelectTargetOverlay implements SelectTargetOverlayScreen {
     private targets: BattleActor[] = [];
     private commandId!: CommandActionType;
 
-    private skill?: SkillId;
+    private skillId!: SkillId;
     private targetType?: string;
 
     private emitWorld!: (event: WorldEvent) => void;
@@ -78,13 +78,9 @@ export class SelectTargetOverlay implements SelectTargetOverlayScreen {
     show(payload: SelectTargetPayload) {
         this.selectedIndex = 0;
         this.screen.style.display = "block";
-        this.commandId = payload.phaseSecond.commandId;
-        this.actorMasterId = payload.phaseSecond.phaseBase.actorMasterId;
-        this.actorInstanceId = payload.phaseSecond.phaseBase.actorInstanceId;
-        this.actorName = payload.phaseSecond.phaseBase.actorName;
-        const targets = payload.isTargetEnemy ? payload.phaseSecond.phaseBase.enemies : payload.phaseSecond.phaseBase.allies
+        const targets = payload.isTargetEnemy ? payload.enemies : payload.allies
         this.setTargets(targets); // ターゲットリスト描画
-        this.skill = payload.skill;
+        this.skillId = payload.skillId;
         this.updateCommandTargetUI();
     }
 
@@ -160,12 +156,7 @@ export class SelectTargetOverlay implements SelectTargetOverlayScreen {
                     this.emitUI({
                         type: "PLAYER_COMMAND_SELECTED",
                         input: {
-                            commandId: this.commandId,
-                            actorMasterId: this.actorMasterId,
-                            actorInstanceId: this.actorInstanceId,
-                            actorName: this.actorName,
-                            enemy: this.targets,
-                            skillId: this.skill ?? TechniqueId.ATTACK,
+                            skillId: this.skillId ?? TechniqueId.ATTACK,
                             targetId: enemyId
                         }
                     });

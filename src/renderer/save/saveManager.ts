@@ -100,10 +100,10 @@ export class SaveManager {
 
             return {
                 id: slotId,
-                label: `${data.playerName} Lv.${data.level}`,
+                label: `${data.playerName} Lv.${data.party[0].level}`,
                 isEmpty: false as const,
-                playerName: data.playerName,
-                level: data.level,
+                playerName: data.party[0].name,
+                level: data.party[0].level,
             };
         } catch (e) {
             console.error(`[SaveManager] Failed to get slot view for ${slotId}`, e);

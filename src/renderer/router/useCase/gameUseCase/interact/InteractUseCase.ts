@@ -27,7 +27,7 @@ export class InteractUseCase {
         private service: InteractionService,
     ) { }
 
-    execute(input: InteractUseCaseEvent) {
+    async execute(input: InteractUseCaseEvent) {
         const { playerState, playerPos, npcs, signs, items } = input;
 
         // resolver で前方のターゲットを判定
@@ -36,9 +36,42 @@ export class InteractUseCase {
 
         switch (target.type) {
             case "NPC":
+                for (const role of target.npc.roles) {
+                    if (role === "TALK" && target.npc.messageId) {
+                        // 会話が終わるまで await で待つ
+                        await this.emitUI(this.service.createTalkEvent(target.npc.messageId));
+                    }
+
+                    if (role === "SHOP" && target.npc.shopId) {
+                        // 「はい/いいえ」の選択を待つ
+                        const confirmed = await new Promise<boolean>((resolve) => {
+                            this.emitUI({
+                                type: "OPEN_YES_NO",
+                                message: "ショップを開きますか？",
+                                onYes: () => {
+                                    this.emitUI({ type: "POP_OVERLAY" }); this.emitUI({ type: "POP_OVERLAY" });
+                                    resolve(true);
+                                },
+                                onNo: () => {
+                                    this.emitUI({ type: "POP_OVERLAY" }); this.emitUI({ type: "POP_OVERLAY" });
+                                    resolve(false);
+                                },
+                            });
+                        });
+
+                        // 「いいえ」ならここで終了（次の role に行かない、またはショップを開かない）
+                        if (!confirmed) return;
+
+                        // はいの場合、ショップを開く
+                        const shopEvent = this.service.createShopEvent(target.npc.shopId);
+                        await this.emitUI(shopEvent);
+                    }
+                }
+                break;
+
             case "SIGN":
                 // 既存通り service で UIイベント作成
-                this.emitUI(this.service.toUIEvent(target));
+                this.emitUI(this.service.createTalkEvent(target.sign.messageId));
                 break;
 
             case "ITEM":
@@ -46,7 +79,7 @@ export class InteractUseCase {
                 this.emitWorld({ type: "ITEM_COLLECTED", item: target.item });
 
                 // UI通知
-                this.emitUI(this.service.toUIEvent(target));
+                this.emitUI(this.service.createTalkEvent(target.item.id));
                 break;
         }
     }

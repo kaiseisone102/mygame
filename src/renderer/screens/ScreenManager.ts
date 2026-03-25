@@ -166,16 +166,18 @@ export class ScreenManager implements ScreenPort, ScreenStateReader {
     /**
      * Overlay を表示
      */
-    pushOverlay<K extends keyof OverlayInstanceMap>(type: K, payload: OverlayPayloadMap[K]) {
+    async pushOverlay<K extends keyof OverlayInstanceMap>(type: K, payload: OverlayPayloadMap[K]): Promise<void> {
         this.inputSystem.reset();
 
         const current = this.overlayStack.at(-1);
         current?.pause?.();
 
         const newOverlay = this.overlayRegistry[type];
-
         this.overlayStack.push(newOverlay);
-        newOverlay.show(payload);
+
+        console.log("[Overlay PUSH START]:", type);
+        await newOverlay.show(payload);
+        console.log("[Overlay PUSH END]:", type);
 
         console.log("[Overlay PUSH]:| depth:", this.overlayStack.length, "| top:", this.overlayStack.at(-1)?.overlayId);
     }

@@ -19,6 +19,7 @@ import "./screens/style/title.css";
 import "./screens/style/viewport.css";
 import "./screens/style/YesNoOverlay.css";
 import "./screens/style/FieldCommandOverlay.css";
+import "./screens/style/ShopOverlay.css";
 
 import { NORM_SIZE } from "../shared/data/constants";
 import { GameState } from "../shared/data/gameState";
@@ -84,7 +85,7 @@ const tileRenderer = new TileRenderer(tileDB);
 const tileEffectService = new TileEffectService(tileDB);
 
 // overlayScreen
-const overlayScreen = createOverlayScreens();
+const overlayScreen = createOverlayScreens(masterData.skillRepository);
 // ゲーム用情報()
 const gameState = new GameState(0);
 // バトルログ変換クラス
@@ -170,8 +171,6 @@ async function startGame() {
 
     // ゲームループ開始
     requestAnimationFrame(gameLoop);
-
-
 }
 
 // ループ

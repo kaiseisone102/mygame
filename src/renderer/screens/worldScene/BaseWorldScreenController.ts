@@ -1,6 +1,5 @@
 // src/renderer/screens/worldScene/BaseWorldScreenController.ts
 
-import { ZoneController } from "../../../renderer/game/map/zone/ZoneController";
 import { CameraController } from "../../../renderer/game/camera/CameraController";
 import { WorldDefinition } from "../../../renderer/game/map/builder/interface/definition/WorldDefinition";
 import { ObjectLayer } from "../../../renderer/game/map/objects/objectLayer";
@@ -8,6 +7,7 @@ import { ItemData } from "../../../renderer/game/map/talkNPC/ItemData";
 import { NpcData } from "../../../renderer/game/map/talkNPC/NPCData";
 import { SignData } from "../../../renderer/game/map/talkNPC/SignData";
 import { WorldManager } from "../../../renderer/game/map/WorldManager";
+import { ZoneController } from "../../../renderer/game/map/zone/ZoneController";
 import { PlayerAnimator } from "../../../renderer/game/player/PlayerAnimator";
 import { PlayerController } from "../../../renderer/game/player/PlayerController";
 import { applyTileDamage } from "../../../renderer/game/player/PlayerStatusSystem";
@@ -247,7 +247,7 @@ export abstract class BaseWorldScreenController implements MainScreenController 
                     break;
 
                 case "TEST_OPEN_OPTION":
-                    this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.OPTIONS, payload: undefined })
+                    this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.OPTIONS, payload: undefined });
                     break;
 
                 case "CANCEL":
@@ -255,7 +255,10 @@ export abstract class BaseWorldScreenController implements MainScreenController 
                     break;
 
                 case "INVENTORY":
-                    this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.FIELD_COMMAND, payload: undefined })
+                    const updatedStatus = this.gameState.getAllyStatusList();
+                    const fieldMagic = this.gameState.getFieldMagicPayload();
+                    this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.ALLIES_STATUS_OVERLAY, payload: { allies: updatedStatus } })
+                    this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.FIELD_COMMAND, payload: fieldMagic });
                     break;
             }
         }

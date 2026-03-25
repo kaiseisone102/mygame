@@ -9,9 +9,9 @@ import { BattleState } from "../../../game/battle/core/BattleState";
 import { BattleResult, CommandActionType } from "../../../../shared/type/battle/TargetType";
 import { OverlayScreen } from "../../interface/overlay/OverLayScreens";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
-import { SkillItem } from "./SkillSelectOverlay";
 import { BASIC_COMMANDS_DISPLAY } from "../../../../shared/data/constants";
 import { BattleActor } from "../../../../shared/type/battle/BattleAction";
+import { SkillItem } from "../../../../shared/type/payload/battle";
 
 export type BasicCommandPayload = {
     actorMasterId: number;
@@ -19,7 +19,7 @@ export type BasicCommandPayload = {
     actorName: string,
     allies: BattleActor[],
     enemies: BattleActor[],
-    skills: SkillItem[]
+    skillItems: SkillItem[]
 }
 
 export type CommandSelectedPayload = {
@@ -49,7 +49,7 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BasicCommandPayl
     private command!: HTMLElement;
     private nameTag!: HTMLElement;
     private commandItems: HTMLParagraphElement[] = [];
-  
+
     private selectedIndex = 0;
     private actorName: string = "";
     private enabled = true;
@@ -131,17 +131,17 @@ export class BattleBasicCommandOverlay implements OverlayScreen<BasicCommandPayl
                 case "UP":
                 case "LEFT":
                     this.selectedIndex = (this.selectedIndex - 1 + this.commandItems.length) % this.commandItems.length;
+                    audioManager.playSE("assets/se/cursorMove.mp3");
                     break;
 
                 case "DOWN":
                 case "RIGHT":
                     this.selectedIndex = (this.selectedIndex + 1) % this.commandItems.length;
+                    audioManager.playSE("assets/se/cursorMove.mp3");
                     break;
             }
+            this.updateCommandUI();
         }
-        audioManager.playSE("assets/se/cursorMove.mp3");
-
-        this.updateCommandUI();
         return true;
     }
 

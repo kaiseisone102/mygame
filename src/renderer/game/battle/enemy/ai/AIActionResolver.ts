@@ -27,7 +27,6 @@ export class AIActionResolver {
             const target = targets[0];
 
             return {
-                commandId: CommandActionType.ATTACK,
                 actorMasterId: actor.actorMasterId,
                 actorInstanceId: actor.instanceId,
                 actorName: actor.name,
@@ -62,7 +61,6 @@ export class AIActionResolver {
                     bestScore = score;
 
                     bestAction = {
-                        commandId: CommandActionType.ATTACK,
                         actorMasterId: actor.actorMasterId,
                         actorInstanceId: actor.instanceId,
                         actorName: actor.name,
@@ -74,7 +72,6 @@ export class AIActionResolver {
         }
         // 何も選べなかったら防御
         return bestAction ?? {
-            commandId: CommandActionType.DEFENCE,
             actorMasterId: actor.actorMasterId,
             actorInstanceId: actor.instanceId,
             actorName: actor.name,

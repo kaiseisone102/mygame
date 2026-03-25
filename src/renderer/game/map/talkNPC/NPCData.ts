@@ -10,8 +10,10 @@ export type NpcData = {
     h: number;
     direction: AppDirection;
 
+    roles: string[];
     messageId: string;
     image?: string;
+    shopId?: string;
 };
 
 export type NpcTileDto = {
@@ -21,6 +23,8 @@ export type NpcTileDto = {
     th: number;
     direction: AppDirection;
 
+    roles: string[];
     messageId: string;
     image?: ImageKey;
+    shopId?: string;
 }

@@ -31,6 +31,7 @@ export const ImageKey = {
     PLAYER_RIGHT_2: "PLAYER_RIGHT_2",
     // ゾーン
     TOWN_ICON: "TOWN_ICON",
+    CAVE: "CAVE",
     ENEMY_ICON: "ENEMY_ICON",
     AREA_ICON: "AREA_ICON",
     WOODEN_SIGN: "WOODEN_SIGN",

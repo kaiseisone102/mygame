@@ -14,14 +14,22 @@ export class BattleCommandSelectedUseCase {
 
         // スキルを魔法か技で絞る
         const filteredSkills = payload.commandId === CommandActionType.MAGIC
-            ? payload.phaseBase.skills.filter(isMagicId)
-            : payload.phaseBase.skills.filter(isTechnickId);
+            ? payload.phaseBase.skillItems.filter(isMagicId)
+            : payload.phaseBase.skillItems.filter(isTechnickId);
         // 技/魔法未習得ならログ出して処理終了
         if (filteredSkills.length === 0) {
             this.emitUI({ type: "ADD_BATTLE_LOG", message: `${payload.phaseBase.actorName}は${payload.commandId === CommandActionType.MAGIC ? "魔法" : "技"}を覚えていない！` });
             return;
         }
         // 選択可能なスキルがあればスキル選択オーバーレイを表示
-        this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.SKILL_SELECT_OVERLAY, payload: { phaseBase: { ...payload.phaseBase, skills: filteredSkills }, commandId: payload.commandId } });
+        this.emitUI({
+            type: "PUSH_OVERLAY", overlay: OverlayScreenType.SKILL_SELECT_OVERLAY,
+            payload: {
+                actorInstanceId: payload.phaseBase.actorInstanceId,
+                skillItems: payload.phaseBase.skillItems,
+                allies: payload.phaseBase.allies,
+                enemies: payload.phaseBase.enemies
+            }
+        });
     }
 }

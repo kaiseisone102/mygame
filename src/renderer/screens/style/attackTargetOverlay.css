@@ -21,7 +21,7 @@
 
     font-family: "Arial Black", "Impact", sans-serif;
     color: white;
-    z-index: 100;
+    z-index: 111;
     transform: skewX(-6deg);
     /* ペルソナっぽい斜め */
 }

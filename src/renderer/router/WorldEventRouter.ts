@@ -23,7 +23,7 @@ export class WorldEventRouter {
 
     setUseCases(useCases: GameUseCases) { this.gameUseCases = useCases };
 
-    dispatch(event: WorldEvent) {
+    async dispatch(event: WorldEvent) {
         switch (event.type) {
             case "ENTER_GAME_START_FLOW":
                 this.gameUseCases.startGameFlowUseCase.execute();
@@ -40,20 +40,9 @@ export class WorldEventRouter {
                 this.gameUseCases.collectItemUseCase.execute(event.item);
                 break;
 
-            case "ZONE_ENTERED_TOWN": {
-                const zoneId = event.zone.id;
-
-                switch (zoneId) {
-                    case "NF_TOWN_ENTRY_01":
-                        this.gameUseCases.enteredTownUseCase.execute(event.ctx);
-                        break;
-
-                    default:
-                        console.warn("[WorldEventRouter] 未登録のENTRYゾーンID:", zoneId);
-                        break;
-                }
+            case "ZONE_ENTERED_TOWN":
+                this.gameUseCases.enteredTownUseCase.execute(event);
                 break;
-            }
 
             case "ZONE_ENTERED_WARP":
                 this.gameUseCases.changeWorldUseCase.execute(MapId.WORLD_MAP);
@@ -80,7 +69,7 @@ export class WorldEventRouter {
             }
 
             case "BATTLE_RESULT":
-                this.gameUseCases.battleResultUseCase.execute(event.result);
+                await this.gameUseCases.battleResultUseCase.execute(event.result);
                 break;
 
             case "BATTLE_FINISHED": {

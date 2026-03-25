@@ -1,14 +1,16 @@
 // src/renderer/router/useCase/gameUseCase/battle/BattleResultUseCase.ts
 
+import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
 import { WorldEvent } from "../../../../../renderer/router/WorldEvent";
 import { BattleResult } from "../../../../../shared/type/battle/TargetType";
 
 export class BattleResultUseCase {
     constructor(
-        private emitWorld: (e: WorldEvent) => void
+        private emitWorld: (e: WorldEvent) => Promise<void>,
+        private emitUI: (e: AppUIEvent) => Promise<void>
     ) { }
 
-    execute(result: BattleResult) {
+    async execute(result: BattleResult) {
 
         switch (result) {
             case BattleResult.WIN:
@@ -25,8 +27,9 @@ export class BattleResultUseCase {
                 break;
         }
 
+        await this.emitUI({ type: "SAVE_GAME" });
         this.emitWorld({
             type: "BATTLE_FINISHED"
-        })
+        });
     }
 }

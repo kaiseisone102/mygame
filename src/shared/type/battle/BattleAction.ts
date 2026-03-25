@@ -6,12 +6,11 @@ import { CommandActionType, TargetType } from "./TargetType";
 
 /** 全てのアクションが共通で持つべき最小構成 */
 export interface BaseAction {
-    commandId: CommandActionType;
     actorMasterId: number;
     actorInstanceId: number;
     actorName: string;      // 実行者の名前（ログ出力用）
     skillId: SkillId;       // 実行するスキルのID
-    targetInstanceIds: number[]; 
+    targetInstanceIds: number[];
 }
 
 /** 通常のプレイヤー選択による詳細なアクション */
@@ -33,9 +32,12 @@ export type TargetSpecifier =
     | { type: typeof TargetType.ALL_ALLIES, actorInstanceId: number }
     | { type: typeof TargetType.SELF, actorInstanceId: number };
 
+export type combatCommandInput = {
+    skillId: SkillId;
+    targetId: number;
+};
 
 export type BattleInput = {
-    commandId: CommandActionType;
     actorMasterId: number;
     actorInstanceId: number;
     actorName: string;

@@ -45,13 +45,9 @@ export class MessageLogOverlay implements MessageLogOverlayScreen {
         this.controller.update(delta);
     }
 
-    pause() {
+    pause() { }
 
-    }
-
-    resume() {
-
-    }
+    resume() { }
 
     handleUIAxes(axes: InputAxis[]): boolean {
         this.controller.UIAxes(axes);

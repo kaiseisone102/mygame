@@ -26,7 +26,7 @@ export interface BattlerParams {
     baseStats: Partial<BaseStats>;
     growthTable: LevelGrowthTable;
     statModifier?: number; // キャラ固有補正
-    skills: SkillId[];
+    skillIds: SkillId[];
     traits: Trait[];
     aiType: AiType;
     imageKey?: ImageKey;
@@ -49,7 +49,7 @@ export class Battler implements BattlerPort, IBattler {
     baseStats!: BaseStats;
 
     // 習得スキル
-    skills: SkillId[];     // skillId 配列
+    skillIds: SkillId[];     // skillId 配列
 
     traits: Trait[]; // ← 個性
 
@@ -68,7 +68,7 @@ export class Battler implements BattlerPort, IBattler {
 
         this.initializeStats(params.baseStats ?? {});
 
-        this.skills = params.skills ?? [];
+        this.skillIds = params.skillIds ?? [];
         this.traits = params.traits ?? [];
         this.growthTable = params.growthTable;
         this.statModifier = params.statModifier ?? 1;

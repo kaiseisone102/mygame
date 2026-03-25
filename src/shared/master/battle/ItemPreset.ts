@@ -7,6 +7,7 @@ import { MagicId, SkillId } from "./type/SkillPreset";
 export type ItemPreset = {
     id: SkillId;
     name: string;
+    occation?: string;
     consumable: boolean;
     targetType: TargetType;
     effects: readonly SkillEffectKind[];

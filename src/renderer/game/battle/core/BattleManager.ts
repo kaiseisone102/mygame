@@ -1,15 +1,15 @@
 // src/renderer/game/battle/core/BattleManager.ts
 
+import { SkillItem } from "../../../../shared/type/payload/battle";
 import { AppUIEvent } from "../../../../renderer/router/AppUIEvents";
 import { delay } from "../../../../renderer/utils/delay";
 import { SkillRepository } from "../../../../shared/master/battle/SkillRepository";
 import { StatusPresets } from "../../../../shared/master/battle/StatusPreset";
 import { SkillId, SkillPreset } from "../../../../shared/master/battle/type/SkillPreset";
-import { BattleAction, BattleInput, BattlerSide } from "../../../../shared/type/battle/BattleAction";
+import { BattleAction, BattlerSide, combatCommandInput } from "../../../../shared/type/battle/BattleAction";
 import { SkillResult } from "../../../../shared/type/battle/result/SkillResult";
 import { SkillEffectKindId } from "../../../../shared/type/battle/skill/skillFormula";
-import { BattleResult, CommandActionType, TargetType } from "../../../../shared/type/battle/TargetType";
-import { SkillItem } from "../../../screens/battleScene/overlayScreen/SkillSelectOverlay";
+import { BattleResult, TargetType } from "../../../../shared/type/battle/TargetType";
 import { AIActionResolver } from "../enemy/ai/AIActionResolver";
 import { BattleLogFormatter } from "../event/BattleLogFormatter";
 import { ActionFactory } from "../logic/actions/ActionFactory";
@@ -18,7 +18,7 @@ import { TargetResolver } from "../logic/targets/TargetResolver";
 import { TraitRunner } from "../logic/traits/TraitRunner";
 import { BattlePort } from "../port/BattlePort";
 import { Battler } from "./Battler";
-import { BattleState, initialBattleState } from "./BattleState";
+import { BattleState, createInitialBattleState } from "./BattleState";
 import { canBattlerAct } from "./canBattlerAct";
 
 /**
@@ -151,7 +151,7 @@ export class BattleManager {
                 this.battlePort.addBattleLog(`${actor.name}のターン！`);
 
                 // usecase からUI入力を受け取る => action 生成
-                const skillItems: SkillItem[] = actor.skills.map(id => {
+                const skillItems: SkillItem[] = actor.skillIds.map(id => {
                     const sp = this.skillRepository.get(id);
                     return {
                         skillId: sp.id,
@@ -164,9 +164,9 @@ export class BattleManager {
                         }
                     };
                 });
-                const input: BattleInput = await this.battlePort.requestCommand(this.battleState.allies, this.battleState.enemies, skillItems);
+                const input: combatCommandInput = await this.battlePort.requestCommand(this.battleState.allies, this.battleState.enemies, skillItems);
 
-                action = this.actionFactory.createAction(input, this.battleState);
+                action = this.actionFactory.createAction(input, this.battleState, actor);
 
                 console.log("⚔Ally Action「", actor.name, "」=>", action)
                 break;
@@ -174,13 +174,13 @@ export class BattleManager {
                 // 思考演出
                 await delay(600);
                 // 最適行動を目指す！ 
-                const AIBestAction = AIActionResolver.decideAction(actor, this.battleState, this.convertSkillIdToSkillPreset(actor.skills));// actor.skillをskillPresetに変換
+                const AIBestAction = AIActionResolver.decideAction(actor, this.battleState, this.convertSkillIdToSkillPreset(actor.skillIds));// actor.skillをskillPresetに変換
                 console.log("AIBestAction:", AIBestAction);
 
                 const AIBattleInput = this.actionFactory.convertStrangeToInput(AIBestAction, actor.instanceId);
                 console.log("AIBattleInput:", AIBattleInput);
 
-                action = this.actionFactory.createAction(AIBattleInput, this.battleState);
+                action = this.actionFactory.createAction(AIBattleInput, this.battleState, actor);
                 break;
         }
 
@@ -254,33 +254,25 @@ export class BattleManager {
                 // instance // インスタンス固有のデータ(value等)が必要な場合のため
             });
             if (!reWrite) continue;
-            action = this.actionFactory.createAction(this.actionFactory.convertStrangeToInput(reWrite, actor.instanceId), this.battleState) ?? action;
+            action = this.actionFactory.createAction(this.actionFactory.convertStrangeToInput(reWrite, actor.instanceId), this.battleState, actor) ?? action;
         }
 
         // Traitによる行動書き換え
         action = TraitRunner.beforeAction(actor, action);
 
-        if (action.commandId !== CommandActionType.ITEM) {
+        const skill = action.skill;
+        if (!skill) throw new Error("BattleManager executeAction cant found action.skill");
 
-            const skill = action.skill;
-            if (!skill) throw new Error("BattleManager executeAction cant found action.skill");
+        this.battlePort.addBattleLog(`${actor.name}は${skill.name}を使った！`);
 
-            this.battlePort.addBattleLog(`${actor.name}は${skill.name}を使った！`);
-
-            // 対象を解決
-            const targets = TargetResolver.resolve(action.target ?? { type: TargetType.SELF }, this.battleState, actor.instanceId);
-
-            const results = SkillExecutor.execute(actor, skill, targets);
-
-            console.log("SkillExecutor results", results);
-
-            return results;
-        }
-
-        this.battlePort.addBattleLog(`${actor.name}は${action.skill.name}を使った！`);
-
+        // 対象を解決
         const targets = TargetResolver.resolve(action.target ?? { type: TargetType.SELF }, this.battleState, actor.instanceId);
-        return SkillExecutor.execute(actor, action.skill, targets);
+
+        const results = SkillExecutor.execute(actor, skill, targets);
+
+        console.log("SkillExecutor results", results);
+
+        return results;
     }
 
     /* =====================
@@ -381,7 +373,7 @@ export class BattleManager {
     }
 
     reset(): void {
-        this.battleState = structuredClone(initialBattleState);
+        this.battleState = createInitialBattleState();
         this.buildTurnOrder();
     }
 

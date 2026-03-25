@@ -29,7 +29,7 @@ export class InteractionResolver {
 
         const talkRect: RectPx = getPlayerTalkRect(playerPos, playerState);
 
-        // ① NPC優先
+        // 1. NPC優先
         const npc = ctx.npcs.find(n => {
             const npcRect: RectPx = {
                 pos: { x: n.pos.x, y: n.pos.y },
@@ -40,11 +40,11 @@ export class InteractionResolver {
         });
         if (npc) return { type: "NPC", npc };
 
-        // ② Sign
+        // 2. Sign
         const sign = ctx.signs.find(s => this.canReadSign(talkRect, playerState.direction, s));
         if (sign) return { type: "SIGN", sign };
 
-        // ③ Item
+        // 3. Item
         const item = ctx.items.find(i => this.rectsOverlap(talkRect, {
             pos: { x: i.pos.x, y: i.pos.y },
             w: i.w ?? NORM_SIZE,

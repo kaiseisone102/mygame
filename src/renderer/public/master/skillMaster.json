@@ -2,6 +2,7 @@
     "ATTACK": {
         "id": "ATTACK",
         "name": "こうげき",
+        "occation": "BATTLE_ONLY",
         "category": "ATTACK",
         "cost": {
             "mp": 0
@@ -21,6 +22,7 @@
     "DOUBLE_ATTACK": {
         "id": "DOUBLE_ATTACK",
         "name": "二回攻撃",
+        "occation": "BATTLE_ONLY",
         "category": "ATTACK",
         "cost": {
             "mp": 0
@@ -41,6 +43,7 @@
     "POWER_SLASH": {
         "id": "POWER_SLASH",
         "name": "渾身斬り",
+        "occation": "BATTLE_ONLY",
         "category": "TECHNIQUE",
         "cost": {
             "mp": 3
@@ -62,6 +65,7 @@
     "WHIRL_WIND": {
         "id": "WHIRL_WIND",
         "name": "なぎ払い",
+        "occation": "BATTLE_ONLY",
         "category": "TECHNIQUE",
         "cost": {
             "mp": 5
@@ -82,6 +86,7 @@
     "BACK_STAB": {
         "id": "BACK_STAB",
         "name": "バックスタブ",
+        "occation": "BATTLE_ONLY",
         "category": "TECHNIQUE",
         "cost": {
             "mp": 4
@@ -102,6 +107,7 @@
     "MERA": {
         "id": "MERA",
         "name": "メラ",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 2
@@ -123,6 +129,7 @@
     "GIRA": {
         "id": "GIRA",
         "name": "ギラ",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 4
@@ -144,6 +151,7 @@
     "IO": {
         "id": "IO",
         "name": "イオ",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 6
@@ -165,6 +173,7 @@
     "HYADO": {
         "id": "HYADO",
         "name": "ヒャド",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 3
@@ -186,6 +195,7 @@
     "RAIDEIN": {
         "id": "RAIDEIN",
         "name": "ライデイン",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 8
@@ -207,6 +217,7 @@
     "BAGI": {
         "id": "BAGI",
         "name": "バギ",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 5
@@ -228,6 +239,7 @@
     "HEAL": {
         "id": "HEAL",
         "name": "ヒール",
+        "occation": "ALWAYS",
         "category": "MAGIC",
         "cost": {
             "mp": 3
@@ -247,6 +259,7 @@
     "HEAL_ALL": {
         "id": "HEAL_ALL",
         "name": "ヒールオール",
+        "occation": "ALWAYS",
         "category": "MAGIC",
         "cost": {
             "mp": 6
@@ -266,6 +279,7 @@
     "REVIVE": {
         "id": "REVIVE",
         "name": "リザレクト",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 10
@@ -285,6 +299,7 @@
     "ATK_UP_SMALL": {
         "id": "ATK_UP_SMALL",
         "name": "ちからため",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 2
@@ -305,6 +320,7 @@
     "ATK_UP_LARGE": {
         "id": "ATK_UP_LARGE",
         "name": "バイキルト",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 4
@@ -325,6 +341,7 @@
     "DEF_UP": {
         "id": "DEF_UP",
         "name": "スクルト",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 4
@@ -345,6 +362,7 @@
     "HASTE": {
         "id": "HASTE",
         "name": "ヘイスト",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 5
@@ -365,6 +383,7 @@
     "ATK_DOWN": {
         "id": "ATK_DOWN",
         "name": "ルカニ",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 4
@@ -385,6 +404,7 @@
     "SLOW": {
         "id": "SLOW",
         "name": "スロウ",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 4
@@ -405,6 +425,7 @@
     "SLEEP": {
         "id": "SLEEP",
         "name": "ラリホー",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 4
@@ -424,6 +445,7 @@
     "POISON": {
         "id": "POISON",
         "name": "ポイズン",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 3
@@ -443,6 +465,7 @@
     "PARALYZE": {
         "id": "PARALYZE",
         "name": "パラライズ",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 5
@@ -462,6 +485,7 @@
     "GUARD": {
         "id": "GUARD",
         "name": "ぼうぎょ",
+        "occation": "BATTLE_ONLY",
         "category": "TECHNIQUE",
         "cost": {
             "mp": 0
@@ -475,6 +499,7 @@
     "PROVOKE": {
         "id": "PROVOKE",
         "name": "挑発",
+        "occation": "BATTLE_ONLY",
         "category": "TECHNIQUE",
         "cost": {
             "mp": 2
@@ -495,6 +520,7 @@
     "ESCAPE": {
         "id": "ESCAPE",
         "name": "にげる",
+        "occation": "BATTLE_ONLY",
         "category": "TECHNIQUE",
         "cost": {
             "mp": 0
@@ -514,6 +540,7 @@
     "LIMIT_BREAK": {
         "id": "LIMIT_BREAK",
         "name": "リミットブレイク",
+        "occation": "BATTLE_ONLY",
         "category": "TECHNIQUE",
         "cost": {
             "mp": 0
@@ -534,6 +561,7 @@
     "GIGADEIN": {
         "id": "GIGADEIN",
         "name": "ギガデイン",
+        "occation": "BATTLE_ONLY",
         "category": "MAGIC",
         "cost": {
             "mp": 30

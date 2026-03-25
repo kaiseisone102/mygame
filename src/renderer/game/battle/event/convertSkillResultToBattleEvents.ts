@@ -50,6 +50,7 @@ export function convertSkillResultToBattleEvents(results: SkillResult[]): Battle
                     type: BattleEventKind.ESCAPE,
                     instanceId: result.instanceId
                 });
+                
                 events.push({
                     type: BattleEventKind.DELAY, // you can choose duration of delay 
                     duration: 800

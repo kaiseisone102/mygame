@@ -16,7 +16,7 @@ export class BattlerFactory {
     createEnemy(template: EnemyTemplateJson): Battler {
 
         return new Battler({
-            templateId: template.templateId,
+            actorMasterId: template.templateId,
             instanceId: this.instanceCounter++,
             name: template.name,
             side: BattlerSide.ENEMY,
@@ -33,7 +33,7 @@ export class BattlerFactory {
                 speed: template.baseStats.speed
             },
             growthTable: template.growthTable ?? {},
-            skills: template.skills ? toSkillId(template.skills) : [],
+            skillIds: template.skills ? toSkillId(template.skills) : [],
             traits: template.traits ? toTraits(template.traits) : [],
             aiType: template.aiType ? toAiType(template.aiType) : AiType.AGGRESSIVE,
             imageKey: template.imageKey ? toImageKey(template.imageKey) : undefined

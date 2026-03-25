@@ -2,12 +2,13 @@
 
 import { EffectScope, SkillCategory } from "../../type/battle/skill/skillFormula";
 import { ItemPreset } from "../battle/ItemPreset";
-import { SkillPreset } from "../battle/type/SkillPreset";
+import { SkillOccasion, SkillPreset } from "../battle/type/SkillPreset";
 
 export function convertItemToSkill(item: ItemPreset): SkillPreset {
     return {
         id: item.id,
         name: item.name,
+        occation: SkillOccasion.ALWAYS,
         category: SkillCategory.ITEM,
         cost: { mp: 0 },
         targetSide: undefined as any, // 必要なら決める

@@ -1,4 +1,4 @@
-import { SkillItem } from "../../../../renderer/screens/battleScene/overlayScreen/SkillSelectOverlay";
+import { SkillItem } from "../../../../shared/type/payload/battle";
 import { MagicId, TechniqueId } from "../../../../shared/master/battle/type/SkillPreset";
 
 // 文字列が MagicId か判定

@@ -11,7 +11,7 @@ import { GameUseCases } from "./useCase/gameUseCase/facade/GameUseCases";
 
 export class UIEventRouter implements UIEventPort {
 
-    emit(event: AppUIEvent) { this.dispatch(event) };
+    async emit(event: AppUIEvent): Promise<void> { await this.dispatch(event) };
 
     private gameUseCases!: GameUseCases;
 
@@ -19,7 +19,7 @@ export class UIEventRouter implements UIEventPort {
 
     setUseCases(useCases: GameUseCases) { this.gameUseCases = useCases };
 
-    async dispatch(event: AppUIEvent) {
+    async dispatch(event: AppUIEvent): Promise<void> {
         switch (event.type) {
             case "OPEN_YES_NO": this.screens.openYesNo(event); break;
 
@@ -46,14 +46,14 @@ export class UIEventRouter implements UIEventPort {
             case "SHOW_START_MESSAGE": this.gameUseCases.changeMainScreenUseCase.execute(MainScreenType.START_MESSAGE, undefined); break;
 
             // インタラクト振り分け処理
-            case "REQUEST_INTERACT": this.gameUseCases.interactUseCase.execute(event); break;
+            case "REQUEST_INTERACT": await this.gameUseCases.interactUseCase.execute(event); break;
 
             case "SHOW_TRIGGER_MESSAGE":
                 this.screens.pushOverlay(OverlayScreenType.MESSAGE_LOG, { messages: [event.message] });
                 break;
 
             // Overlay 操作
-            case "PUSH_OVERLAY": this.screens.pushOverlay(event.overlay, event.payload); break;
+            case "PUSH_OVERLAY": await this.screens.pushOverlay(event.overlay, event.payload); break;
             case "POP_OVERLAY": this.screens.popOverlay(); break;
             case "POP_ALL_OVERLAY": this.screens.popAllOverlay(); break;
 
@@ -66,7 +66,7 @@ export class UIEventRouter implements UIEventPort {
             case "BATTLE_COMMAND_SELECTED": {  // UI操作
                 switch (event.payload.commandId) {
                     case CommandActionType.ATTACK: // 攻撃対象選択用オーバーレイを表示
-                        this.screens.pushOverlay(OverlayScreenType.SELECT_TARGET_OVERLAY, { phaseSecond: event.payload, isTargetEnemy: true });
+                        this.screens.pushOverlay(OverlayScreenType.SELECT_TARGET_OVERLAY, { skillId: TechniqueId.ATTACK, allies: [], enemies: event.payload.phaseBase.enemies, isTargetEnemy: true });
                         break;
 
                     case CommandActionType.TECHNIQUE:
@@ -79,11 +79,11 @@ export class UIEventRouter implements UIEventPort {
                         break;
 
                     case CommandActionType.DEFENCE:
-                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorMasterId: event.payload.phaseBase.actorMasterId, actorInstanceId: event.payload.phaseBase.actorInstanceId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: TechniqueId.GUARD, targetId: event.payload.phaseBase.actorInstanceId });
+                        this.gameUseCases.battleInputUseCase.execute({ skillId: TechniqueId.GUARD, targetId: event.payload.phaseBase.actorInstanceId });
                         break;
 
                     case CommandActionType.ESCAPE:// すぐにコマンド処理を実行
-                        this.gameUseCases.battleInputUseCase.execute({ commandId: event.payload.commandId, actorMasterId: event.payload.phaseBase.actorMasterId, actorInstanceId: event.payload.phaseBase.actorInstanceId, actorName: event.payload.phaseBase.actorName, enemy: [], skillId: TechniqueId.ESCAPE, targetId: event.payload.phaseBase.actorInstanceId });
+                        this.gameUseCases.battleInputUseCase.execute({ skillId: TechniqueId.ESCAPE, targetId: event.payload.phaseBase.actorInstanceId });
                         break;
                 }
                 break;
@@ -94,18 +94,13 @@ export class UIEventRouter implements UIEventPort {
                     this.emit({
                         type: "PLAYER_COMMAND_SELECTED",
                         input: {
-                            commandId: event.payload.phaseSec.commandId,
-                            actorMasterId: event.payload.phaseSec.phaseBase.actorMasterId,
-                            actorInstanceId: event.payload.phaseSec.phaseBase.actorInstanceId,
-                            actorName: event.payload.phaseSec.phaseBase.actorName,
-                            enemy: event.payload.phaseSec.phaseBase.enemies,
                             skillId: event.payload.skillId ?? TechniqueId.ATTACK,
-                            targetId: 0
+                            targetId: -1
                         }
                     });
                     break;
                 }
-                this.screens.pushOverlay(OverlayScreenType.SELECT_TARGET_OVERLAY, { phaseSecond: event.payload.phaseSec, skill: event.payload.skillId, isTargetEnemy: event.payload.target.side === TargetSide.ENEMY ? true : false });
+                this.screens.pushOverlay(OverlayScreenType.SELECT_TARGET_OVERLAY, { skillId: event.payload.skillId, allies: event.payload.allies, enemies: event.payload.enemies, isTargetEnemy: event.payload.target.side === TargetSide.ENEMY ? true : false });
                 break;
 
             case "BATTLE_ITEM_SELECTED":

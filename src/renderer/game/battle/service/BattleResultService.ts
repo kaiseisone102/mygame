@@ -38,24 +38,29 @@ export class BattleResultService {
         // 戦闘結果を gameState に反映
         const state = this.manager.getState();
 
-        // 味方それぞれの Battler を GameState 用データに変換
-        const alliesData = state.allies.map(a => ({
-            templateId: a.templateId,
-            instanceId: a.instanceId,
-            name: a.name,
-            level: a.level,
-            exp: a.exp,
-            baseStats: a.baseStats,
-            skills: a.skills,
-            traits: a.traits.map(t => t.id),
-            statusEffects: a.statusEffects,
-            aiType: a.aiType ?? AiType.AGGRESSIVE
+        // 1. 【共通処理】戦闘結果のステータス（消耗状態）を GameState に反映
+        const alliesData = state.allies.map(ally => ({
+            actorMasterId: ally.actorMasterId,
+            instanceId: ally.instanceId,
+            name: ally.name,
+            level: ally.level,
+            exp: ally.exp,
+            baseStats: { ...ally.baseStats },
+            skillIds: [...ally.skillIds],
+            traits: ally.traits.map(trait => trait.id),
+            statusEffects: [...ally.statusEffects],
+            aiType: ally.aiType ?? AiType.AGGRESSIVE
         }));
 
         // GameState に反映
         this.gameState.applyBattleResult(alliesData);
 
-        // --- 経験値分配 ---
+        // 2. 勝利時以外はここで終了（保存したデータで復帰するだけ）
+        if (result !== BattleResult.WIN) {
+            return { expLogs, levelUps };
+        }
+
+        // 3. 【勝利時のみ】経験値分配とレベルアップ処理
         const expDistribution = this.rewardCalculator.calculateExpForAllies(state);
 
         for (const distribution of expDistribution) {
@@ -68,8 +73,7 @@ export class BattleResultService {
 
             // 仮ログ用
             const oldExp = ally.exp;
-            const oldStats = { ...ally.baseStats };
-
+        
             // 経験値加算
             ally.exp += distribution.gainedExp;
 
@@ -84,8 +88,6 @@ export class BattleResultService {
                 newExp: ally.exp,
                 expRequired
             });
-
-            if (result !== BattleResult.WIN) continue;
 
             // レベルアップ判定
             while (ally.level < 100) {
@@ -103,12 +105,19 @@ export class BattleResultService {
 
                 ally.baseStats.maxHp = grow.maxHp;
                 ally.baseStats.maxMp = grow.maxMp;
-                ally.baseStats.hp = grow.maxHp; // 現在HPも全回復させる場合
-                ally.baseStats.mp = grow.maxMp; // 現在MPも全回復させる場合
                 ally.baseStats.attack = grow.attack;
                 ally.baseStats.defense = grow.defense;
                 ally.baseStats.magic = grow.magic;
                 ally.baseStats.speed = grow.speed;
+
+                // 上昇した差分だけ現在値も増やす
+                if (ally.baseStats.hp > 0) {
+                    const hpDiff = grow.maxHp - statsBeforeThisLevel.maxHp;
+                    const mpDiff = grow.maxMp - statsBeforeThisLevel.maxMp;
+
+                    ally.baseStats.hp += hpDiff;
+                    ally.baseStats.mp += mpDiff;
+                }
 
                 levelUps.push({
                     name: ally.name,
@@ -120,9 +129,6 @@ export class BattleResultService {
             }
         }
 
-        return {
-            expLogs,
-            levelUps
-        };
+        return { expLogs, levelUps };
     }
 }

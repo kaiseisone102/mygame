@@ -13,7 +13,7 @@ export type BattlerSaveData = {
     level: number;
     exp: number;
     baseStats: BaseStats;
-    skills: SkillId[];
+    skillIds: SkillId[];
     traits: TraitId[];
     statusEffects: StatusInstance[];
     aiType: AiType;

@@ -1,12 +1,12 @@
 // src/renderer/screens/battleScreen/overlayScreen//BattleLogOverlay.ts
 
+import { BattleActor } from "../../../../shared/type/battle/BattleAction";
 import { BattleState } from "../../../../renderer/game/battle/core/BattleState";
 import { ExpLog } from "../../../../renderer/game/battle/service/BattleResultService";
 import { InputAxis, UIActionEvent } from "../../../../renderer/input/mapping/InputMapper";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
 import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { OverlayScreen } from "../../interface/overlay/OverLayScreens";
-import { BattleActor } from "./SelectTargetOverlay";
 import { BattleLogOverlayController } from "./controller/BattleLogOverlayController";
 
 /**

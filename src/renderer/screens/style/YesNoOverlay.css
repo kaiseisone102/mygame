@@ -1,82 +1,97 @@
-/* =========================
-   Yes / No Overlay
-   ========================= */
-
-/* 背景全体 */
+/* ベースとなるオーバーレイ */
 #yesNoOverlay {
-    position: absolute;
-    inset: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* 背景を少し暗く */
     display: none;
-    pointer-events: auto;
-    z-index: 999;
-    background: rgba(0, 0, 0, 0.4);
+    z-index: 500;
+    font-family: 'Arial Black', sans-serif; /* 実際はもっと尖ったフォントが理想 */
 }
 
-/* ウィンドウ本体 */
+/* メインウィンドウ - 斜めの傾き */
 .yesno-window {
     position: absolute;
-    bottom: 40px;
-    right: 40px;
-
-    background: #000;
-    color: #fff;
-
-    border: 4px solid #fff;
-    outline: 2px solid #000;
-    box-shadow:
-        0 0 0 2px #000,
-        0 0 0 4px #fff,
-        0 0 0 6px #000;
-
-    padding: 12px 16px;
-    min-width: 240px;
-
-    font-family: "PixelMplus10", monospace;
-    font-size: 24px;
+    bottom: 15%;
+    right: 5%;
+    background: #fdfdfd; /* わずかにオフホワイト */
+    padding: 20px 60px;
+    transform: rotate(-3deg); /* 全体を斜めに */
+    border: 4px solid #000;
+    box-shadow: 15px 15px 0px #eb0000; /* P5らしい赤い影 */
+    min-width: 300px;
 }
 
-/* メッセージ */
+/* メッセージ部分 */
 .yesno-message {
-    margin-bottom: 10px;
-    line-height: 1.5;
+    font-size: 24px;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    border-bottom: 8px solid #000;
+    display: inline-block;
+    padding-right: 20px;
+    transform: skewX(-10deg); /* 文字を歪ませる */
 }
 
-/* 選択肢 */
+/* 選択肢のリスト */
 .yesno-choices {
     list-style: none;
     padding: 0;
     margin: 0;
-}
-
-.choice {
     display: flex;
-    align-items: center;
-    height: 24px;
-    padding: 2px 4px;
-
-    transition: background 0.05s linear;
+    flex-direction: column;
+    align-items: flex-end; /* 右側に寄せる */
 }
 
-.cursor {
-    width: 16px;
-    display: inline-block;
-}
-
-/* 選択中カーソル */
-.choice.selected .cursor::before {
-    content: "▶";
-    animation: blinkCursor 0.8s steps(1) infinite;
-}
-
-/* 選択中ハイライト */
-.choice.selected {
-    background: #fff;
+/* 各選択肢 */
+.choice {
+    font-size: 32px;
+    font-weight: 900;
     color: #000;
+    padding: 5px 20px;
+    margin: 5px 0;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    position: relative;
+    background: transparent;
+    transform: skewX(-15deg); /* P5特有の歪み */
 }
 
-/* 点滅アニメ */
-@keyframes blinkCursor {
-    50% {
-        opacity: 0;
-    }
+/* 選択中のスタイル（反転） */
+.choice.selected {
+    background-color: #000;
+    color: #fff;
+    transform: skewX(-15deg) scale(1.1); /* 選択されたら少し大きく */
+    box-shadow: -10px 0 0 #eb0000; /* 選択中に赤いバーを左に出す */
+}
+
+/* 選択中のカーソル（<span>要素） */
+.choice .cursor {
+    display: none;
+}
+
+.choice.selected .cursor {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 15px solid #eb0000; /* 赤い三角矢印 */
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* アニメーション：ふわっと出る */
+@keyframes p5-pop {
+    0% { transform: scale(0.5) rotate(10deg); opacity: 0; }
+    70% { transform: scale(1.05) rotate(-4deg); }
+    100% { transform: scale(1) rotate(-3deg); opacity: 1; }
+}
+
+#yesNoOverlay[style*="display: block"] .yesno-window {
+    animation: p5-pop 0.3s ease-out forwards;
 }

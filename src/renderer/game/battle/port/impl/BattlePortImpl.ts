@@ -1,16 +1,15 @@
-import { BattleInput } from "../../../../../renderer/router/useCase/gameUseCase/battle/BattleInputUseCase";
-import { BattleAI, BattlePort } from "../BattlePort";
+import { SkillItem } from "shared/type/payload/battle";
 import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
-import { BattleManager } from "../../core/BattleManager";
 import { ItemPresetsById } from "../../../../../shared/master/battle/ItemPreset";
 import { SkillPreset } from "../../../../../shared/master/battle/type/SkillPreset";
 import { convertItemToSkill } from "../../../../../shared/master/item/convertItemToSkill";
-import { SkillItem } from "../../../../../renderer/screens/battleScene/overlayScreen/SkillSelectOverlay";
-import { BattleActor } from "../../../../../shared/type/battle/BattleAction";
+import { BattleActor, combatCommandInput } from "../../../../../shared/type/battle/BattleAction";
+import { BattleManager } from "../../core/BattleManager";
+import { BattleAI, BattlePort } from "../BattlePort";
 
 export class BattlePortImpl implements BattlePort {
 
-    private resolver?: (input: BattleInput) => void;
+    private resolver?: (input: combatCommandInput) => void;
 
     constructor(
         private emitUI: (e: AppUIEvent) => void,
@@ -18,7 +17,7 @@ export class BattlePortImpl implements BattlePort {
         private manager: BattleManager
     ) { }
 
-    async requestCommand(allies: BattleActor[], enemies: BattleActor[], skills: SkillItem[]): Promise<BattleInput> {
+    async requestCommand(allies: BattleActor[], enemies: BattleActor[], skillItems: SkillItem[]): Promise<combatCommandInput> {
         // 🎮 プレイヤーの場合
         if (this.isPlayer(this.manager.currentActor.instanceId)) {
             console.log(`requestCommand wait for [${this.manager.currentActor.name}] input`);
@@ -32,7 +31,7 @@ export class BattlePortImpl implements BattlePort {
                         actorInstanceId: this.manager.currentActor.instanceId,
                         actorName: this.manager.currentActor.name,
                         allies,
-                        skills,
+                        skillItems,
                         enemies
                     }
                 });
@@ -43,7 +42,7 @@ export class BattlePortImpl implements BattlePort {
         return this.ai.decide(this.manager.currentActor.actorMasterId, this.manager.currentActor.instanceId, this.getState());
     }
     // 入力完了時に呼ばれる
-    resolvePlayerInput(input: BattleInput) {
+    resolvePlayerInput(input: combatCommandInput) {
         if (this.resolver) {
             this.resolver(input);
             this.resolver = undefined;

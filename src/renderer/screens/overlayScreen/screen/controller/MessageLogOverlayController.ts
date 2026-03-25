@@ -63,25 +63,13 @@ export class MessageLogOverlayController {
         this.screen.style.display = "none";
     }
 
-    update(delta: number): void {
-        // 特に毎フレームの更新はなし
-    }
+    update(delta: number): void { }
 
     /**
      * Axis 操作処理
      */
     UIAxes(axes: InputAxis[]): void {
         for (const axis of axes) {
-            // switch (axis) {
-            //     case "UP":
-            //     case "DOWN":
-            //     case "LEFT":
-            //     case "RIGHT":
-            //         // 方向キーでメッセージ送りもできるようにするならここ
-            //         this.nextMessage();
-            //         break;
-            // }
-            // audioManager.playSE("assets/se/cursorMove.mp3");
         }
     }
 
@@ -128,8 +116,8 @@ export class MessageLogOverlayController {
             this.typeMessage(this.messages[this.currentMessageIndex]);
         } else {
             this.hide();
-            this.emitUI({ type: "POP_OVERLAY" });
             this.resolveCurrent?.();
+            this.emitUI({ type: "POP_OVERLAY" });
         }
     }
 
@@ -137,12 +125,16 @@ export class MessageLogOverlayController {
      * 1メッセージをタイプライター表示
      */
     private typeMessage(text: string): void {
+        clearInterval(this.interval);
+
         this.typing = true;
         this.logBox.innerHTML = "";
         let i = 0;
 
         this.interval = setInterval(() => {
+           if (text[i]) {
             this.logBox.innerHTML += text[i];
+        }
             i++;
             if (i >= text.length) {
                 clearInterval(this.interval);

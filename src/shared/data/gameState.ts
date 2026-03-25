@@ -2,9 +2,14 @@
 
 import { BattleState, createInitialBattleState, createInitialParty } from "../../renderer/game/battle/core/BattleState";
 import { SaveData } from "../save/SaveData";
+import { AllyStatusData } from "../type/ally/AllyStatusData";
+import { BattleActor } from "../type/battle/BattleAction";
+import { ImageKey } from "../type/ImageKey";
 import { MapId } from "../type/MapId";
-import { PlayerPxPosition, WorldPxPosition } from "../type/playerPosition/posType";
+import { FieldMagicPayload, SkillSelectPayload } from "../type/payload/battle";
+import { PlayerPxPosition, WorldPxPosition, WorldTilePosition } from "../type/playerPosition/posType";
 import { BattlerSaveData } from "./BattlerSaveData";
+import { NORM_SIZE } from "./constants";
 import { DEFAULT_COLLECTED_ITEMS, DEFAULT_EVENTFLAG, DEFAULT_PLAYER_BASE_STATS, DEFAULT_PLAYER_EXP, DEFAULT_PLAYER_GOLD, DEFAULT_PLAYER_LEVEL, DEFAULT_PLAYER_NAME, DEFAULT_START_MAP_ID, DEFAULT_START_POSITION_BY_WORLD, SAVE_VERSION } from "./playerConstants";
 
 /**
@@ -38,7 +43,7 @@ export class GameState {
     get level() { return this.mainPlayer?.level ?? DEFAULT_PLAYER_LEVEL; }
     get exp() { return this.mainPlayer?.exp ?? DEFAULT_PLAYER_EXP; }
     get baseStats() { return this.mainPlayer?.baseStats ?? DEFAULT_PLAYER_BASE_STATS; }
-    get skills() { return this.mainPlayer?.skills ?? []; }
+    get skillIds() { return this.mainPlayer?.skillIds ?? []; }
 
     // アイテム、マップ等のフラグ類
     equipment: Record<string, boolean> = {};
@@ -57,6 +62,46 @@ export class GameState {
     battleReturn?: { mapId: MapId, pos: WorldPxPosition };
 
     constructor(public saveFileId: number) { }
+
+    /**
+     * パーティ全員の最新ステータスを UI 表示用の形式で取得する
+     */
+    getAllyStatusList(): AllyStatusData[] {
+        return this.party.map(battler => ({
+            instanceId: battler.instanceId,
+            name: battler.name,
+            // 現状 baseStats に最大値が入っている想定
+            // 本来は BattlerSaveData に currentHp などを持たせるのが理想的
+            hp: battler.baseStats.hp,
+            maxHp: battler.baseStats.maxHp,
+            mp: battler.baseStats.mp,
+            maxMp: battler.baseStats.maxMp,
+            states: battler.statusEffects.map(s => ({
+                id: s.statusId,
+                duration: s.duration,
+                imageKey: ImageKey[s.statusId as keyof typeof ImageKey]
+            }))
+        }));
+    };
+
+    getFieldMagicPayload(): FieldMagicPayload[] {
+        // 全員の基本情報を先に作っておく
+        const allPartyMembers = this.party.map(p => ({
+            actorMasterId: p.actorMasterId,
+            instanceId: p.instanceId,
+            name: p.name,
+            hp: p.baseStats.hp,
+            maxHp: p.baseStats.maxHp,
+            alive: p.baseStats.hp > 0
+        }));
+
+        // キャラクターごとのPayload配列を返す
+        return this.party.map(battler => ({
+            actorInstanceId: battler.instanceId,
+            skillIds: battler.skillIds,
+            allies: allPartyMembers // 全員の情報を含める
+        }));
+    };
 
     // 戦闘後の味方データを反映
     applyBattleResult(allies: BattlerSaveData[]) {
@@ -85,12 +130,6 @@ export class GameState {
             playerName: this.playerName,
             gold: this.gold,
             party: this.party, // パーティ全員の状態を保存
-
-            // UI表示用に主人公のデータも残す
-            level: this.level,
-            exp: this.exp,
-            baseStats: this.baseStats,
-            skills: this.skills,
 
             // 装備やアイテム
             equipment: this.equipment,
@@ -131,6 +170,9 @@ export class GameState {
         this.collectedItems = save.collectedItems;
         this.currentBattleState = save.currentBattleState;
         this.battleReturn = save.battleReturn;
+
+        // playername = プレイヤの名前に確実になるようにする
+        this.setPlayerName(this.playerName)
     }
 
     /**
@@ -153,17 +195,29 @@ export class GameState {
      * - 空文字や未指定時はデフォルト名にフォールバック
      */
     setPlayerName(name?: string) {
-        this.playerName = name && name.trim() !== ""
+        const newName = name && name.trim() !== ""
             ? name
             : DEFAULT_PLAYER_NAME;
+
+        this.playerName = newName;
+
+        // パーティが存在する場合、先頭の BattlerSaveData の名前も更新
+        if (this.party.length > 0) {
+            this.party[0].name = newName;
+        }
     }
 
     /**
      * 現在アクティブなワールドを変更する
-     * - 画面遷移や WorldManager の更新は UseCase 側で行う
+     * 遷移先座標があればそれもセットする
+     * 移動イベントで利用
      */
-    setWorld(mapId: MapId) {
+    setWorld(mapId: MapId, pos?: WorldTilePosition) {
         this.currentMapId = mapId;
+        if (pos) {
+            // 特定のマップの座標履歴のみを更新する
+            this.where[mapId] = { x: pos.tx * NORM_SIZE, y: pos.ty * NORM_SIZE };
+        }
     }
 
     /**
@@ -175,10 +229,7 @@ export class GameState {
 
     /**
      * 指定ワールドのプレイヤー座標を記録する
-     *
-     * - ワールド切替時
-     * - 戦闘復帰時
-     * などで使用
+     * pos: px座標 計算用
      */
     setPlayerPosition(mapId: MapId, pos: WorldPxPosition) {
         this.where[mapId] = pos;
@@ -212,7 +263,7 @@ export class GameState {
 
         this.playerName = DEFAULT_PLAYER_NAME;
         this.gold = DEFAULT_PLAYER_GOLD;
-        this.party = [createInitialParty()];
+        this.party = createInitialParty();
 
         this.equipment = {};
         this.items = {};

@@ -65,15 +65,15 @@ export function createGameUseCases(deps: {
     battlerFactory: BattlerFactory,
     interactionResolver: InteractionResolver,
     interactionService: InteractionService,
-    emitWorld: (e: WorldEvent) => void,
-    emitUI: (e: AppUIEvent) => void
+    emitWorld: (e: WorldEvent) => Promise<void>,
+    emitUI: (e: AppUIEvent) => Promise<void>
 }): GameUseCases {
 
     // バトルWorld
     const encounterUseCase = new EncounterUseCase(deps.gameState, deps.tileDB, deps.emitWorld);
     const battleStartedUseCase = new BattleStartedUseCase(deps.gameState, deps.enemyRepository, deps.encounterRepository, deps.battlerFactory, deps.emitWorld, deps.emitUI);
     const battleCommandSelectedUseCase = new BattleCommandSelectedUseCase(deps.emitUI);
-    const battleResultUseCase = new BattleResultUseCase(deps.emitWorld);
+    const battleResultUseCase = new BattleResultUseCase(deps.emitWorld, deps.emitUI);
 
     // ChangeScreen
     const changeMainScreenUseCase = new ChangeMainScreenUseCase(deps.screens, deps.bgmUseCase);
@@ -84,7 +84,7 @@ export function createGameUseCases(deps: {
     const changeWorldUseCase = new ChangeWorldUseCase(deps.mapRepository, deps.zoneController, deps.worldDefinitionFactory, deps.screens, deps.worldManager, deps.gameState, changeMainScreenUseCase, encounterUseCase);
 
     // ゲームスタート
-    const startGameUseCase = new StartGameUseCase(deps.saveManager, changeWorldUseCase);
+    const startGameUseCase = new StartGameUseCase(deps.saveManager, changeWorldUseCase, deps.gameState);
 
     // Overlay
     const openOptionsUseCase = new OpenOptionsUseCase();

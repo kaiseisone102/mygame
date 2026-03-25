@@ -11,6 +11,17 @@
                 "th": 1,
                 "block": false,
                 "image": "TOWN_ICON"
+            },
+            {
+                "id": "G_CAVE_ENTRY_01",
+                "pos": {
+                    "tx": 30,
+                    "ty": 180
+                },
+                "tw": 2,
+                "th": 2,
+                "block": false,
+                "image": "CAVE"
             }
         ],
         "FIELD_ENEMY": [

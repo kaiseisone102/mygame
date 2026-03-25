@@ -1,13 +1,12 @@
 // src/renderer/screens/mainScreens/controller/InputNameOverlayController.ts
 
+import { BaseScreenController } from "../../../../../renderer/screens/interface/controller/BaseScreenController";
+import { DEFAULT_PLAYER_NAME } from "../../../../../shared/data/playerConstants";
 import { InputAxis, UIActionEvent } from "../../../../input/mapping/InputMapper";
 import { AppUIEvent } from "../../../../router/AppUIEvents";
-import { ScreenInitContext } from "../../../interface/context/ScreenInitContext";
-import { UIScreenController } from "../../../interface/controller/UIScreenController";
 import { WorldEvent } from "../../../../router/WorldEvent";
-import { DEFAULT_PLAYER_NAME } from "../../../../../shared/data/playerConstants";
+import { ScreenInitContext } from "../../../interface/context/ScreenInitContext";
 import { InputNamePayload } from "../InputNameOverlay";
-import { BaseScreenController } from "renderer/screens/interface/controller/BaseScreenController";
 
 export class InputNameOverlayController implements BaseScreenController<InputNamePayload> {
 
