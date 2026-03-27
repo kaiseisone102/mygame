@@ -9,6 +9,8 @@ import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
 import { WorldEvent } from "../../../../../renderer/router/WorldEvent";
 import { EnemyKey } from "../../../../../shared/Json/enemy/EnemyTemplateJson";
 import { BiomeId } from "../../../../../shared/type/battle/enemy/BiomeId";
+import { EncounterTransition } from "../../../../../renderer/screens/view/EncounterTransition";
+import { ScreenPort } from "../../../../../renderer/port/ScreenPort";
 
 // BattleStartedUseCase は「画面上のワールド状態」を基準にする
 /**
@@ -18,6 +20,7 @@ import { BiomeId } from "../../../../../shared/type/battle/enemy/BiomeId";
  */
 export class BattleStartedUseCase {
     constructor(
+        private screenPort: ScreenPort,
         private gameState: GameState,
         private enemyRepo: EnemyRepository,
         private encounterRepo: EncounterRepository,
@@ -26,7 +29,10 @@ export class BattleStartedUseCase {
         private emitUI: (e: AppUIEvent) => void,
     ) { }
 
-    execute(biomeId: BiomeId) {
+    async execute(biomeId: BiomeId) {
+
+        this.screenPort.lockInput(true);
+        await EncounterTransition.flashIn();
 
         // 1.エリアから敵ID取得
         const enemyIds = this.encounterRepo.getEnemyIds(biomeId);
@@ -52,5 +58,9 @@ export class BattleStartedUseCase {
                 biomeId
             }
         });
+
+        await EncounterTransition.flashOut();
+        this.screenPort.lockInput(false);
+
     }
 }

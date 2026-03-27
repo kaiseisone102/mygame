@@ -1,0 +1,121 @@
+/* src/renderer/view/TransitionView.css */
+
+/* 親コンテナ：画面全体をロック */
+#transition-container {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* 共通レイヤー設定 */
+.transition-bg-black,
+.transition-main-white {
+    position: absolute;
+    inset: -10%; /* 画面端の隙間を埋めるために少し広めに */
+    width: 120%;
+    height: 120%;
+    opacity: 0;
+    /* 初期状態：中心に収束した点（トゲの数だけ頂点を用意） */
+    clip-path: polygon(
+        50% 50%, 50% 50%, 50% 50%, 50% 50%, 50% 50%, 50% 50%, 
+        50% 50%, 50% 50%, 50% 50%, 50% 50%, 50% 50%,
+        50% 50%, 50% 50%, 50% 50%, 50% 50%, 50% 50%, 50% 50%,
+        50% 50%, 50% 50%, 50% 50%, 50% 50%, 50% 50%
+    );
+
+}
+
+/* 背後の黒レイヤー（シルエット担当） */
+.transition-bg-black {
+    background-color: #ff3a3a;
+    z-index: 1;
+}
+
+/* 前面のグレーレイヤー（メイン担当）チェック柄 */
+.transition-main-white {
+    /* 1. ベースの色（チェックの「薄い方」の色） */
+    background-color: rgba(255, 255, 255, 0.9);
+
+    /* 薄いグレー (#ccc) の四角形を互い違いに配置する */
+    background-image: 
+        linear-gradient(45deg, rgba(200, 200, 200, 0.9) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(200, 200, 200, 0.9) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(200, 200, 200, 0.9) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(200, 200, 200, 0.9) 75%);
+
+    /* 3. チェック柄の大きさ */
+    background-size: 10vw 10vw;
+    
+    /* 4. チェックの位置を調整して、互い違いにする（background-sizeの半分ズラす） */
+    background-position: 0 0, 0 5vw, 5vw 5vw, 5vw 0px;
+    
+    /* ★ アニメーション */
+    animation: bg-scroll 4s linear infinite;
+
+    z-index: 2;
+    /* わずかにドロップシャドウをつけて境界を強調 */
+    filter: drop-shadow(0 0 20px rgba(0,0,0,0.9));
+}
+
+@keyframes bg-scroll {
+    from {
+        /* 初期位置（既存のbackground-positionと同じにする） */
+        background-position: 0 0, 0 5vw, 5vw 5vw, 5vw 0px;
+    }
+    to {
+        /* 1タイル分（background-sizeと同じ10vw）ずらす */
+        /* これにより継ぎ目なくループします */
+        background-position: 10vw 10vw, 10vw 15vw, 15vw 15vw, 15vw 10vw;
+    }
+}
+
+/* =========================================
+   FLASH IN: 画面を覆い尽くす（トゲが中心から広がる）
+   ========================================= */
+.transition-in .transition-bg-black,
+.transition-in .transition-main-white {
+    opacity: 1;
+    pointer-events: all;
+    /* 非常に複雑で鋭い多角形（画面の内側に頂点を作るのがコツ） */
+    clip-path: polygon(
+        -10% -20%, 15% -30%, 40% -20%, 65% -30%, 90% -20%, 115% -30%,
+        105% 0%, 115% 25%, 105% 50%, 115% 75%, 105% 100%,
+        115% 100%, 90% 120%, 65% 130%, 40% 120%, 15% 130%, -10% 120%,
+        -20% 110%, -30% 80%, -20% 50%, -30% 20%, -20% -10%
+    );
+}
+
+/* 黒が先に動き出し、白が0.1秒遅れて追いかける */
+.transition-in .transition-bg-black {
+    transition: clip-path 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.transition-in .transition-main-white {
+    /* 0.1sのディレイが重要 */
+    transition: clip-path 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+}
+
+/* =========================================
+   FLASH OUT: 画面が晴れる（一気に拡大して消える）
+   ========================================= */
+.transition-out .transition-bg-black,
+.transition-out .transition-main-white {
+    opacity: 0;
+    /* 消えるときは「縮む」のではなく「切り裂きながら拡大する」 */
+    transform: scale(1.5) rotate(10deg);
+    transition: 
+        transform 0.5s cubic-bezier(0.5, 0, 0.75, 0),
+        opacity 0.4s ease-in,
+        clip-path 0.3s ease-in;
+}
+
+/* 消えるときは白を先に消して、余韻で黒を消す */
+.transition-out .transition-main-white {
+    transition-delay: 0s;
+}
+
+.transition-out .transition-bg-black {
+    transition-delay: 0.05s;
+}

@@ -66,6 +66,7 @@ export class SkillSelectOverlay implements OverlayScreen<SkillSelectPayload> {
 
     hide(): void {
         this.screen.style.display = "none";
+        this.payload = {actorInstanceId:-1,skillItems:[],allies:[],enemies:[] };
     }
 
     update(delta: number): void { }

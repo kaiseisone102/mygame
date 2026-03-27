@@ -73,12 +73,8 @@ export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
     pause() { }
     resume() { }
 
-    handleUIActions(actions: UIActionEvent[]): boolean {
-        return true;
-    }
-    handleUIAxes(axes: InputAxis[]): boolean {
-        return true;
-    }
+    handleUIActions(actions: UIActionEvent[]): boolean { return true; };
+    handleUIAxes(axes: InputAxis[]): boolean { return true; };
 
     updateStatus(payload: AlliesStatusPayload): void {
         // --- 1. 表示中かつデータがあるかチェック ---
@@ -228,5 +224,6 @@ export class AlliesStatusOverlay implements OverlayScreen<AlliesStatusPayload> {
             mpTextEl: mpText,
             statesEl: statesContainer
         });
+        console.log("Created element for:", ally.name);
     }
 }

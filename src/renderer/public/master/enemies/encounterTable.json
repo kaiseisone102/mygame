@@ -12,5 +12,15 @@
         "GHOST",
         "GHOST",
         "DRAGON"
+    ],
+    "WATER": [
+        "METAL_SLIME",
+        "SLIME",
+        "GHOST"
+    ],
+    "DEEPER_CAVE": [
+        "KILLER_LICKANT",
+        "DRAGON",
+        "KILLER_LICKANT"
     ]
 }

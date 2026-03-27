@@ -6,7 +6,7 @@ export class EnterWorldMapUseCase {
         private changeMain: ChangeMainScreenUseCase,
     ) { }
 
-    execute() {
-        this.changeMain.execute(MainScreenType.WORLD_MAP);
+   async execute() {
+       await this.changeMain.execute(MainScreenType.WORLD_MAP, undefined);
     }
 }

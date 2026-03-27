@@ -23,15 +23,13 @@ export class ForestTempleBuilder implements MapBuilder {
         world.ensureChunk(0, 0);
 
         fillRectTile(world, 0, 29, 0, 34, TileType.PLAIN);
-        fillRectTile(world, 12, 18, 25, 34, TileType.DIRT);
-        fillRectTile(world, 13, 6, 19, 14, TileType.WOOD_FLOOR);
-        fillRectTile(world, 12, 12, 5, 15, TileType.WALL);
-        fillRectTile(world, 20, 20, 5, 15, TileType.WALL);
-        fillRectTile(world, 13, 20, 5, 5, TileType.WALL);
-        fillRectTile(world, 20, 20, 30, 30, TileType.WATER);
+        fillRectTile(world, 11, 18, 18, 34, TileType.DIRT);
+       
+        addObjectBlock(objectLayer, ObjectType.TREE, 0, 0, 1, 11);
+        addObjectBlock(objectLayer, ObjectType.TREE, 27, 0, 1, 11);
+        addObjectBlock(objectLayer, ObjectType.TREE, 3, 0, 9, 1);
 
-        addObjectBlock(objectLayer, ObjectType.TREE, 2, 18, 5, 4);
-        addObject(objectLayer, ObjectType.THRONE, 15, 7);
+        addObject(objectLayer, ObjectType.TREE, 3, 7);
 
         if (this.buildingSquare) {
 
@@ -40,7 +38,7 @@ export class ForestTempleBuilder implements MapBuilder {
             );
 
             if (luxuryHouse) {
-                placeBuildingSquare(world, 12, 20, luxuryHouse);
+                placeBuildingSquare(world, 9, 4, luxuryHouse);
             }
         }
 

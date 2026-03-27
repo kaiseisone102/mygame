@@ -36,6 +36,7 @@ export type AppUIEvent =
     | { type: "SAVE_GAME" }
 
     // インベントリ
+    | { type: "SHOW_FIELD_COMMAND"}
     | { type: "SELECT" }
 
     // Overlay

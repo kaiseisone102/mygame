@@ -8,7 +8,7 @@ import { audioManager } from "../../../../asset/audio/audioManager";
 import { InputAxis, UIActionEvent } from "../../../../input/mapping/InputMapper";
 import { AppUIEvent } from "../../../../router/AppUIEvents";
 import { ScreenInitContext } from "../../../interface/context/ScreenInitContext";
-import { SlotViewModel } from "../../../viewModel/SlotViewModel";
+import { SlotViewModel } from "../../../view/viewModel/SlotViewModel";
 
 export class SlotSelectOverlayController implements BaseScreenController<void> {
 

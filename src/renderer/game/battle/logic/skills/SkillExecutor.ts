@@ -42,21 +42,25 @@ export class SkillExecutor {
                         );
 
                         // メソッドを使用し、HP減少を適用
-                        target.addHp(-final);
+                        target.addHp(-final.damage);
                         const killed = !target.alive;
 
                         target.emitEvent(BattleEvent.DAMAGE, {
                             source: actor,
                             target,
-                            value: final
+                            value: final.damage
                         });
 
                         results.push({
                             kind: SkillEffectKindId.DAMAGE,
                             instanceId: actor.instanceId,
                             targetId: target.instanceId,
-                            value: final,
-                            isCritical: base.isCritical,
+                            value: final.damage,
+                            options: {
+                                isCritical: base.isCritical,
+                                isWeakness: final.isWeakness,
+                                isResist: final.isResist
+                            },
                             killed: killed,
                             success: true // ダメージが発生したなら成功
                         });
@@ -112,7 +116,7 @@ export class SkillExecutor {
                         }
 
                         const instance = createStatus(effect.statusId as StatusId, actor, buffValue);
-                    
+
                         target.addStatus(instance);
 
                         // --- 3. 付与後の反映 ---

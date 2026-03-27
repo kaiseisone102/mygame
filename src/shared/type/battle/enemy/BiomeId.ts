@@ -16,6 +16,7 @@ export const TileBiomeMap: Record<TileType, BiomeId> = {
     [TileType.FOREST]: BiomeId.FOREST,
 
     [TileType.WALL]: BiomeId.PLAIN,
+    [TileType.YELLOW_WALL]: BiomeId.PLAIN,
     [TileType.WATER]: BiomeId.WATER,
     [TileType.ROOF]: BiomeId.PLAIN,
 

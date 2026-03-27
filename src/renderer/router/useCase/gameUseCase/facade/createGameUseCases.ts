@@ -30,12 +30,11 @@ import { BattleStartedUseCase } from "../battle/BattleStartedUseCase";
 import { EncounterUseCase } from "../battle/EncounterUseCase";
 import { InteractUseCase } from "../interact/InteractUseCase";
 import { CollectItemUseCase } from "../interact/Item/CollectItemUseCase";
-import { NpcInteractUseCase } from "../interact/npc/NpcInteractUseCase";
-import { ReadSignUseCase } from "../interact/sign/ReadSignUseCase";
 import { SelectSlotFlowUseCase } from "../mainScreen/SelectSlotFlowUseCase";
 import { StartGameFlowUseCase } from "../mainScreen/StartGameFlowUseCase";
 import { StartGameUseCase } from "../mainScreen/StartGameUseCase";
 import { OpenOptionsUseCase } from "../overlay/OpenOptionsUseCase";
+import { ShowFieldCommand } from "../overlay/ShowFieldCommand";
 import { SaveConfigUseCase } from "../save/SaveConfigUseCase";
 import { SaveGameUseCase } from "../save/SaveGameUseCase";
 import { ChangeMainScreenUseCase } from "../screen/ChangeMainUseCase";
@@ -71,7 +70,7 @@ export function createGameUseCases(deps: {
 
     // バトルWorld
     const encounterUseCase = new EncounterUseCase(deps.gameState, deps.tileDB, deps.emitWorld);
-    const battleStartedUseCase = new BattleStartedUseCase(deps.gameState, deps.enemyRepository, deps.encounterRepository, deps.battlerFactory, deps.emitWorld, deps.emitUI);
+    const battleStartedUseCase = new BattleStartedUseCase(deps.screens, deps.gameState, deps.enemyRepository, deps.encounterRepository, deps.battlerFactory, deps.emitWorld, deps.emitUI);
     const battleCommandSelectedUseCase = new BattleCommandSelectedUseCase(deps.emitUI);
     const battleResultUseCase = new BattleResultUseCase(deps.emitWorld, deps.emitUI);
 
@@ -97,6 +96,9 @@ export function createGameUseCases(deps: {
     const enterWorldMapUseCase = new EnterWorldMapUseCase(changeMainScreenUseCase)
     const enteredTownUseCase = new EnteredTownUseCase(changeWorldUseCase);
 
+    // フィールドアクション
+    const showFieldCommand = new ShowFieldCommand(deps.gameState, deps.emitUI);
+
     // 保存
     const saveGameUseCase = new SaveGameUseCase(deps.saveManager);
     const saveConfigUseCase = new SaveConfigUseCase();
@@ -110,8 +112,6 @@ export function createGameUseCases(deps: {
     // インタラクト処理
     const interactUseCase = new InteractUseCase(deps.emitWorld, deps.emitUI, deps.interactionResolver, deps.interactionService);
     const collectItemUseCase = new CollectItemUseCase(deps.gameState, deps.screens);
-    const npcInteractUseCase = new NpcInteractUseCase(deps.screens);
-    const readSignUseCase = new ReadSignUseCase(deps.screens);
 
     return new GameUseCases({
         addBattleLogUseCase,
@@ -126,6 +126,7 @@ export function createGameUseCases(deps: {
         enterForestTempleUseCase,
         enterWorldMapUseCase,
         enteredTownUseCase,
+        showFieldCommand,
         saveGameUseCase,
         saveConfigUseCase,
         encounterUseCase,
@@ -134,7 +135,5 @@ export function createGameUseCases(deps: {
         battleInputUseCase,
         interactUseCase,
         collectItemUseCase,
-        npcInteractUseCase,
-        readSignUseCase,
     });
 }

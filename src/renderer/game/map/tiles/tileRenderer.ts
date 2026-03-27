@@ -37,8 +37,5 @@ export class TileRenderer {
                 }
             }
         }
-        // viewport枠
-        ctx.strokeStyle = "red";
-        ctx.strokeRect(0, 0, camera.width, camera.height);
     }
 }

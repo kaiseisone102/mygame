@@ -39,7 +39,7 @@ export class InteractUseCase {
                 for (const role of target.npc.roles) {
                     if (role === "TALK" && target.npc.messageId) {
                         // 会話が終わるまで await で待つ
-                        await this.emitUI(this.service.createTalkEvent(target.npc.messageId));
+                        await this.emitUI(this.service.createTalkEvent(target.npc.messageId, target.npc.name));
                     }
 
                     if (role === "SHOP" && target.npc.shopId) {

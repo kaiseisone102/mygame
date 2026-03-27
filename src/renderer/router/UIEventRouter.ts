@@ -43,10 +43,13 @@ export class UIEventRouter implements UIEventPort {
                 await this.gameUseCases.saveGameUseCase.execute();
                 break;
 
-            case "SHOW_START_MESSAGE": this.gameUseCases.changeMainScreenUseCase.execute(MainScreenType.START_MESSAGE, undefined); break;
+            case "SHOW_START_MESSAGE": await this.gameUseCases.changeMainScreenUseCase.execute(MainScreenType.START_MESSAGE, undefined); break;
 
             // インタラクト振り分け処理
             case "REQUEST_INTERACT": await this.gameUseCases.interactUseCase.execute(event); break;
+
+            // フィールドコマンド
+            case "SHOW_FIELD_COMMAND": this.gameUseCases.showFieldCommand.execute(); break;
 
             case "SHOW_TRIGGER_MESSAGE":
                 this.screens.pushOverlay(OverlayScreenType.MESSAGE_LOG, { messages: [event.message] });

@@ -10,8 +10,10 @@ export const ImageKey = {
     DIRT: "DIRT",
     WOODS: "WOODS",
     PLAIN: "PLAIN",
+    WOOD_FLOOR: "WOOD_FLOOR",
     SKY: "SKY",
     WALL: "WALL",
+    YELLOW_WALL: "YELLOW_WALL",
     WATER: "WATER",
     DARK: "DARK",
     // 洞窟タイル
@@ -29,11 +31,15 @@ export const ImageKey = {
     PLAYER_RIGHT_0: "PLAYER_RIGHT_0",
     PLAYER_RIGHT_1: "PLAYER_RIGHT_1",
     PLAYER_RIGHT_2: "PLAYER_RIGHT_2",
-    // ゾーン
+    // ----- zone ------ // 
+    // 侵入
     TOWN_ICON: "TOWN_ICON",
     CAVE: "CAVE",
+    FOREST_TEMPLE: "FOREST_TEMPLE",
+    // 敵
     ENEMY_ICON: "ENEMY_ICON",
     AREA_ICON: "AREA_ICON",
+    // 看板
     WOODEN_SIGN: "WOODEN_SIGN",
     GOLD_ICON: "GOLD_ICON",
     POTION_ICON: "POTION_ICON",
@@ -50,6 +56,11 @@ export const ImageKey = {
     ENEMY2: "ENEMY2",
     ENEMY3: "ENEMY3",
     ENEMY4: "ENEMY4",
+    SP_DRACKY: "SP_DRACKY",
+    SP_GHOST: "SP_GHOST",
+    SP_SLIME: "SP_SLIME",
+    SP_KILLER_LICKANT: "SP_KILLER_LICKANT",
+    SP_METAL_SLIME: "SP_METAL_SLIME",
     // ステータスアイコン
     CHARM: "CHARM",
     POISON: "POISON",

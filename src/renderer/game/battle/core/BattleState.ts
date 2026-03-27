@@ -123,7 +123,7 @@ export function createInitialParty(): BattlerSaveData[] {
 
 
                 MagicId.HASTE,
-
+                MagicId.MERA,
                 MagicId.ATK_DOWN,
                 MagicId.HEAL_ALL,
                 MagicId.GIGADEIN
@@ -146,7 +146,7 @@ export function createInitialParty(): BattlerSaveData[] {
 
 
                 MagicId.HASTE,
-
+                MagicId.MERA,
                 MagicId.ATK_DOWN,
                 MagicId.HEAL_ALL,
                 MagicId.GIGADEIN

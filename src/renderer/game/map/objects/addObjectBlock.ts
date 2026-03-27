@@ -6,7 +6,6 @@ import { ObjectType } from "./objectType";
  * @param addObjectBlock オブジェクトを複数並べる
  * @param layer     ObjectLayer 配置先
  * @param type      ↓ObjectType一覧↓
- * @see ObjectType  にCtr + カーソルホバー
  * @param startX    左上開始X（タイル単位）
  * @param startY    左上開始Y（タイル単位）
  * @param w         横に並べる個数

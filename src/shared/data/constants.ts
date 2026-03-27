@@ -3,16 +3,16 @@
 import { CommandActionType } from "../type/battle/TargetType";
 import { FieldActionType } from "../type/field/FieldActionType";
 
-export const NORM_SIZE: number = 32;
+export const NORM_SIZE: number = 48;
 export const P_HIT_SIZE: number = NORM_SIZE * 0.8;
 export const TILE_SIZE = NORM_SIZE;
-export const CHUNK_TILES = 16;
+export const CHUNK_TILES = NORM_SIZE / 2;
 export const CHUNK_SIZE = TILE_SIZE * CHUNK_TILES;
 
 export const NUMBER_OF_SLOT: number = 3;
 // 会話判定ボックス(プレイヤー前方)
-export const TALK_RECT_REACH = NORM_SIZE * 2;   // ボックス長さ
-export const TALK_RECT_WIDTH = NORM_SIZE * 2;   // ボックス幅
+export const TALK_RECT_REACH = NORM_SIZE * 0.5;   // ボックス長さ
+export const TALK_RECT_WIDTH = NORM_SIZE * 0.5;   // ボックス幅
 
 // マップ毎の基本エンカウント率
 export const BASE_ENCOUNTER_RATE_SAFE = 0;

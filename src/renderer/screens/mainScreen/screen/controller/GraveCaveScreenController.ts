@@ -4,5 +4,5 @@ import { BaseWorldScreenController } from "../../../../../renderer/screens/world
 import { MainScreenType } from "../../../../../shared/type/screenType";
 
 export class GraveCaveScreenController extends BaseWorldScreenController {
-    protected screenId: string = MainScreenType.GRAVE_CAVE;
+    //protected screenId: string = MainScreenType.GRAVE_CAVE;
 }

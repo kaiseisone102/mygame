@@ -17,21 +17,32 @@ export class NoFeatureTownBuilder implements MapBuilder {
 
     build(): BaseWorldDefinition {
 
-        const world = new World(30, 35, WORLD_DEFAULT_TILE[MapCategory.TOWN]);
+        const world = new World(60, 20, WORLD_DEFAULT_TILE[MapCategory.TOWN]);
         const objectLayer = new ObjectLayer();
 
         world.ensureChunk(0, 0);
 
-        fillRectTile(world, 0, 29, 0, 34, TileType.PLAIN);
-        fillRectTile(world, 12, 18, 25, 34, TileType.DIRT);
-        fillRectTile(world, 13, 6, 19, 14, TileType.WOOD_FLOOR);
-        fillRectTile(world, 12, 12, 5, 15, TileType.WALL);
-        fillRectTile(world, 20, 20, 5, 15, TileType.WALL);
-        fillRectTile(world, 13, 20, 5, 5, TileType.WALL);
-        fillRectTile(world, 20, 20, 30, 30, TileType.WATER);
+        // 地面
+        fillRectTile(world, 0, 58, 1, 18, TileType.DIRT);
+        fillRectTile(world, 28, 32, 19, 19, TileType.DIRT);
 
-        addObjectBlock(objectLayer, ObjectType.TREE, 2, 18, 5, 4);
-        addObject(objectLayer, ObjectType.THRONE, 15, 7);
+        // 草
+        fillRectTile(world, 2, 15, 1, 9, TileType.PLAIN);
+        fillRectTile(world, 2, 11, 12, 18, TileType.PLAIN);
+
+        // 外壁
+        fillRectTile(world, 0, 59, 0, 0, TileType.WALL);    // 上
+        fillRectTile(world, 0, 27, 19, 19, TileType.WALL);   // 下(左)
+        fillRectTile(world, 33, 59, 19, 19, TileType.WALL); // 下(右)
+        fillRectTile(world, 59, 59, 0, 19, TileType.WALL);  // 右
+
+        fillRectTile(world, 36, 39, 12, 15, TileType.WATER);
+        fillRectTile(world, 40, 49, 12, 18, TileType.WATER);
+
+        addObjectBlock(objectLayer, ObjectType.TREE, 4, 1, 3, 2);
+        addObjectBlock(objectLayer, ObjectType.TREE, 4, 13, 2, 2);
+
+        addObject(objectLayer, ObjectType.THRONE, 93, 8);
 
         return { world, objectLayer };
     }

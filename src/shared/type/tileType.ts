@@ -5,6 +5,7 @@ export enum TileType {
     DIRT = "DIRT",
     WOOD_FLOOR = "WOOD_FLOOR",
     WALL = "WALL",
+    YELLOW_WALL = "YELLOW_WALL",
     WATER = "WATER",
     ROOF = "ROOF",
     FOREST = "FOREST",

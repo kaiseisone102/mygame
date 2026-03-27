@@ -15,7 +15,6 @@ export class BattleEventQueue {
     async play(events: BattleEvent[]): Promise<void> {
 
         this.queue.push(...events);
-
         if (this.playing) return;
 
         this.playing = true;
@@ -23,8 +22,20 @@ export class BattleEventQueue {
 
         while (this.queue.length > 0 && !this.cancelled) {
             const event = this.queue.shift()!;
-            this.emitBattle({ type: "BATTLE_EVENT_QUEUE", event });
-            await delay(this.getDuration(event));
+
+            if (event.type === BattleEventKind.BULK) {
+                // BULKの場合は中のイベントをすべて同時に emit
+                event.events.forEach(subEvent => {
+                    this.emitBattle({ type: "BATTLE_EVENT_QUEUE", event: subEvent });
+                });
+                // BULK内の最大時間、または固定時間を待機
+                const maxDuration = Math.max(...event.events.map(e => this.getDuration(e)));
+                await delay(maxDuration);
+            } else {
+                // 通常の直列処理
+                this.emitBattle({ type: "BATTLE_EVENT_QUEUE", event });
+                await delay(this.getDuration(event));
+            };
         }
 
         this.playing = false;

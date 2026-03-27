@@ -87,10 +87,24 @@ export class LevelUpOverlay implements OverlayScreen<LevelUpPayload[]> {
         this.currentPayload = payload;
         this.screen.className = "LevelUpOverlay";
         this.messageElem.className = "LevelUpOverlayMessage";
+        // 文字をバラバラにして「整列させない」
+        const nameHtml = payload.name.split('').map(char =>
+            `<span style="display:inline-block; transform:rotate(${(Math.random() - 0.5) * 10}deg)">${char}</span>`
+        ).join('');
 
         // メッセージ部分の構築
-        let html = `<div class="characterName">${payload.name} はレベルアップした！</div>`;
-        html += `<div class="levelTransition">Level ${payload.oldLevel} → <span class="newLevel">${payload.newLevel}</span></div>`;
+        let html = `
+        <div class="levelUpHeader">
+            <div class="nameBadge">
+                <span class="characterName">${nameHtml}</span>
+            </div>
+            <div class="levelLabel">LEVEL UP!</div>
+        </div>
+        <div class="levelTransition">
+            <span class="oldLevel">Lv ${payload.oldLevel}</span>
+            <span class="arrow">>></span>
+            <span class="newLevel">${payload.newLevel}</span>
+        </div>`;
 
         // ステータス変化表の構築
         html += `<div class="statsContainer">`;
@@ -100,20 +114,23 @@ export class LevelUpOverlay implements OverlayScreen<LevelUpPayload[]> {
             "maxHp", "maxMp", "attack", "defense", "magic", "speed", "luck"
         ];
 
-        for (const key of statKeys) {
+        for (const [index, key] of statKeys.entries()) {
             const oldVal = payload.oldStats[key];
             const newVal = payload.newStats[key];
             const diff = newVal - oldVal;
 
             html += `
-                    <div class="statRow">
-                        <span class="statName">${this.getStatDisplayName(key)}</span>
-                        <span class="statValues">${oldVal} → ${newVal}</span>
-                        <span class="statDiff">${diff > 0 ? `(+${diff})` : ""}</span>
-                    </div>`;
+                <div class="statRow" style="animation-delay: ${index * 0.05}s">
+                    <span class="statName">${this.getStatDisplayName(key)}</span>
+                    <div class="statValueContainer">
+                        <span class="statValues">${oldVal} <small>>></small> ${newVal}</span>
+                    </div>
+                    ${diff > 0 ? `<span class="statDiff">+${diff}</span>` : ""}
+                </div>`;
         }
 
         html += `</div>`;
+        
         this.messageElem.innerHTML = html;
 
         // CONFIRM 要素を作って追加

@@ -1,21 +1,35 @@
 /* src/renderer/styles/global.css */
-html, body {
-    height: 100%;
-    margin: 0;         /* これが重要：ブラウザ標準の 8px 程度の余白を消す */
-    padding: 0;        /* 念のためパディングも 0 に */
-    overflow: hidden;  /* スクロールバーが出ないようにする（P5風なら必須） */
+html,
+body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    /* これが重要：ブラウザ標準の 8px 程度の余白を消す */
+    padding: 0;
+    /* 念のためパディングも 0 に */
+    overflow: hidden;
+    /* スクロールバーが出ないようにする（P5風なら必須） */
+    user-select: none;
+    /* Chrome / Safari */
+    -webkit-user-select: none;
+    /* old Edge */
+    -ms-user-select: none;
 }
 
 #root {
     position: absolute;
-    top: 0;            /* 左上に固定 */
-    left: 0;           /* 左上に固定 */
-    width: 100vw;      /* % ではなく Viewport Width を使うとより確実 */
-    height: 100vh;     /* % ではなく Viewport Height を使うとより確実 */
+    top: 0;
+    /* 左上に固定 */
+    left: 0;
+    /* 左上に固定 */
+    width: 100vw;
+    /* % ではなく vw を使うとより確実 */
+    height: 100vh;
+    /* % ではなく vh を使うとより確実 */
     display: block;
 }
+
 body {
     background-color: skyblue;
-    overflow: hidden;
     white-space: pre-line;
 }

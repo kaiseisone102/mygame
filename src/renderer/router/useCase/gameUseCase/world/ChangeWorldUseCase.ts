@@ -48,6 +48,6 @@ export class ChangeWorldUseCase {
 
         this.encounterUseCase.reset();
         // switch BGM and main screen
-        this.changeMain.execute(screenType, undefined);
+        await this.changeMain.execute(screenType, undefined);
     }
 }

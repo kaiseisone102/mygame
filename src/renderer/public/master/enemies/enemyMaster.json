@@ -25,7 +25,7 @@
             "WEAK_FIRE"
         ],
         "aiType": "AGGRESSIVE",
-        "imageKey": "ENEMY1"
+        "imageKey": "SP_SLIME"
     },
     "DRACKY": {
         "templateId": 102,
@@ -53,7 +53,7 @@
             "RESIST_MAGIC"
         ],
         "aiType": "AGGRESSIVE",
-        "imageKey": "ENEMY2"
+        "imageKey": "SP_DRACKY"
     },
     "GHOST": {
         "templateId": 103,
@@ -81,10 +81,66 @@
         ],
         "traits": [],
         "aiType": "AGGRESSIVE",
-        "imageKey": "ENEMY3"
+        "imageKey": "SP_GHOST"
+    },
+      "METAL_SLIME": {
+        "templateId": 104,
+        "name": "METAL_SLIME",
+        "side": "ENEMY",
+        "level": 1,
+        "exp": 80,
+        "baseStats": {
+            "hp": 1,
+            "mp": 20,
+            "attack": 20,
+            "defense": 999,
+            "magic": 0,
+            "speed": 999
+        },
+        "growthTable": {},
+        "statModifier": 1,
+        "skills": [
+            "ATTACK",
+            "HEAL",
+            "HEAL_ALL",
+            "REVIVE",
+            "MERA"
+        ],
+        "traits": [
+            "WEAK_FIRE"
+        ],
+        "aiType": "AGGRESSIVE",
+        "imageKey": "SP_METAL_SLIME"
+    },
+     "KILLER_LICKANT": {
+        "templateId": 105,
+        "name": "KILLER_LICKANT",
+        "side": "ENEMY",
+        "level": 1,
+        "exp": 24,
+        "baseStats": {
+            "hp": 100,
+            "mp": 20,
+            "attack": 20,
+            "defense": 20,
+            "magic": 20,
+            "speed": 5
+        },
+        "growthTable": {},
+        "statModifier": 1,
+        "skills": [
+            "ATTACK",
+            "ATK_UP_SMALL",
+            "ATK_UP_LARGE"
+        ],
+        "traits": [
+            "RESIST_MAGIC"
+        ],
+        "aiType": "AGGRESSIVE",
+        "imageKey": "SP_KILLER_LICKANT"
     },
     "DRAGON": {
-        "templateId": 104,
+        "templateId": 106,
         "name": "DRAGON",
         "side": "ENEMY",
         "level": 1,

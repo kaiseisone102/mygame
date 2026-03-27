@@ -26,7 +26,7 @@ export class BattleCommandSelectedUseCase {
             type: "PUSH_OVERLAY", overlay: OverlayScreenType.SKILL_SELECT_OVERLAY,
             payload: {
                 actorInstanceId: payload.phaseBase.actorInstanceId,
-                skillItems: payload.phaseBase.skillItems,
+                skillItems: filteredSkills,
                 allies: payload.phaseBase.allies,
                 enemies: payload.phaseBase.enemies
             }

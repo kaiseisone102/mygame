@@ -118,12 +118,16 @@ export class StatusManager {
                     instanceId: instance.actorId ?? ctx.target.instanceId, // かけた本人、いなければ自分
                     targetId: ctx.target.instanceId,
                     value: hpDiff,
-                    isCritical: false,
+                    options: {
+                        isCritical: false,
+                        isWeakness: false,
+                        isResist: false
+                    },
                     killed: !ctx.target.alive,
                     success: true,
                     statusId: instance.statusId
                 } as DamageResult);
-                
+
             } else if (hpDiff < 0) {
                 // 回復が発生した場合 (リジェネなど)
                 results.push({

@@ -2,15 +2,15 @@
     "zones": {
         "ENTRY": [
             {
-                "id": "NF_TOWN_ENTRY_01",
+                "id": "G_CAVE_ENTRY_01",
                 "pos": {
-                    "tx": 2,
-                    "ty": 3
+                    "tx": 9,
+                    "ty": 30
                 },
-                "tw": 3,
-                "th": 1,
+                "tw": 2,
+                "th": 2,
                 "block": false,
-                "image": "TOWN_ICON"
+                "image": "CAVE"
             }
         ],
         "FIELD_ENEMY": [
@@ -27,19 +27,7 @@
             }
         ],
         "RANDOM_ENEMY_ENCOUNT": [],
-        "WALKABLE_ZONE": [
-            {
-                "id": "G_CAVE_WALKABLE_ZONE_01",
-                "pos": {
-                    "tx": 0,
-                    "ty": 0
-                },
-                "tw": 20,
-                "th": 20,
-                "block": false,
-                "image": "AREA_ICON"
-            }
-        ],
+        "WALKABLE_ZONE": [],
         "TRIGGER": [],
         "WARP": [],
         "OBSTACLE": []
@@ -47,12 +35,16 @@
     "npcs": [
         {
             "id": "FOREST_KEEPER_01",
+            "name": "GorillaC_A",
             "pos": {
                 "tx": 10,
                 "ty": 10
             },
             "direction": "DOWN",
             "image": "PLAYER_STAND_LEFT",
+            "roles": [
+                "TALK"
+            ],
             "messageId": "FOREST_KEEPER_GO_AHEAD"
         }
     ],

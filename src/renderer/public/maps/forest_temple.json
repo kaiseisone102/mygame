@@ -2,15 +2,14 @@
     "zones": {
         "ENTRY": [
             {
-                "id": "NF_TOWN_ENTRY_01",
+                "id": "FOREST_T_ENTRY_01",
                 "pos": {
-                    "tx": 2,
-                    "ty": 3
+                    "tx": 0,
+                    "ty": 34
                 },
-                "tw": 3,
+                "tw": 30,
                 "th": 1,
-                "block": false,
-                "image": "TOWN_ICON"
+                "block": false
             }
         ],
         "FIELD_ENEMY": [
@@ -27,19 +26,7 @@
             }
         ],
         "RANDOM_ENEMY_ENCOUNT": [],
-        "WALKABLE_ZONE": [
-            {
-                "id": "FOREST_T_WALKABLE_ZONE_01",
-                "pos": {
-                    "tx": 0,
-                    "ty": 0
-                },
-                "tw": 20,
-                "th": 20,
-                "block": false,
-                "image": "AREA_ICON"
-            }
-        ],
+        "WALKABLE_ZONE": [],
         "TRIGGER": [],
         "WARP": [],
         "OBSTACLE": []
@@ -47,13 +34,33 @@
     "npcs": [
         {
             "id": "FOREST_KEEPER_01",
+            "name": "GorillaF_A",
             "pos": {
                 "tx": 10,
                 "ty": 10
             },
             "direction": "DOWN",
             "image": "PLAYER_STAND_LEFT",
+            "roles": [
+                "TALK"
+            ],
             "messageId": "FOREST_KEEPER_GO_AHEAD"
+        },
+        {
+            "id": "FOREST_KEEPER_02",
+            "name": "GorillaF_B",
+            "pos": {
+                "tx": 30,
+                "ty": 11
+            },
+            "direction": "DOWN",
+            "image": "PLAYER_STAND_LEFT",
+            "roles": [
+                "TALK",
+                "SHOP"
+            ],
+            "messageId": "WELCOME_TO_MY_SHOP",
+            "shopId": "LEGENDARY_WEAPON_SHOP"
         }
     ],
     "signs": [

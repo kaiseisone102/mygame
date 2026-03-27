@@ -5,59 +5,86 @@ import { SkillEffectKindId } from "../../../../shared/type/battle/skill/skillFor
 import { BattleEvent, BattleEventKind } from "./BattleEvent";
 
 export function convertSkillResultToBattleEvents(results: SkillResult[]): BattleEvent[] {
-    const events: BattleEvent[] = [];
+    const finalEvents: BattleEvent[] = [];
 
-    for (const result of results) {
-        switch (result.kind) {
-            case SkillEffectKindId.DAMAGE:
-                events.push({
-                    type: BattleEventKind.DAMAGE,
-                    instanceId: result.instanceId,
-                    targetId: result.targetId,
-                    value: result.value,
-                    isCritical: result.isCritical ?? false,
-                    killed: result.killed ?? false,
-                });
+    // 1. 種類ごとに結果をグルーピングする
+    const damageResults = results.filter(r => r.kind === SkillEffectKindId.DAMAGE);
+    const healResults = results.filter(r => r.kind === SkillEffectKindId.HEAL);
+    const statusResults = results.filter(r => r.kind === SkillEffectKindId.STATUS);
+    const otherResults = results.filter(r =>
+        r.kind !== SkillEffectKindId.DAMAGE &&
+        r.kind !== SkillEffectKindId.HEAL &&
+        r.kind !== SkillEffectKindId.STATUS
+    );
 
-                if (result.killed) {
-                    events.push({
-                        type: BattleEventKind.DEAD,
-                        targetId: result.targetId
-                    });
-                }
-                break;
+    // --- A. ダメージの一斉処理 ---
+    if (damageResults.length > 0) {
+        const dmgEvents: BattleEvent[] = damageResults.map(result => ({
+            type: BattleEventKind.DAMAGE,
+            instanceId: result.instanceId,
+            targetId: result.targetId,
+            value: result.value,
+            options: {
+                isCritical: result.options.isCritical ?? false,
+                isWeakness: result.options.isWeakness ?? false,
+                isResist: result.options.isResist ?? false,
+                sizeMultiplier: result.options.sizeMultiplier ?? 1
+            },
+            killed: result.killed ?? false,
+        }));
 
-            case SkillEffectKindId.HEAL:
-                events.push({
-                    type: BattleEventKind.HEAL,
-                    instanceId: result.instanceId,
-                    targetId: result.targetId,
-                    value: result.value,
-                });
-                break;
+        // まとめてBULKに突っ込む
+        finalEvents.push({
+            type: BattleEventKind.BULK,
+            events: dmgEvents
+        });
 
-            case SkillEffectKindId.STATUS:
-                events.push({
-                    type: BattleEventKind.STATUS_APPLIED,
-                    instanceId: result.instanceId,
-                    targetId: result.targetId,
-                    statusId: result.statusId,
-                });
-                break;
+        // 死亡判定も一斉に行う（ダメージ演出の後に全員一斉に消える）
+        const deadEvents: BattleEvent[] = damageResults
+            .filter(r => r.killed)
+            .map(r => ({ type: BattleEventKind.DEAD, targetId: r.targetId }));
 
-            case SkillEffectKindId.ESCAPE:
-                events.push({
-                    type: BattleEventKind.ESCAPE,
-                    instanceId: result.instanceId
-                });
-                
-                events.push({
-                    type: BattleEventKind.DELAY, // you can choose duration of delay 
-                    duration: 800
-                });
-                break
+        if (deadEvents.length > 0) {
+            finalEvents.push({
+                type: BattleEventKind.BULK,
+                events: deadEvents
+            });
+        }
+    };
+
+    // --- B. 回復の一斉処理 ---
+    if (healResults.length > 0) {
+        finalEvents.push({
+            type: BattleEventKind.BULK,
+            events: healResults.map(r => ({
+                type: BattleEventKind.HEAL,
+                instanceId: r.instanceId,
+                targetId: r.targetId,
+                value: r.value,
+            }))
+        });
+    }
+
+    // --- C. 状態異常の一斉処理 ---
+    if (statusResults.length > 0) {
+        finalEvents.push({
+            type: BattleEventKind.BULK,
+            events: statusResults.map(r => ({
+                type: BattleEventKind.STATUS_APPLIED,
+                instanceId: r.instanceId,
+                targetId: r.targetId,
+                statusId: r.statusId,
+            }))
+        });
+    }
+
+    // --- D. その他（逃走など、単発で処理すべきもの） ---
+    for (const result of otherResults) {
+        if (result.kind === SkillEffectKindId.ESCAPE) {
+            finalEvents.push({ type: BattleEventKind.ESCAPE, instanceId: result.instanceId });
+            finalEvents.push({ type: BattleEventKind.DELAY, duration: 800 });
         }
     }
 
-    return events;
+    return finalEvents;
 }

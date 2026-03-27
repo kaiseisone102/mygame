@@ -7,7 +7,8 @@ import { MessageLogOverlayController } from "./controller/MessageLogOverlayContr
 import { MessageLogOverlayScreen } from "../../interface/overlay/OverLayScreens";
 
 export type MessageLogEvent = {
-    messages: string[],
+    name?: string;
+    messages: string[];
 }
 
 export class MessageLogOverlay implements MessageLogOverlayScreen {

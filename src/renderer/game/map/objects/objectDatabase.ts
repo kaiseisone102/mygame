@@ -26,8 +26,8 @@ export const objectDatabase: Record<
         walkable: false,
         width: 3,
         height: 3,
-        hitWidth: 2,
-        hitHeight: 1,   // 幹だけ当たる
+        hitWidth: 3,
+        hitHeight: 3,   // 幹だけ当たる
         imageKey: ImageKey.TREE,
         color: "#2e7d32",
     },
@@ -36,7 +36,7 @@ export const objectDatabase: Record<
         width: 3,
         height: 2,
         hitWidth: 3,
-        hitHeight: 1,
+        hitHeight: 2,
         imageKey: ImageKey.TREE,
         color: "#f4220aff",
     },

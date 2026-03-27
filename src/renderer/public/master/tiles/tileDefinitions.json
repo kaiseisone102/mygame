@@ -1,0 +1,58 @@
+{
+    "PLAIN": {
+        "walkable": true,
+        "imageKey": "PLAIN"
+    },
+    "DIRT": {
+        "walkable": true,
+        "imageKey": "DIRT"
+    },
+    "WOOD_FLOOR": {
+        "walkable": true,
+        "imageKey": "WOOD_FLOOR"
+    },
+    "WALL": {
+        "walkable": false,
+        "imageKey": "WALL"
+    },
+    "YELLOW_WALL": {
+        "walkable": false,
+        "imagekey": "YELLOW_WALL"
+    },
+    "WATER": {
+        "walkable": true,
+        "requires": "SWIM",
+        "imageKey": "WATER",
+        "speedModifier": 0.5
+    },
+    "ROOF": {
+        "walkable": false,
+        "imageKey": "PLAIN"
+    },
+    "FOREST": {
+        "walkable": true,
+        "imageKey": "WOODS",
+        "encounterRateModifier": 1.5
+    },
+    "CAVEWALL": {
+        "walkable": false,
+        "imageKey": "CAVEWALL"
+    },
+    "CAVEFLOOR": {
+        "walkable": true,
+        "imageKey": "CAVEFLOOR"
+    },
+    "LAVA": {
+        "walkable": true,
+        "damage": 5,
+        "color": "rgb(143, 34, 34)"
+    },
+    "DARK": {
+        "walkable": false,
+        "imageKey": "DARK"
+    },
+    "SKY": {
+        "walkable": true,
+        "imageKey": "SKY"
+    }
+}

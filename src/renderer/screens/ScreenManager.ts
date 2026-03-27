@@ -251,6 +251,7 @@ export class ScreenManager implements ScreenPort, ScreenStateReader {
         );
     }
 
+    /** true => 入力無視モード, false => 入力受付モード */
     lockInput(lock: boolean) {
         this.inputLocked = lock;
 

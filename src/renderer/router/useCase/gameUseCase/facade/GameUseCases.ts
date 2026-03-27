@@ -1,27 +1,26 @@
 // src/renderer/screens/router/useCase/facade/StartGameUseCase.ts
 
-import { OpenOptionsUseCase } from "../overlay/OpenOptionsUseCase";
 import { BgmUseCase } from "../audio/BgmUseCase";
-import { EnterForestTempleUseCase } from "../world/enterWorld/EnterForestTemple";
-import { EnterWorldMapUseCase } from "../world/enterWorld/EnterWorldMapUseCase";
-import { ChangeWorldUseCase } from "../world/ChangeWorldUseCase";
-import { SaveConfigUseCase } from "../save/SaveConfigUseCase";
-import { StartGameUseCase } from "../mainScreen/StartGameUseCase";
-import { StartGameFlowUseCase } from "../mainScreen/StartGameFlowUseCase";
-import { SelectSlotFlowUseCase } from "../mainScreen/SelectSlotFlowUseCase";
-import { SaveGameUseCase } from "../save/SaveGameUseCase";
-import { BattleStartedUseCase } from "../battle/BattleStartedUseCase";
-import { ChangeMainScreenUseCase } from "../screen/ChangeMainUseCase";
-import { CollectItemUseCase } from "../interact/Item/CollectItemUseCase";
-import { ReadSignUseCase } from "../interact/sign/ReadSignUseCase";
-import { NpcInteractUseCase } from "../interact/npc/NpcInteractUseCase";
-import { EncounterUseCase } from "../battle/EncounterUseCase";
-import { BattleInputUseCase } from "../battle/BattleInputUseCase";
-import { BattleResultUseCase } from "../battle/BattleResultUseCase";
-import { InteractUseCase } from "../interact/InteractUseCase";
-import { EnteredTownUseCase } from "../zone/EnteredTownUseCase";
 import { AddBattleLogUseCase } from "../battle/AddBattleLogUseCase";
 import { BattleCommandSelectedUseCase } from "../battle/BattleCommandSelectedUseCase";
+import { BattleInputUseCase } from "../battle/BattleInputUseCase";
+import { BattleResultUseCase } from "../battle/BattleResultUseCase";
+import { BattleStartedUseCase } from "../battle/BattleStartedUseCase";
+import { EncounterUseCase } from "../battle/EncounterUseCase";
+import { InteractUseCase } from "../interact/InteractUseCase";
+import { CollectItemUseCase } from "../interact/Item/CollectItemUseCase";
+import { SelectSlotFlowUseCase } from "../mainScreen/SelectSlotFlowUseCase";
+import { StartGameFlowUseCase } from "../mainScreen/StartGameFlowUseCase";
+import { StartGameUseCase } from "../mainScreen/StartGameUseCase";
+import { OpenOptionsUseCase } from "../overlay/OpenOptionsUseCase";
+import { ShowFieldCommand } from "../overlay/ShowFieldCommand";
+import { SaveConfigUseCase } from "../save/SaveConfigUseCase";
+import { SaveGameUseCase } from "../save/SaveGameUseCase";
+import { ChangeMainScreenUseCase } from "../screen/ChangeMainUseCase";
+import { ChangeWorldUseCase } from "../world/ChangeWorldUseCase";
+import { EnterForestTempleUseCase } from "../world/enterWorld/EnterForestTemple";
+import { EnterWorldMapUseCase } from "../world/enterWorld/EnterWorldMapUseCase";
+import { EnteredTownUseCase } from "../zone/EnteredTownUseCase";
 
 type GameUseCasesDeps = {
     addBattleLogUseCase: AddBattleLogUseCase;
@@ -36,6 +35,7 @@ type GameUseCasesDeps = {
     enterWorldMapUseCase: EnterWorldMapUseCase;
     changeWorldUseCase: ChangeWorldUseCase;
     enteredTownUseCase: EnteredTownUseCase;
+    showFieldCommand: ShowFieldCommand;
     saveGameUseCase: SaveGameUseCase;
     saveConfigUseCase: SaveConfigUseCase;
     encounterUseCase: EncounterUseCase;
@@ -44,8 +44,6 @@ type GameUseCasesDeps = {
     battleInputUseCase: BattleInputUseCase;
     interactUseCase: InteractUseCase;
     collectItemUseCase: CollectItemUseCase;
-    npcInteractUseCase: NpcInteractUseCase;
-    readSignUseCase: ReadSignUseCase;
 };
 
 export class GameUseCases {
@@ -75,6 +73,9 @@ export class GameUseCases {
     public readonly changeWorldUseCase!: ChangeWorldUseCase;
     public readonly enteredTownUseCase!: EnteredTownUseCase;
 
+    // フィールドアクション
+    public readonly showFieldCommand!: ShowFieldCommand;
+
     // 保存
     public readonly saveGameUseCase!: SaveGameUseCase;
     public readonly saveConfigUseCase!: SaveConfigUseCase;
@@ -92,8 +93,6 @@ export class GameUseCases {
     // インタラクト処理
     public readonly interactUseCase!: InteractUseCase;
     public readonly collectItemUseCase!: CollectItemUseCase;
-    public readonly npcInteractUseCase!: NpcInteractUseCase;
-    public readonly readSignUseCase!: ReadSignUseCase;
 
     constructor(deps: GameUseCasesDeps) {
         Object.assign(this, deps);

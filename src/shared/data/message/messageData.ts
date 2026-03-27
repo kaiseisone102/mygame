@@ -1,6 +1,6 @@
 // 人
-export const OLD_MAN_HELLO_STRANGER = "おじいさん: ようこそ、冒険者よ。";
-export const FOREST_KEEPER_GO_AHEAD = "守護者: この神殿の奥へ進め！";
+export const OLD_MAN_HELLO_STRANGER = "ようこそ、冒険者よ。";
+export const FOREST_KEEPER_GO_AHEAD = "この神殿の奥へ進め！";
 export const WELCOME_TO_MY_SHOP = "ようこそ！商品を見ていってくれ！";
 // 看板
 export const FOREST_TEMPLE_ENTRANCE_SIGN = "ここは森の入口です。";

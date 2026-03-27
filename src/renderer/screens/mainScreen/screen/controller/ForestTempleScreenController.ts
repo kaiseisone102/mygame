@@ -4,6 +4,6 @@ import { BaseWorldScreenController } from "../../../../../renderer/screens/world
 import { MainScreenType } from "../../../../../shared/type/screenType";
 
 export class ForestTempleScreenController extends BaseWorldScreenController {
-    protected screenId: string = MainScreenType.FOREST_TEMPLE;
+    //protected screenId: string = MainScreenType.FOREST_TEMPLE;
 }
 

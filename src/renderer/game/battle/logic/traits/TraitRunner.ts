@@ -6,15 +6,29 @@ import { Trait } from "../../../../../shared/type/battle/trait/Trait";
 import { DamageContext } from "../../../../../shared/type/battle/trait/TraitType";
 import { SkillPreset } from "../../../../../shared/master/battle/type/SkillPreset";
 
+export interface DamageResult {
+    damage: number;
+    isWeakness: boolean;
+    isResist: boolean; // 耐性も取れるようにしておくと便利
+}
+
 export class TraitRunner {
-    static applyDamageTraits(
-        ctx: DamageContext,
-        traits: Trait[]
-    ): number {
-        return traits.reduce((damage, trait) => {
-            if (!trait.onDamage) return damage;
-            return trait.onDamage({ ...ctx, damage });
-        }, ctx.damage);
+    static applyDamageTraits(ctx: DamageContext, targetTraits: Trait[]): DamageResult {
+        const initialDamage = ctx.damage;
+
+        const finalDamage = targetTraits.reduce((currentDamage, trait) => {
+            if (!trait.onDamage) return currentDamage;
+            // 現在のダメージを引き継ぎつつ計算
+            return trait.onDamage({ ...ctx, damage: currentDamage });
+        }, initialDamage);
+
+        return {
+            damage: finalDamage,
+            // 元のダメージより増えていれば「弱点」とみなす
+            isWeakness: finalDamage > initialDamage,
+            // 元のダメージより減っていれば「耐性」とみなす
+            isResist: finalDamage < initialDamage
+        };
     }
 
     static applyHealTraits(

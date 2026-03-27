@@ -59,7 +59,7 @@ export class WorldEventRouter {
                 break;
 
             case "ENCOUNTER_CONFIRMED":
-                this.gameUseCases.battleStartedUseCase.execute(event.biomeId);
+                await this.gameUseCases.battleStartedUseCase.execute(event.biomeId);
                 break;
 
             case "BATTLE_STARTED": {

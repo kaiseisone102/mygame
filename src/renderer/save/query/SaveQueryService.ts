@@ -1,7 +1,7 @@
 // src/renderer/save/query/SaveQueryService.ts
 
 import { SaveManager } from "../../../renderer/save/saveManager";
-import { SlotViewModel } from "../../screens/viewModel/SlotViewModel";
+import { SlotViewModel } from "../../screens/view/viewModel/SlotViewModel";
 
 /**
  * SaveQueryService

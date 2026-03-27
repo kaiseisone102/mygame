@@ -11,8 +11,8 @@ export function toZoneTile(typeKey: keyof typeof ZoneType, dto: ZoneJson): ZoneT
     return {
         id: dto.id,
         pos: { tx: dto.pos.tx, ty: dto.pos.ty },
-        tw: dto.tw,
-        th: dto.th,
+        tw: dto.tw ?? 1,
+        th: dto.th ?? 1,
         block: dto.block,
         type: ZoneType[typeKey],
         image: dto.image ? mapImageKey(dto.image) : undefined

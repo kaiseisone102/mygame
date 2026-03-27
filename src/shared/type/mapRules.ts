@@ -8,7 +8,7 @@ import { TileType } from "./tileType";
 export const mapRules = {
     // never random appear enemy ↓
     [MapId.FOREST_TEMPLE]: {
-        encounterEnabled: true,
+        encounterEnabled: false,
         baseEncounterRate: BASE_ENCOUNTER_RATE_SAFE,
         stepIncrease: ENCOUNTER_STEP_INCREASE_RATE_SAFE,
         maxChance: ENCOUNTER_MAX_CHANCE_SAFE,

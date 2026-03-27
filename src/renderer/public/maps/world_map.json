@@ -2,10 +2,10 @@
     "zones": {
         "ENTRY": [
             {
-                "id": "NF_TOWN_ENTRY_01",
+                "id": "WORLD_MAP_ENTRY_01",
                 "pos": {
-                    "tx": 2,
-                    "ty": 3
+                    "tx": 3,
+                    "ty": 195
                 },
                 "tw": 3,
                 "th": 1,
@@ -13,7 +13,7 @@
                 "image": "TOWN_ICON"
             },
             {
-                "id": "G_CAVE_ENTRY_01",
+                "id": "WORLD_MAP_ENTRY_02",
                 "pos": {
                     "tx": 30,
                     "ty": 180
@@ -22,6 +22,17 @@
                 "th": 2,
                 "block": false,
                 "image": "CAVE"
+            },
+            {
+                "id": "WORLD_MAP_ENTRY_03",
+                "pos": {
+                    "tx": 20,
+                    "ty": 190
+                },
+                "tw": 3,
+                "th": 1,
+                "block": false,
+                "image": "FOREST_TEMPLE"
             }
         ],
         "FIELD_ENEMY": [
@@ -58,13 +69,33 @@
     "npcs": [
         {
             "id": "FOREST_KEEPER_01",
+            "name": "GorillaW_A",
             "pos": {
                 "tx": 10,
                 "ty": 10
             },
             "direction": "DOWN",
             "image": "PLAYER_STAND_LEFT",
+            "roles": [
+                "TALK"
+            ],
             "messageId": "FOREST_KEEPER_GO_AHEAD"
+        },
+        {
+            "id": "FOREST_KEEPER_01",
+            "name": "GorillaW_B",
+            "pos": {
+                "tx": 20,
+                "ty": 190
+            },
+            "direction": "DOWN",
+            "image": "PLAYER_STAND_LEFT",
+            "roles": [
+                "TALK",
+                "SHOP"
+            ],
+            "messageId": "WELCOME_TO_MY_SHOP",
+            "shopId": "ZONAI_RESOURCE_SHOP"
         }
     ],
     "signs": [

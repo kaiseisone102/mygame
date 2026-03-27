@@ -6,7 +6,7 @@ export class EnterForestTempleUseCase {
         private changeMain: ChangeMainScreenUseCase,
     ) { }
 
-    execute() {
-        this.changeMain.execute(MainScreenType.FOREST_TEMPLE);
+    async execute() {
+        await this.changeMain.execute(MainScreenType.FOREST_TEMPLE, undefined);
     }
 }

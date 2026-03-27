@@ -2,11 +2,15 @@
 
 export type BattleEvent =
     | {
+        type: typeof BattleEventKind.BULK; // 新設
+        events: BattleEvent[];            // 同時に実行したいイベントの配列
+    }
+    | {
         type: typeof BattleEventKind.DAMAGE;
         instanceId: number;
         targetId: number;
         value: number;
-        isCritical: boolean;
+        options: { isCritical: boolean, isWeakness: boolean, isResist: boolean, sizeMultiplier: number }
         killed: boolean;
         success?: boolean; // ミス用
     }
@@ -45,7 +49,7 @@ export type BattleEvent =
     };
 
 export const BattleEventKind = {
-    DAMAGE: "DAMAGE", HEAL: "HEAL", DEAD: "DEAD",
+    BULK: "BULK", DAMAGE: "DAMAGE", HEAL: "HEAL", DEAD: "DEAD",
     STATUS_APPLIED: "STATUS_APPLIED", BUFF_APPLIED: "BUFF_APPLIED", ESCAPE: "ESCAPE", DELAY: "DELAY"
 } as const;
 export type BattleEventKind = typeof BattleEventKind[keyof typeof BattleEventKind]

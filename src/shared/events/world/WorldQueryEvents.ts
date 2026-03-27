@@ -1,5 +1,5 @@
 import { GameConfig } from "../../config/GameConfig";
-import { SlotViewModel } from "../../../renderer/screens/viewModel/SlotViewModel";
+import { SlotViewModel } from "../../../renderer/screens/view/viewModel/SlotViewModel";
 
 /* ======================
    Sync

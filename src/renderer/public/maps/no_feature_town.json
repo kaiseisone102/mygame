@@ -4,42 +4,27 @@
             {
                 "id": "NF_TOWN_ENTRY_01",
                 "pos": {
-                    "tx": 2,
-                    "ty": 3
-                },
-                "tw": 3,
-                "th": 1,
-                "block": false,
-                "image": "TOWN_ICON"
-            }
-        ],
-        "FIELD_ENEMY": [
-            {
-                "id": "NF_TOWN_ENEMY_01",
-                "pos": {
-                    "tx": 4,
-                    "ty": 4
+                    "tx": 0,
+                    "ty": 1
                 },
                 "tw": 1,
-                "th": 1,
-                "block": true,
-                "image": "ENEMY_ICON"
-            }
-        ],
-        "RANDOM_ENEMY_ENCOUNT": [],
-        "WALKABLE_ZONE": [
+                "th": 18,
+                "block": false
+            },
             {
-                "id": "NF_TOWN_WALKABLE_ZONE_01",
+                "id": "NF_TOWN_ENTRY_02",
                 "pos": {
-                    "tx": 0,
-                    "ty": 0
+                    "tx": 28,
+                    "ty": 19
                 },
-                "tw": 20,
-                "th": 20,
-                "block": false,
-                "image": "AREA_ICON"
+                "tw": 5,
+                "th": 1,
+                "block": false
             }
         ],
+        "FIELD_ENEMY": [],
+        "RANDOM_ENEMY_ENCOUNT": [],
+        "WALKABLE_ZONE": [],
         "TRIGGER": [],
         "WARP": [],
         "OBSTACLE": []
@@ -47,24 +32,31 @@
     "npcs": [
         {
             "id": "FOREST_KEEPER_01",
+            "name": "GorillaNT_A",
             "pos": {
                 "tx": 10,
                 "ty": 10
             },
             "direction": "DOWN",
             "image": "OMAENO_SHIWAZA_DATANO_KA",
-            "roles": ["TALK"],
+            "roles": [
+                "TALK"
+            ],
             "messageId": "FOREST_KEEPER_GO_AHEAD"
         },
         {
             "id": "ITEM_SHOP_NPC_01",
+            "name": "GorillaNT_B",
             "pos": {
                 "tx": 12,
                 "ty": 10
             },
             "direction": "DOWN",
             "image": "OMAENO_SHIWAZA_DATANO_KA",
-            "roles": ["TALK", "SHOP"],
+            "roles": [
+                "TALK",
+                "SHOP"
+            ],
             "messageId": "WELCOME_TO_MY_SHOP",
             "shopId": "BASIC_ITEM_SHOP"
         }

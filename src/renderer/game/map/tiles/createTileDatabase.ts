@@ -15,6 +15,26 @@ export interface TileData {
     speedModifier?: number;     // 通過速度に補正
     encounterRateModifier?: number;    // 地形のエンカウント補正
 }
+export type tileDefinitions = {
+    "walkable": true;
+        "requires": "SWIM";
+        "imageKey": "WATER";
+        "speedModifier": 0.5;
+        "encounterRateModifier": 1.5;
+        tags: string[]
+        tags: string[]
+}
+// 1. 各タイルの固有データのみを定義（型安全な Partial を利用）
+const rawDefinitions: Record<TileType, Partial<TileData>> = {
+    [TileType.PLAIN]:      { imageKey: ImageKey.PLAIN },
+    [TileType.DIRT]:       { imageKey: ImageKey.DIRT },
+    [TileType.WOOD_FLOOR]: { imageKey: ImageKey.WOOD_FLOOR },
+    [TileType.WALL]:       { walkable: false, imageKey: ImageKey.WALL },
+    [TileType.WATER]:      { requires: AbilityKey.SWIM, imageKey: ImageKey.WATER, speedModifier: 0.5 },
+    [TileType.FOREST]:     { color: "rgba(36, 65, 21, 1)", imageKey: ImageKey.WOODS, encounterRateModifier: 1.5 },
+    [TileType.LAVA]:       { color: "rgb(143, 34, 34)", damage: 5 },
+    // ...残りのタイル
+};
 
 export function createTileDatabase(): Record<TileType, TileData> {
     return {
@@ -31,12 +51,17 @@ export function createTileDatabase(): Record<TileType, TileData> {
         [TileType.WOOD_FLOOR]: {
             type: TileType.WOOD_FLOOR,
             walkable: true,
-            color: "#a1887f", // image: ImageStore.get("plain")
+            image: ImageStore.get(ImageKey.WOOD_FLOOR)
         },
         [TileType.WALL]: {
             type: TileType.WALL,
             walkable: false,
             image: ImageStore.get(ImageKey.WALL)
+        },
+        [TileType.YELLOW_WALL]: {
+            type: TileType.YELLOW_WALL,
+            walkable: false,
+            image: ImageStore.get(ImageKey.YELLOW_WALL)
         },
         [TileType.WATER]: {
             type: TileType.WATER,

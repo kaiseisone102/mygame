@@ -72,24 +72,24 @@ export function getPlayerTalkRect(pos: WorldPxPosition, state: PlayerState): Rec
     switch (state.direction) {
         case AppDirection.UP:
             rect.pos.x = pos.x - TALK_RECT_WIDTH / 2;
-            rect.pos.y = pos.y - TALK_RECT_REACH - NORM_SIZE / 2;
+            rect.pos.y = pos.y - TALK_RECT_REACH - (NORM_SIZE * 3 / 4);
             rect.w = TALK_RECT_WIDTH;
             rect.h = TALK_RECT_REACH;
             break;
         case AppDirection.DOWN:
             rect.pos.x = pos.x - TALK_RECT_WIDTH / 2;
-            rect.pos.y = pos.y + NORM_SIZE / 2;
+            rect.pos.y = pos.y + (NORM_SIZE * 3 / 4);
             rect.w = TALK_RECT_WIDTH;
             rect.h = TALK_RECT_REACH;
             break;
         case AppDirection.LEFT:
-            rect.pos.x = pos.x - TALK_RECT_REACH - NORM_SIZE / 2;
+            rect.pos.x = pos.x - TALK_RECT_REACH - (NORM_SIZE * 3 / 4);
             rect.pos.y = pos.y - TALK_RECT_WIDTH / 2;
             rect.w = TALK_RECT_REACH;
             rect.h = TALK_RECT_WIDTH;
             break;
         case AppDirection.RIGHT:
-            rect.pos.x = pos.x + NORM_SIZE / 2;
+            rect.pos.x = pos.x + (NORM_SIZE * 3 / 4);
             rect.pos.y = pos.y - TALK_RECT_WIDTH / 2;
             rect.w = TALK_RECT_REACH;
             rect.h = TALK_RECT_WIDTH;

@@ -5,6 +5,8 @@ import { AppDirection } from "../../../../shared/type/PlayerState";
 
 export type NpcData = {
     id: string;
+    name: string;
+
     pos: WorldPxPosition;
     w: number;
     h: number;
@@ -18,6 +20,8 @@ export type NpcData = {
 
 export type NpcTileDto = {
     id: string;
+    name: string;
+
     pos: WorldTilePosition;
     tw: number;
     th: number;

@@ -21,12 +21,13 @@ export interface EventZoneObject {
     image?: keyof typeof ImageKey;
 }
 
-export interface ZoneJson {
+export interface ZoneJson extends EventZoneObject {
     block: boolean;
     type: keyof typeof ZoneType;
 }
 
 export interface NpcJson extends EventZoneObject {
+    name: string;
     direction: string;
     roles: string[];
     messageId?: string;

@@ -13,8 +13,10 @@ export async function loadAssets() {
         ImageStore.load(ImageKey.DIRT, "assets/images/tiles/dirt.gif"),
         ImageStore.load(ImageKey.WOODS, "assets/images/tiles/woods.gif"),
         ImageStore.load(ImageKey.PLAIN, "assets/images/tiles/plain.gif"),
+        ImageStore.load(ImageKey.WOOD_FLOOR, "assets/images/tiles/woodenFloor.png"),
         ImageStore.load(ImageKey.SKY, "assets/images/tiles/sky.gif"),
-        ImageStore.load(ImageKey.WALL, "assets/images/tiles/wall.gif"),
+        ImageStore.load(ImageKey.WALL, "assets/images/tiles/wall.png"),
+        ImageStore.load(ImageKey.YELLOW_WALL, "assets/images/tiles/yellowWall.png"),
         ImageStore.load(ImageKey.WATER, "assets/images/tiles/water.gif"),
         ImageStore.load(ImageKey.DARK, "assets/images/tiles/cave/dark.png"),
         // 洞窟
@@ -38,8 +40,9 @@ export async function loadAssets() {
         // ----- zone ------ // 
         // 侵入
         ImageStore.load(ImageKey.TOWN_ICON, "assets/images/zone/entry/town.png"),
-           ImageStore.load(ImageKey.CAVE, "assets/images/zone/entry/cave.png"),
-      // 敵
+        ImageStore.load(ImageKey.CAVE, "assets/images/zone/entry/cave.png"),
+        ImageStore.load(ImageKey.FOREST_TEMPLE, "assets/images/zone/entry/forestTemple.png"),
+        // 敵
         ImageStore.load(ImageKey.ENEMY_ICON, "assets/images/zone/enemy/enemy1.png"),
         // エリア
         ImageStore.load(ImageKey.AREA_ICON, "assets/images/zone/area/skipArea.png"),
@@ -63,6 +66,12 @@ export async function loadAssets() {
         ImageStore.load(ImageKey.ENEMY2, "assets/images/enemy/Enemy2.png"),
         ImageStore.load(ImageKey.ENEMY3, "assets/images/enemy/Enemy3.png"),
         ImageStore.load(ImageKey.ENEMY4, "assets/images/enemy/Enemy4.png"),
+        // 友情出演
+        ImageStore.load(ImageKey.SP_DRACKY, "assets/images/specialThanks/en-dracky.png"),
+        ImageStore.load(ImageKey.SP_GHOST, "assets/images/specialThanks/en-ghost.png"),
+        ImageStore.load(ImageKey.SP_SLIME, "assets/images/specialThanks/en-slime.png"),
+        ImageStore.load(ImageKey.SP_KILLER_LICKANT, "assets/images/specialThanks/en-killerLickant.png"),
+        ImageStore.load(ImageKey.SP_METAL_SLIME, "assets/images/specialThanks/en-metalSlime.png"),
 
         // ----- ステータスアイコン ----- //
         ImageStore.load(ImageKey.CHARM, "assets/images/status/icon_status_charm.png"),

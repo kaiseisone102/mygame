@@ -14,7 +14,12 @@ export interface DamageResult {
     instanceId: number;
     targetId: number;
     value: number;
-    isCritical: boolean;
+    options: {
+        isCritical: boolean;
+        isWeakness: boolean;
+        isResist: boolean;
+        sizeMultiplier?: number;
+    },
     killed: boolean;
     success?: boolean; // ミス用
     statusId?: StatusId;  // 状態異常ログ用

@@ -31,7 +31,6 @@ import { MainScreenController } from "../interface/controller/MainScreenControll
 export abstract class BaseWorldScreenController implements MainScreenController {
 
     protected screen!: HTMLElement;
-    protected viewport!: HTMLElement;
     protected canvas!: HTMLCanvasElement;
     protected ctx!: CanvasRenderingContext2D;
 
@@ -66,7 +65,7 @@ export abstract class BaseWorldScreenController implements MainScreenController 
         protected worldManager: WorldManager
     ) { }
 
-    protected abstract screenId: string;
+    protected screenId: string = "FIELD_MAP";
 
     init(root: HTMLElement, initCtx: ScreenInitContext) {
 
@@ -88,20 +87,16 @@ export abstract class BaseWorldScreenController implements MainScreenController 
         this.screen.id = this.screenId;
         root.appendChild(this.screen);
 
-        this.viewport = document.createElement("div");
-        this.viewport.id = "viewport";
-        this.screen.appendChild(this.viewport);
-
         this.canvas = document.createElement("canvas");
-        this.canvas.width = this.viewport.clientWidth;
-        this.canvas.height = this.viewport.clientHeight;
-        this.viewport.appendChild(this.canvas);
+        this.canvas.width = this.screen.clientWidth;
+        this.canvas.height = this.screen.clientHeight;
+        this.screen.appendChild(this.canvas);
 
         this.ctx = this.canvas.getContext("2d")!;
 
         this.playerEl = document.createElement("div");
         this.playerEl.id = "player";
-        this.viewport.appendChild(this.playerEl);
+        this.screen.appendChild(this.playerEl);
 
         // ====================
         // Renderer
@@ -115,19 +110,21 @@ export abstract class BaseWorldScreenController implements MainScreenController 
     }
 
     show() {
-
         this.screen.style.display = "block";
 
-        this.canvas.width = this.viewport.clientWidth;
-        this.canvas.height = this.viewport.clientHeight;
+        const width = this.screen.clientWidth;
+        const height = this.screen.clientHeight;
+
+        this.canvas.width = width;
+        this.canvas.height = height;
 
         // ====================
         // Camera生成
         // ====================
 
         const camera = new Camera(
-            this.viewport.clientWidth,
-            this.viewport.clientHeight,
+            width,
+            height,
             this.world.width * NORM_SIZE,
             this.world.height * NORM_SIZE
         );
@@ -140,7 +137,6 @@ export abstract class BaseWorldScreenController implements MainScreenController 
     }
 
     update(delta: number, frame: InputFrame) {
-
         if (this.screen.style.display === "none") return;
 
         const mapId = this.gameState.currentMapId;
@@ -255,10 +251,7 @@ export abstract class BaseWorldScreenController implements MainScreenController 
                     break;
 
                 case "INVENTORY":
-                    const updatedStatus = this.gameState.getAllyStatusList();
-                    const fieldMagic = this.gameState.getFieldMagicPayload();
-                    this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.ALLIES_STATUS_OVERLAY, payload: { allies: updatedStatus } })
-                    this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.FIELD_COMMAND, payload: fieldMagic });
+                    this.emitUI({ type: "SHOW_FIELD_COMMAND" })
                     break;
             }
         }

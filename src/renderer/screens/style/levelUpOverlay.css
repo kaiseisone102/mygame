@@ -3,13 +3,14 @@
 .LevelUpOverlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.85); /* 背景を暗くして集中させる */
+    background: radial-gradient(circle, rgba(20, 20, 20, 0.9) 0%, rgba(0, 0, 0, 0.95) 100%);
+    /* 背景を暗くして集中させる */
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 100;
+    z-index: 10000;
     overflow: hidden;
-    font-family: 'Arial Black', sans-serif;
+    font-family: 'Inter', 'Arial Black', sans-serif;
 }
 
 /* 画面を斜めに横切る赤い背景帯 */
@@ -17,39 +18,53 @@
     content: "";
     position: absolute;
     width: 200%;
-    height: 300px;
-    background: #d31212; /* 怪盗レッド */
+    height: 33%;
+    background: linear-gradient(90deg, #b00000 0%, #d31212 50%, #b00000 100%);
+    /* 怪盗レッド */
     transform: rotate(-10deg) skew(-10deg);
     z-index: 0;
-    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
     animation: p5-slide-in 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .LevelUpOverlayMessage {
     position: relative;
+    top: -6%;
     z-index: 1;
-    width: 80%;
-    max-width: 900px;
+    width: 65%;
     color: white;
-    transform: rotate(-3deg); /* 全体を少し傾ける */
+    transform: rotate(-3deg);
+    /* 全体を少し傾ける */
+}
+
+.nameBadge {
+    /* 名前背景の黒を少し斜めにカット */
+    clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%);
+    background: #000;
+    padding: 10px 50px 10px 20px;
+    box-shadow: 10px 10px 0px #fff;
+    /* シャドウを太く */
+    margin-right: -20px;
+    /* LEVEL UP! と少し重ねる */
+    z-index: 2;
 }
 
 /* キャラクター名：大きく強調 */
 .characterName {
     font-size: 3.5rem;
+    white-space: nowrap;
+    font-family: 'YourP5Font', sans-serif;
+    font-style: italic;
     font-weight: 900;
     color: #fff;
-    background: #000;
     display: inline-block;
     padding: 10px 50px;
-    margin-bottom: 20px;
-    clip-path: polygon(0 0, 100% 0, 90% 100%, 5% 100%);
-    box-shadow: 8px 8px 0px #fff;
     animation: p5-pop 0.3s forwards;
 }
 
 /* レベル表示 */
 .levelTransition {
+    white-space: nowrap;
     font-size: 2.5rem;
     margin-left: 20px;
     margin-bottom: 30px;
@@ -66,73 +81,199 @@
     display: inline-block;
 }
 
+
 /* ステータスコンテナ：格子状ではなくバラバラに配置されている風 */
 .statsContainer {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(5px);
-    padding: 30px;
+    padding: 20px;
     border-left: 15px solid #fff;
     display: grid;
+    /* 2列レイアウト */
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
+    gap: 20px 40px;
+    /* 背景を透明にして、各行を際立たせる */
+    background: transparent;
 }
 
 .statRow {
+    position: relative;
+    flex-grow: 1;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     font-size: 1.5rem;
-    border-bottom: 2px solid rgba(255,255,255,0.3);
-    padding: 5px 0;
+    background: #000;
+    padding: 8px 15px;
     transition: transform 0.2s;
+
+    opacity: 0;
+    animation: row-in 0.3s forwards;
 }
 
-.statRow:hover {
-    transform: scale(1.05) translateX(10px);
-    background: rgba(211, 18, 18, 0.5);
+/* 黒い斜め背景バー */
+.statRow::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #000;
+    z-index: -1;
+    /* 左右の切り欠きを鋭く */
+    clip-path: polygon(0% 0%, 98% 0%, 100% 100%, 2% 100%);
+    /* 微かに光沢を入れる */
+    background: linear-gradient(170deg, #1a1a1a 0%, #000 50%);
+}
+
+@keyframes row-in {
+    from {
+        transform: translateX(50px) skewX(-20deg);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0) skewX(0);
+        opacity: 1;
+    }
+}
+
+/* 偶数行を右に少しずらす */
+.statRow:nth-child(even) {
+    margin-left: 25px;
+    /* アニメーション開始位置を少し遠くして、飛び込んでくる感を出す */
+    animation-name: row-in-even;
+}
+
+/* ステータス行のイン（偶数：少し軌道を変えて躍動感を出す） */
+@keyframes row-in-even {
+    from {
+        transform: translateX(300px) skewX(-50deg);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0) skewX(0);
+        opacity: 1;
+    }
 }
 
 .statName {
-    flex: 1;
-    font-weight: bold;
+    font-size: 1.2rem;
+    font-style: italic;
+    font-weight: 900;
+    text-transform: uppercase;
 }
 
 .statValues {
-    margin: 0 20px;
+    font-size: 1.4rem;
+    /* 数字は少し無機質な方 */
+    font-family: 'Courier New', monospace;
+    letter-spacing: -1px;
 }
 
+.statValues small {
+    color: #888;
+    /* 矢印を少し暗く */
+    margin: 0 5px;
+    font-size: 0.8em;
+}
+
+/* 変化量（+3など）を一番目立たせる */
 .statDiff {
-    color: #00ff00; /* 上昇値は緑、または赤地に白文字など */
+    position: absolute;
+    z-index: 10;
+    top: -3%;
+    left: 25%;
+    background: #d31212;
+    /* 赤背景 */
+    color: #fff;
+    padding: 2px 10px;
+    font-size: 3rem;
     font-weight: 900;
-    background: #000;
-    padding: 2px 8px;
-    min-width: 60px;
-    text-align: center;
+    transform: rotate(5deg) scale(1) translateZ(0);
+    box-shadow: 3px 3px 0px #000;
+    min-width: fit-content;
+    animation: pulse 4s infinite;
+
+    /* 魔法の1行：ハードウェアアクセラレーションを有効にする */
+    will-change: transform;
+}
+
+@keyframes pulse {
+    0% {
+        transform: rotate(5deg) scale(1);
+        filter: brightness(1);
+    }
+
+    50% {
+        /* 中間地点でふわっと大きく、少し明るく */
+        transform: rotate(5deg) scale(1.05);
+        filter: brightness(1.2);
+    }
+
+    100% {
+        transform: rotate(5deg) scale(1);
+        filter: brightness(1);
+    }
 }
 
 /* PRESS ENTER: 点滅させる */
 .confirmText {
-    margin-top: 40px;
-    text-align: right;
-    font-size: 1.8rem;
-    letter-spacing: 5px;
+    position: absolute;
+    bottom: -60px;
+    /* 親要素の右端に合わせる */
+    right: 0;
+
+    font-size: 1.5rem;
+    letter-spacing: 3px;
+    padding: 5px 20px;
+    background: #ffffff;
+    /* 白背景に黒文字だとよりP5っぽい */
+    color: #000;
+
+    /* P5特有の斜めカット */
+    clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+    box-shadow: 5px 5px 0px #d31212;
     animation: p5-blink 0.8s infinite;
-    color: #fff;
-    text-transform: uppercase;
+    z-index: 100;
 }
 
 /* アニメーション */
 @keyframes p5-slide-in {
-    from { transform: translateX(-100%) rotate(-10deg); }
-    to { transform: translateX(0) rotate(-10deg); }
+    from {
+        transform: translateX(-100%) rotate(-10deg);
+    }
+
+    to {
+        transform: translateX(0) rotate(-10deg);
+    }
 }
 
 @keyframes p5-pop {
-    0% { transform: scale(0.5) rotate(5deg); opacity: 0; }
-    80% { transform: scale(1.1) rotate(-3deg); }
-    100% { transform: scale(1) rotate(-3deg); opacity: 1; }
+    0% {
+        transform: scale(0.5) rotate(5deg);
+        opacity: 0;
+    }
+
+    80% {
+        transform: scale(1.1) rotate(-3deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(-3deg);
+        opacity: 1;
+    }
 }
 
 @keyframes p5-blink {
-    0%, 100% { opacity: 1; transform: translateX(0); }
-    50% { opacity: 0.3; transform: translateX(-10px); }
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: skewX(-10deg) translateX(0);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: skewX(-10deg) translateX(10px);
+    }
 }

@@ -72,7 +72,7 @@ export class WorldRenderer {
     drawPlayer(
         image: HTMLImageElement,    // プレイヤーの描画に使う画像（スプライト）
         pos: WorldPxPosition,     // プレイヤーのワールドPx座標 
-        camera: Camera              // カメラ情報（viewportの位置やサイズ）
+        camera: Camera              // カメラ情報（screenの位置やサイズ）
     ) {
         this.ctx.drawImage(
             image,

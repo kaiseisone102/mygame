@@ -7,7 +7,7 @@ import { AppUIEvent } from "../../../../renderer/router/AppUIEvents";
 import { GameConfig } from "../../../../shared/config/GameConfig";
 import { GameState } from "../../../../shared/data/gameState";
 import { WorldEvent } from "../../../../renderer/router/WorldEvent";
-import { SlotViewModel } from "../../../../renderer/screens/viewModel/SlotViewModel";
+import { SlotViewModel } from "../../view/viewModel/SlotViewModel";
 import { WorldQueryAsyncEvent, WorldQuerySyncEvent } from "../../../../shared/events/world/WorldQuerryEvent";
 
 export interface ScreenInitContext {

@@ -1,7 +1,7 @@
 // src/renderer/screens/router/useCase/LoadSlotsUseCase.ts
 
 import { SaveManager } from "../../../../../renderer/save/saveManager";
-import { SlotViewModel } from "../../../../../renderer/screens/viewModel/SlotViewModel";
+import { SlotViewModel } from "../../../../screens/view/viewModel/SlotViewModel";
 
 export class LoadSlotsUseCase {
     private readonly SLOT_COUNT = 3;

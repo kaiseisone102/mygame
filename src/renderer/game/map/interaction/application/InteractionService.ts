@@ -10,12 +10,12 @@ export class InteractionService {
 
     constructor(private messageRepo: MessageRepository) { }
 
-    createTalkEvent(messageId: string): AppUIEvent {
+    createTalkEvent(messageId: string, name?: string): AppUIEvent {
         const message = this.messageRepo.getMessage(messageId) ?? "...";
         return {
             type: "PUSH_OVERLAY",
             overlay: OverlayScreenType.MESSAGE_LOG,
-            payload: { messages: [message] }
+            payload: { name: name, messages: [message] }
         };
     }
 

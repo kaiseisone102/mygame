@@ -273,7 +273,7 @@ export class GameState {
         this.collectedItems = structuredClone(DEFAULT_COLLECTED_ITEMS);
         this.currentBattleState = createInitialBattleState();
         this.battleReturn = { mapId: this.currentMapId, pos: this.where[this.currentMapId] };
-        this.abilities = { swim: false };
+        this.abilities = this.createDefaultAbilities();
     }
 
     /**
@@ -316,7 +316,7 @@ export class GameState {
 
     private createDefaultAbilities() {
         return {
-            swim: false
+            swim: true
         };
     }
 }

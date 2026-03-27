@@ -4,6 +4,6 @@ import { BaseWorldScreenController } from "../../../../../renderer/screens/world
 import { MainScreenType } from "../../../../../shared/type/screenType";
 
 export class WorldMapScreenController extends BaseWorldScreenController {
-    protected screenId: string = MainScreenType.WORLD_MAP;
+   // protected screenId: string = MainScreenType.WORLD_MAP;
 }
 

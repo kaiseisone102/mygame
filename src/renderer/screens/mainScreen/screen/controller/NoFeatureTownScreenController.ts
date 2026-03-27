@@ -4,5 +4,5 @@ import { BaseWorldScreenController } from "../../../../../renderer/screens/world
 import { MainScreenType } from "../../../../../shared/type/screenType";
 
 export class NoFeatureTownScreenController extends BaseWorldScreenController {
-    protected screenId: string = MainScreenType.NO_FEATURE_TOWN;
+    //protected screenId: string = MainScreenType.NO_FEATURE_TOWN;
 }

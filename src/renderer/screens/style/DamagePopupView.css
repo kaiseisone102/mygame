@@ -1,0 +1,506 @@
+/* 1. すべての演出パーツを包む親コンテナ */
+.p5-damage-view-container {
+    position: absolute;
+    pointer-events: none;
+    /* 子要素（数字、ラベル、残像）の基準点となる */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 3D演出をコンテナ全体で許可 */
+    perspective: 800px;
+    transform-style: preserve-3d;
+    overflow: visible;
+}
+
+/* 2. メインの数字要素（.damage-popup）の初期状態とアニメーション */
+.damage-popup {
+    opacity: 0;
+    position: relative;
+    pointer-events: none;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 38px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    /* 登場時は少し小さく、傾いている */
+    transform: scale(0.4) skewX(-15deg);
+    transition: all 0.25s cubic-bezier(0.15, 0.85, 0.35, 1.2);
+    /* 遠近感を追加（数字が飛び出すように見える） */
+    perspective: 500px;
+    transform-style: preserve-3d;
+    /* TSから渡される値を保持する変数 */
+    --rotation: 0deg;
+    overflow: visible !important;
+    /* はみ出しを許可 */
+}
+
+/* 白い四角（背景レイヤー） */
+.p5-damage-bg {
+    position: absolute;
+
+    height: 100%;
+    width: 80px;
+    background-color: #fff;
+    border: 3px solid #000;
+    /* 切り絵風の形 */
+    clip-path: polygon(5% 0%, 95% 5%, 100% 95%, 0% 100%);
+    background-image: radial-gradient(#000 15%, transparent 16%);
+    background-size: 5px 5px;
+    /* 文字より奥に配置 */
+    transform: translateZ(0px) skewX(-15deg);
+    z-index: 1;
+}
+
+/* ===== クリティカル ===== **/
+
+/* --- クリティカル時のコンテナ設定（基礎） --- */
+.damage-popup.critical {
+    /* サイズを大きく、最手前に */
+    font-size: 60px !important;
+    z-index: 2000 !important;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+/* --- 【革新】クリティカル専用の背景レイヤー --- */
+.p5-damage-bg.critical {
+    /* 1. 基礎となる「黒い板」 (切り絵風) */
+    background-color: #000 !important;
+    background-image: none !important;
+    border: none !important;
+    /* フチは clip-path で作る */
+    width: 120px;
+    /* 少し横長に */
+    height: 100%;
+
+    /* 鋭利な破片のような形状 */
+    clip-path: polygon(10% 0%, 100% 15%, 90% 85%, 0% 100%);
+
+    /* 強いドロップシャドウで浮かせる */
+    filter: drop-shadow(8px 8px 0px rgba(0, 0, 0, 0.8));
+    transform: translateZ(0px) skewX(-15deg);
+}
+
+/* --- 2. 黒い板の上に重ねる「赤いギザギザ（閃光）」 --- */
+.p5-damage-bg.critical::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+
+    /* 鮮烈な赤 */
+    background-color: #ff0000;
+
+    /* 【秘伝】不規則で多数の頂点を持つ、突き刺さるようなギザギザ */
+    clip-path: polygon(0% 40%, 15% 10%, 25% 30%, 35% 5%, 45% 45%,
+            55% 10%, 70% 35%, 85% 0%, 100% 50%, 90% 65%,
+            100% 90%, 80% 80%, 70% 100%, 55% 75%, 40% 95%,
+            25% 70%, 10% 100%, 0% 60%);
+
+    /* 赤い発光（ネオン効果） */
+    filter: blur(1px) drop-shadow(0 0 10px #ff0000);
+
+    /* 黒い板より少し手前に浮かせる */
+    transform: translateZ(10px);
+    z-index: 2;
+}
+
+/* --- 3. さらなる「インクの飛び散り」 (Splatter) --- */
+.p5-damage-bg.critical::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    /* 黒いインクのシミ (ハーフトーンと組み合わせ) */
+    background-image:
+        radial-gradient(circle at 20% 30%, #000 5px, transparent 6px),
+        radial-gradient(circle at 80% 70%, #000 4px, transparent 5px),
+        radial-gradient(#000 20%, transparent 20%);
+    background-size: 100% 100%, 100% 100%, 5px 5px;
+
+    opacity: 0.5;
+    transform: translateZ(5px);
+    z-index: 3;
+}
+
+/* --- クリティカル時の数字（白抜きにする） --- */
+.damage-popup.critical .p5-char {
+    color: #ffff00 !important;
+    /* 赤背景には白文字が鉄則 */
+    /* 強い黒いフチ取り */
+    filter: drop-shadow(3px 3px 0px #000);
+    z-index: 10000;
+
+    /* 文字は赤いギザギザよりさらに手前に飛び出させる */
+    transform: translateZ(100px);
+    animation: p5-char-pop-out-critical 0.4s forwards;
+}
+
+/* --- クリティカル専用の飛び出しアニメーション --- */
+@keyframes p5-char-pop-out-critical {
+    0% {
+        opacity: 0;
+        transform: scale(0.3) translateZ(-200px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateZ(100px);
+    }
+}
+
+/* クリティカル時の激しい震え */
+.p5-damage-view-container.critical-hit {
+    animation: p5-critical-vibration 0.08s 4;
+    /* 揺れ終わったあとの位置を元に戻す */
+    animation-fill-mode: forwards;
+}
+
+@keyframes p5-critical-vibration {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(-8px, 6px);
+    }
+
+    50% {
+        transform: translate(8px, -6px);
+    }
+
+    75% {
+        transform: translate(-5px, -8px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+/* ----- クリティカル ----- **/
+
+/* 飛び出す数字（文字レイヤー） */
+.p5-char {
+    position: relative;
+    z-index: 10;
+    /* 背景より絶対手前 */
+    font-size: 48px;
+    /* 少し大きく */
+    color: #ff0000;
+    /* 強いドロップシャドウで「浮いてる感」を出す */
+    filter: drop-shadow(4px 4px 0px #000);
+    /* アニメーションで手前に飛び出す動き */
+    animation: p5-char-pop-out 0.4s forwards cubic-bezier(0.17, 0.89, 0.32, 1.49);
+}
+
+.p5-char-heal {
+    position: relative;
+    z-index: 10;
+    /* 背景より絶対手前 */
+    font-size: 48px;
+    /* 少し大きく */
+    color: #00ff00;
+    /* 強いドロップシャドウで「浮いてる感」を出す */
+    filter: drop-shadow(4px 4px 0px #000);
+    /* アニメーションで手前に飛び出す動き */
+    animation: p5-char-pop-out 0.4s forwards cubic-bezier(0.17, 0.89, 0.32, 1.49);
+}
+
+/* クリティカル専用の文字色設定 */
+.p5-char-critical {
+    position: relative;
+    z-index: 100;
+    font-size: 64px;
+    /* 通常より大きく */
+
+    /* P5のリザルト風なら「明るい黄色 (#ffff00)」が最強に映えます */
+    color: #ffff00;
+
+    /* 黒いぶ厚いフチ取り（これがないと安っぽくなります） */
+    filter: drop-shadow(4px 4px 0px #000) drop-shadow(-1px -1px 0px #000) drop-shadow(1px -1px 0px #000) drop-shadow(-1px 1px 0px #000);
+
+    /* 文字自体も少し震えさせる（個別の振動） */
+    animation: p5-char-pop-out-critical 0.4s forwards,
+        p5-vibration 0.08s 4;
+}
+
+.damage-popup.HEAL {
+    color: #00ff88;
+    /* 鮮やかな回復緑 */
+    filter: drop-shadow(0px 0px 8px rgba(0, 255, 136, 0.6));
+    /* 発光演出 */
+}
+
+/* 回復時は「切り絵」ではなく、少し丸みのある、または綺麗な形にする */
+.damage-popup.HEAL {
+    background-color: rgba(255, 255, 255, 0.9);
+    /* ダメージより歪みを抑える */
+    background-image: none;
+    /* ドット模様を消して綺麗に見せる */
+}
+
+/* ダメージ時の配色と背景 */
+.damage-popup.DAMAGE {
+    color: #ff0000;
+    /* 鮮烈な赤 */
+    background-color: #fff;
+    padding: 4px 12px;
+    border: 3px solid #000;
+    /* 背景にハーフトーン（点々）を入れる */
+    background-image: radial-gradient(#000 15%, transparent 16%);
+    background-size: 5px 5px;
+}
+
+@keyframes p5-afterimage-pop {
+    0% {
+        opacity: 0.8;
+        transform: scale(1.1) rotate(var(--rotation)) skewX(-20deg);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.8) rotate(calc(var(--rotation) + 5deg)) skewX(-20deg);
+        filter: blur(12px);
+    }
+}
+
+/* 数字の退場アニメーション（フェードアウト） */
+.damage-popup.animate {
+    opacity: 1;
+    animation: main-sequence 2s forwards cubic-bezier(0.15, 0.85, 0.35, 1.2);
+}
+
+/* 1文字ごとのポップアップアニメーション */
+@keyframes p5-char-pop-out {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) translateZ(-100px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateZ(60px);
+        /* 60px分、画面側に飛び出す */
+    }
+}
+
+/* クリティカル時の激しい震え */
+@keyframes p5-vibration {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    25% {
+        transform: translate(3px, -2px) rotate(1deg);
+    }
+
+    50% {
+        transform: translate(-3px, 2px) rotate(-1deg);
+    }
+
+    75% {
+        transform: translate(2px, 2px) rotate(0.5deg);
+    }
+
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+}
+
+/* 4. WEAKNESS / RESIST ラベルが正しく表示されるための補正 */
+.p5-weakness-label,
+.p5-resist-label {
+    /* 初期位置を絶対座標からコンテナ基準の相対座標へ */
+    position: absolute;
+    white-space: nowrap;
+    /* 改行防止 */
+}
+
+/* WEAKNESSラベルの基盤 */
+.p5-weakness-label {
+    position: absolute;
+    pointer-events: none;
+    font-family: 'Arial Black', "Impact", sans-serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 28px;
+    /* 本体より少し小さく、鋭く */
+    color: #000;
+    /* 文字は黒 */
+    background-color: #00ffcc;
+    /* 鮮やかな青緑 */
+    z-index: 1500;
+    /* 本体より手前、クリティカルより奥 */
+    padding: 0 20px;
+    opacity: 0;
+
+    /* 非常に尖った不規則な形状（怪盗団の仮面や、突き刺さるイメージ） */
+    clip-path: polygon(0% 20%, 60% 0%, 100% 10%, 90% 80%, 10% 100%);
+    border: 4px solid #fff;
+    /* 白いフチ取り */
+    box-shadow: 10px 10px 0px #000;
+    /* 強烈な黒い影 */
+
+    /* 初期状態：縮小 */
+    transform-origin: center center;
+    transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+/* 弱点時の「WEAKNESS!!」テキストのフチ取り */
+.p5-weakness-label .p5-char {
+    filter: drop-shadow(2px 2px 0px #fff);
+}
+
+/* アニメーション：飛び出す演出 */
+.p5-weakness-label.animate {
+    opacity: 1;
+    /* scale(0) から scale(1) へ、そして少し戻る（バウンド） */
+    transform: rotate(var(--rotation)) skewX(-25deg) scale(1) translateY(-20px) !important;
+    animation: weakness-exit 1.0s forwards ease-in;
+}
+
+/* WEAKNESSラベル専用の退場アニメーション */
+@keyframes weakness-exit {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    15% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+    25% {
+        transform: scale(1.0);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translateY(-30px);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.8) rotate(20deg);
+    }
+}
+
+/* RESISTラベルの基盤 */
+.p5-resist-label {
+    position: absolute;
+    pointer-events: none;
+    font-family: 'Arial Black', "Impact", sans-serif;
+    font-weight: 900;
+    font-size: 24px;
+    color: #fff;
+    background-color: #444;
+    /* 重いグレー */
+    z-index: 1400;
+    padding: 2px 15px;
+    opacity: 0;
+
+    /* 弱点とは逆の、鈍い台形のような形状 */
+    clip-path: polygon(10% 0%, 90% 10%, 100% 90%, 0% 80%);
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0px #222;
+
+    transform: scale(0.8);
+    transition: all 0.4s ease-out;
+}
+
+/* アニメーション：重々しく出現して沈む */
+.p5-resist-label.animate {
+    opacity: 1;
+    transform: scale(1) translateY(10px);
+    /* 下に沈む */
+    animation: resist-exit 1.2s forwards;
+}
+
+@keyframes resist-exit {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    20% {
+        opacity: 1;
+        transform: translateY(10px);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translateY(20px) scale(0.9);
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* 耐性時のドットパターン（弱点より密度を高くして重くする） */
+.p5-resist-label {
+    background-image: radial-gradient(#000 20%, transparent 20%);
+    background-size: 2px 2px;
+}
+
+/* 数字部分のメインシーケンス（出現 -> 保持 -> フェードアウト） */
+@keyframes main-sequence {
+    0% {
+        opacity: 0;
+        transform: scale(0.4) skewX(-15deg);
+    }
+
+    15% {
+        opacity: 1;
+        transform: scale(1.1) translateY(-30px) rotate(var(--rotation)) skewX(-20deg);
+    }
+
+    70% {
+        opacity: 1;
+        transform: scale(1.0) translateY(-45px) rotate(var(--rotation)) skewX(-20deg);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.8) translateY(-60px) rotate(calc(var(--rotation) + 10deg)) skewX(-20deg);
+    }
+}
+
+/* 6. 回復(HEAL)時の背景微調整 */
+.damage-popup.HEAL .p5-damage-bg {
+    background-color: rgba(255, 255, 255, 0.9);
+    background-image: none;
+    /* ドットを消す */
+    border-color: #00ff88;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+}
+
+/* 7. コンテナ全体を揺らす（クリティカル時などにTSから付与可能） */
+.p5-damage-view-container.vibrate {
+    animation: p5-container-vibrate 0.1s infinite;
+}
+
+@keyframes p5-container-vibrate {
+    0% {
+        transform: translate(2px, 2px);
+    }
+
+    50% {
+        transform: translate(-2px, -2px);
+    }
+
+    100% {
+        transform: translate(2px, -2px);
+    }
+}

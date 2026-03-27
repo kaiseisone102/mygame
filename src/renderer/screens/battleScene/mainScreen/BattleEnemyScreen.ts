@@ -149,7 +149,7 @@ export class BattleEnemyScreen implements MainScreen {
 
         switch (e.type) {
             case BattleEventKind.DAMAGE:
-                this.showDamage(e.targetId, e.value, e.isCritical);
+                this.showDamage(e.targetId, e.value, e.options);
                 break;
 
             case BattleEventKind.HEAL:
@@ -166,12 +166,12 @@ export class BattleEnemyScreen implements MainScreen {
         }
     }
 
-    private showDamage(targetId: number, value: number, critical: boolean) {
+    private showDamage(targetId: number, value: number, options: { isCritical: boolean, isWeakness: boolean, sizeMultiplier: number }) {
         const view = this.enemyViews.get(targetId);
         if (!view) return;
 
         const pos = view.getCenterPosition();
-        new DamagePopupView(this.root, pos.x, pos.y, value, critical);
+        new DamagePopupView(this.root, pos.x, pos.y, value, options);
 
         //     view.shake?.();
         //     view.flash?.();
@@ -182,7 +182,7 @@ export class BattleEnemyScreen implements MainScreen {
         if (!enemyView) return;
 
         const pos = enemyView.getCenterPosition();
-        new DamagePopupView(this.root, pos.x, pos.y, value, false, BattleEventKind.HEAL);
+        new DamagePopupView(this.root, pos.x, pos.y, value, { kind: BattleEventKind.HEAL });
     }
 
     private onKilled(targetId: number) {

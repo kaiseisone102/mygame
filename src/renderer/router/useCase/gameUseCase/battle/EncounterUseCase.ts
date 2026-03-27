@@ -43,6 +43,7 @@ export class EncounterUseCase {
 
         // 最初のN歩は無視
         if (this.stepCount <= IGNORE_STEPS) {
+            console.log("[EncounterUseCase] IGNORE_STEPS", this.stepCount)
             return;
         }
 

@@ -7,6 +7,8 @@ import { mapImageKey } from "./ZoneDtoMapper";
 export function toNpcTile(dto: NpcJson): NpcTileDto {
     return {
         id: dto.id,
+        name: dto.name,
+
         pos: { tx: dto.pos.tx, ty: dto.pos.ty },
         tw: dto.tw ?? 1,
         th: dto.th ?? 1,
@@ -22,6 +24,8 @@ export function toNpcTile(dto: NpcJson): NpcTileDto {
 export function buildNpcs(npcTiles: NpcTileDto[]): NpcData[] {
     return npcTiles.map(npc => ({
         id: npc.id,
+        name: npc.name,
+
         pos: { x: npc.pos.tx * NORM_SIZE, y: npc.pos.ty * NORM_SIZE },
         w: npc.tw * NORM_SIZE,
         h: npc.th * NORM_SIZE,
