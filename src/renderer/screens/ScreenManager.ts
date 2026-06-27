@@ -12,6 +12,7 @@ import { ScreenPort } from "../port/ScreenPort";
 import { ScreenStateReader } from "../save/query/ScreenQueryService";
 import { OverlayInstanceMap, OverlayPayloadMap } from "./interface/overlay/overlayPayloadMap";
 import { OverlayScreen } from "./interface/overlay/OverLayScreens";
+import { GoldHud } from "./overlayScreen/screen/GoldHud";
 import type { MainScreen } from "./interface/screen/MainScreen";
 import { MainScreenInstanceMap, MainScreenPayloadMap } from "./interface/screen/MainScreenPayloadMap";
 import { ZoneController } from "../../renderer/game/map/zone/ZoneController";

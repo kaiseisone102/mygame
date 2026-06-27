@@ -10,7 +10,14 @@ import { FieldMagicPayload, SkillSelectPayload } from "../type/payload/battle";
 import { PlayerPxPosition, WorldPxPosition, WorldTilePosition } from "../type/playerPosition/posType";
 import { BattlerSaveData } from "./BattlerSaveData";
 import { NORM_SIZE } from "./constants";
-import { DEFAULT_COLLECTED_ITEMS, DEFAULT_EVENTFLAG, DEFAULT_PLAYER_BASE_STATS, DEFAULT_PLAYER_EXP, DEFAULT_PLAYER_GOLD, DEFAULT_PLAYER_LEVEL, DEFAULT_PLAYER_NAME, DEFAULT_START_MAP_ID, DEFAULT_START_POSITION_BY_WORLD, SAVE_VERSION } from "./playerConstants";
+import { BaseStats, DEFAULT_COLLECTED_ITEMS, DEFAULT_EVENTFLAG, DEFAULT_PLAYER_BASE_STATS, DEFAULT_PLAYER_EXP, DEFAULT_PLAYER_GOLD, DEFAULT_PLAYER_LEVEL, DEFAULT_PLAYER_NAME, DEFAULT_START_MAP_ID, DEFAULT_START_POSITION_BY_WORLD, SAVE_VERSION } from "./playerConstants";
+import { EquipSlot } from "../type/equipment/EquipSlot";
+import { JobId } from "../type/job/JobId";
+import { canEquipByJob, EquipmentId, finalStatsOf as computeFinalStats, getEquipmentById } from "../master/battle/EquipmentPreset";
+import { JOINABLE_ALLIES, JoinableAllyId } from "./partyJoiners";
+import { ItemPresetsById } from "../master/battle/ItemPreset";
+import { MaterialId } from "../master/item/MaterialPreset";
+import { SkillEffectKindId } from "../type/battle/skill/skillFormula";
 
 /**
  * GameState
@@ -30,7 +37,7 @@ export class GameState {
     selectedSlotId: number | null = null;
 
     playerName: string = DEFAULT_PLAYER_NAME;
-    gold: number = DEFAULT_PLAYER_GOLD;
+    _gold: number = DEFAULT_PLAYER_GOLD;
 
     // パーティメンバー（個々のレベル、経験値、ステータスはここが保持する）
     party: BattlerSaveData[] = [];
@@ -45,9 +52,12 @@ export class GameState {
     get baseStats() { return this.mainPlayer?.baseStats ?? DEFAULT_PLAYER_BASE_STATS; }
     get skillIds() { return this.mainPlayer?.skillIds ?? []; }
 
-    // アイテム、マップ等のフラグ類
-    equipment: Record<string, boolean> = {};
+    // 未着用の装備在庫(装備ID → 所持数)。着用中の装備は各 BattlerSaveData.equipment が持つ。
+    equipment: Record<string, number> = {};
+    // 消費アイテム在庫(道具ID → 所持数)。「使えるアイテム」。
     items: Record<string, number> = {};
+    // マテリアル(素材)在庫(マテリアルID → 所持数)。コレクション要素。
+    materials: Record<string, number> = {};
     currentMapId: MapId = DEFAULT_START_MAP_ID;
     where: PlayerPxPosition = structuredClone(DEFAULT_START_POSITION_BY_WORLD)
     collectedItems: Record<string, boolean> = structuredClone(DEFAULT_COLLECTED_ITEMS);
@@ -128,12 +138,13 @@ export class GameState {
         return {
             version: this.version,
             playerName: this.playerName,
-            gold: this.gold,
+            gold: this._gold,
             party: this.party, // パーティ全員の状態を保存
 
             // 装備やアイテム
             equipment: this.equipment,
             items: this.items,
+            materials: this.materials,
             currentMapId: this.currentMapId,
             where: this.where,
             eventFlags: this.eventFlags,
@@ -155,11 +166,17 @@ export class GameState {
 
         this.version = save.version;
         this.playerName = save.playerName;
-        this.gold = save.gold;
-        this.party = save.party ?? [];
+        this._gold = save.gold;
+        // 旧セーブには job / equipment が無いので既定値を補う
+        this.party = (save.party ?? []).map(p => ({
+            ...p,
+            job: p.job ?? JobId.BRAVER,
+            equipment: p.equipment ?? {},
+        }));
 
-        this.equipment = save.equipment ?? [];
-        this.items = save.items ?? [];
+        this.equipment = this.normalizeCountMap(save.equipment);
+        this.items = save.items ?? {};
+        this.materials = this.normalizeCountMap(save.materials);
         this.currentMapId = save.currentMapId;
         this.where = save.where;
         this.abilities = this.abilities = {
@@ -262,11 +279,19 @@ export class GameState {
         this.version = SAVE_VERSION;
 
         this.playerName = DEFAULT_PLAYER_NAME;
-        this.gold = DEFAULT_PLAYER_GOLD;
+        this._gold = DEFAULT_PLAYER_GOLD;
         this.party = createInitialParty();
 
-        this.equipment = {};
-        this.items = {};
+        // 新規ゲーム時の初期装備在庫(基本は店/拾得だが、最初に試せる分を少し持たせる)
+        this.equipment = {
+            [EquipmentId.RUSTY_SWORD]: 1,
+            [EquipmentId.WOODEN_SHIELD]: 1,
+            [EquipmentId.LEATHER_CAP]: 1,
+        };
+        // 新規ゲーム時の初期道具(セーブロード時は load() 側で上書きされる)
+        this.items = { POTION: 3, HIGH_POTION: 1, BOMB: 2 };
+        // マテリアル(コレクション)。最初に数個持たせておく。
+        this.materials = { [MaterialId.SLIME_GEL]: 3, [MaterialId.IRON_ORE]: 1 };
         this.currentMapId = DEFAULT_START_MAP_ID;
         this.where = structuredClone(DEFAULT_START_POSITION_BY_WORLD);
         this.eventFlags = structuredClone(DEFAULT_EVENTFLAG);
@@ -301,6 +326,201 @@ export class GameState {
         if (!this.hasItem(itemId, amount)) return false;
         this.items[itemId] -= amount;
         if (this.items[itemId] <= 0) delete this.items[itemId];
+        return true;
+    }
+
+    /* =====================
+            装備システム
+        ===================== */
+
+    /** 装備在庫(未着用)を持っているか */
+    hasEquipment(equipId: string, amount: number = 1): boolean {
+        return (this.equipment[equipId] ?? 0) >= amount;
+    }
+
+    /** 装備在庫に加える(店購入・拾得・着脱で外した分の戻し) */
+    addEquipment(equipId: string, amount: number = 1): void {
+        this.equipment[equipId] = (this.equipment[equipId] ?? 0) + amount;
+    }
+
+    /** 装備在庫から減らす。不足時は false。 */
+    private removeEquipmentFromStock(equipId: string, amount: number = 1): boolean {
+        if (!this.hasEquipment(equipId, amount)) return false;
+        this.equipment[equipId] -= amount;
+        if (this.equipment[equipId] <= 0) delete this.equipment[equipId];
+        return true;
+    }
+
+    /** instanceId から味方を引く */
+    private findPartyMember(instanceId: number): BattlerSaveData | undefined {
+        return this.party.find(p => p.instanceId === instanceId);
+    }
+
+    /**
+     * 装備を着ける。
+     * - 在庫に無い / 職が合わない / 装備IDが不正 なら false。
+     * - 同じスロットに既装備があれば在庫へ戻す。
+     */
+    equip(instanceId: number, equipId: string): boolean {
+        const member = this.findPartyMember(instanceId);
+        if (!member) return false;
+
+        const preset = getEquipmentById(equipId);
+        if (!preset) return false;
+        if (!this.hasEquipment(equipId)) return false;
+        if (!canEquipByJob(preset, member.job)) return false;
+
+        // 在庫から取り出す
+        this.removeEquipmentFromStock(equipId);
+
+        // 既装備があれば在庫へ戻す
+        const slot = preset.slot;
+        const current = member.equipment[slot];
+        if (current) this.addEquipment(current);
+
+        // 着用
+        member.equipment = { ...member.equipment, [slot]: equipId };
+
+        // maxHp / maxMp が変わるため現在値をクランプ
+        this.clampVitals(member);
+        return true;
+    }
+
+    /** 指定スロットの装備を外して在庫へ戻す。 */
+    unequip(instanceId: number, slot: EquipSlot): boolean {
+        const member = this.findPartyMember(instanceId);
+        if (!member) return false;
+
+        const current = member.equipment[slot];
+        if (!current) return false;
+
+        this.addEquipment(current);
+        const next = { ...member.equipment };
+        delete next[slot];
+        member.equipment = next;
+
+        this.clampVitals(member);
+        return true;
+    }
+
+    /**
+     * 装備込みの最終ステータスを返す(ステータス画面・着脱プレビュー用)。
+     * 戦闘中は StatCalculator が同じ装備ボーナスを適用するので数値が一致する。
+     */
+    getFinalStats(instanceId: number): BaseStats | undefined {
+        const member = this.findPartyMember(instanceId);
+        if (!member) return undefined;
+        return computeFinalStats(member.baseStats, member.equipment);
+    }
+
+    /** 現在値(hp/mp)が装備込み最大値を超えないように丸める */
+    private clampVitals(member: BattlerSaveData): void {
+        const final = computeFinalStats(member.baseStats, member.equipment);
+        if (member.baseStats.hp > final.maxHp) member.baseStats.hp = final.maxHp;
+        if (member.baseStats.mp > final.maxMp) member.baseStats.mp = final.maxMp;
+    }
+
+    /**
+     * 仲間を加入させる(後から加入する3人用)。
+     * - 既に加入済み(同じ actorMasterId)なら何もせず false。
+     * - instanceId は現在の最大値+1で採番。
+     */
+    joinAlly(id: JoinableAllyId): boolean {
+        const template = JOINABLE_ALLIES[id];
+        if (!template) return false;
+        if (this.party.some(p => p.actorMasterId === template.actorMasterId)) return false;
+
+        const nextInstanceId = this.party.reduce((max, p) => Math.max(max, p.instanceId), 0) + 1;
+        this.party.push({ ...structuredClone(template), instanceId: nextInstanceId });
+        return true;
+    }
+
+    /* =====================
+            マテリアル(素材)
+        ===================== */
+
+    /** マテリアルを所持しているか */
+    hasMaterial(materialId: string, amount: number = 1): boolean {
+        return (this.materials[materialId] ?? 0) >= amount;
+    }
+
+    /** マテリアルを加える(拾得・ドロップ・店購入) */
+    addMaterial(materialId: string, amount: number = 1): void {
+        this.materials[materialId] = (this.materials[materialId] ?? 0) + amount;
+    }
+
+    /* =====================
+            道具のフィールド使用
+        ===================== */
+
+    /** その道具をフィールドで使えるか(現状は回復系のみ。攻撃系は戦闘中だけ) */
+    isFieldUsableItem(itemId: string): boolean {
+        const preset = ItemPresetsById[itemId];
+        if (!preset || !preset.consumable) return false;
+        return preset.effects.some(e => e.type === SkillEffectKindId.HEAL);
+    }
+
+    /**
+     * フィールドで道具を味方に使う(回復のみ対応)。
+     * 成功すれば 1個消費する。結果メッセージを返す。
+     */
+    useItemOnAlly(itemId: string, instanceId: number): { ok: boolean; message: string } {
+        const preset = ItemPresetsById[itemId];
+        if (!preset) return { ok: false, message: "それは使えない" };
+        if (!this.hasItem(itemId)) return { ok: false, message: `${preset.name}を持っていない` };
+
+        const member = this.findPartyMember(instanceId);
+        if (!member) return { ok: false, message: "対象がいない" };
+
+        const healEffect = preset.effects.find(e => e.type === SkillEffectKindId.HEAL);
+        if (!healEffect || !("power" in healEffect)) {
+            return { ok: false, message: `${preset.name}は戦闘中にしか使えない` };
+        }
+
+        const finalStats = computeFinalStats(member.baseStats, member.equipment);
+        const before = member.baseStats.hp;
+        member.baseStats.hp = Math.min(finalStats.maxHp, member.baseStats.hp + healEffect.power);
+        const healed = member.baseStats.hp - before;
+        this.consumeItem(itemId, 1);
+        return { ok: true, message: `${member.name} のHPが ${healed} かいふくした！` };
+    }
+
+    /** 旧形式(boolean マップ / 未定義)も含めて個数マップ(Record<string, number>)に正規化する */
+    private normalizeCountMap(raw: unknown): Record<string, number> {
+        const out: Record<string, number> = {};
+        if (!raw || typeof raw !== "object") return out;
+        for (const [key, value] of Object.entries(raw as Record<string, unknown>)) {
+            if (typeof value === "number" && value > 0) out[key] = value;
+            else if (value === true) out[key] = 1; // 旧 Record<string, boolean> からの移行
+        }
+        return out;
+    }
+
+    /**
+     * 現在ゴールドを取得
+     */
+    getAsyncGold(): Promise<number> {
+        return Promise.resolve(this._gold);
+    }
+    getSyncGold(): number {
+        return this._gold;
+    }
+
+    /**
+     * ゴールドを増やす(戦闘報酬・拾得など)
+     */
+    addGold(amount: number): void {
+        this._gold = Math.max(0, this._gold + amount);
+    }
+
+    /**
+     * ゴールドを消費する(買い物など)。
+     * - 残高が足りなければ何もせず false を返す
+     */
+    spendGold(amount: number): boolean {
+        if (amount < 0) return false;
+        if (this._gold < amount) return false;
+        this._gold -= amount;
         return true;
     }
 

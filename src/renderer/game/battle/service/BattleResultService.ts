@@ -7,6 +7,8 @@ import { BattleResult } from "../../../../shared/type/battle/TargetType";
 import { LevelUpPayload } from "../../../screens/battleScene/overlayScreen/LevelUpOverlay";
 import { RewardCalculator } from "../logic/rewards/RewardCalculator";
 import { AiType } from "../../../../shared/master/battle/type/EnemyPreset ";
+import { EQUIP_TRAIT_TAG } from "../../../../shared/master/battle/EquipmentPreset";
+import { JobId } from "../../../../shared/type/job/JobId";
 
 export type ExpLog = {
     name: string;
@@ -19,6 +21,7 @@ export type ExpLog = {
 export type BattleResultProcess = {
     expLogs: ExpLog[];
     levelUps: LevelUpPayload[];
+    gold: number;
 };
 
 export class BattleResultService {
@@ -47,9 +50,16 @@ export class BattleResultService {
             exp: ally.exp,
             baseStats: { ...ally.baseStats },
             skillIds: [...ally.skillIds],
-            traits: ally.traits.map(trait => trait.id),
+            // 装備由来の特性(EQUIP_TRAIT_TAG付き)は永続化しない。
+            // 次戦で equipment から再生成されるため、ここで焼き込むと毎戦累積してしまう。
+            traits: ally.traits
+                .filter(trait => !trait.tags?.includes(EQUIP_TRAIT_TAG))
+                .map(trait => trait.id),
             statusEffects: [...ally.statusEffects],
-            aiType: ally.aiType ?? AiType.AGGRESSIVE
+            aiType: ally.aiType ?? AiType.AGGRESSIVE,
+            // 装備システム: 職と着用装備をそのまま引き継ぐ
+            job: ally.job ?? JobId.BRAVER,
+            equipment: { ...ally.equipment },
         }));
 
         // GameState に反映
@@ -57,8 +67,12 @@ export class BattleResultService {
 
         // 2. 勝利時以外はここで終了（保存したデータで復帰するだけ）
         if (result !== BattleResult.WIN) {
-            return { expLogs, levelUps };
+            return { expLogs, levelUps, gold: 0 };
         }
+
+        // 勝利時のゴールド報酬: 倒した敵の goldReward 合計を加算
+        const gold = this.rewardCalculator.calculateTotalGold(state);
+        this.gameState.addGold(gold);
 
         // 3. 【勝利時のみ】経験値分配とレベルアップ処理
         const expDistribution = this.rewardCalculator.calculateExpForAllies(state);
@@ -129,6 +143,6 @@ export class BattleResultService {
             }
         }
 
-        return { expLogs, levelUps };
+        return { expLogs, levelUps, gold };
     }
 }

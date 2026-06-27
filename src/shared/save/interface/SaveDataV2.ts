@@ -22,8 +22,9 @@ export interface SaveDataV2 extends SaveDataBase {
     statusEffects: string[];
     skills: SkillId[];
 
-    equipment: Record<string, boolean>;
+    equipment: Record<string, number>; // 未着用の装備在庫(装備ID → 所持数)
     items: Record<string, number>;
+    materials: Record<string, number>; // マテリアル(素材)在庫(マテリアルID → 所持数)
 
     currentMapId: MapId;
     where: PlayerPxPosition;

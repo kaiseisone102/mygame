@@ -7,3 +7,4 @@ export type WorldQuerySyncEvent =
 export type WorldQueryAsyncEvent =
     | { type: "GET_CONFIG" }
     | { type: "GET_SLOT_VIEW"; slotId: number }
+    | { type: "GET_CURRENT_GOLD"}

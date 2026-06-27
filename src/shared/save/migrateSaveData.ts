@@ -51,6 +51,7 @@ function migrateV1toV2(v1: SaveDataV1): SaveDataV2 {
 
         equipment: {},
         items: {},
+        materials: {},
 
         currentMapId: v1.currentMapId,
         where: v1.where,

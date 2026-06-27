@@ -35,6 +35,7 @@ export type TargetSpecifier =
 export type combatCommandInput = {
     skillId: SkillId;
     targetId: number;
+    itemId?: string; // 道具使用時のみ。ItemPresetsById のキー(あれば skillId より優先)
 };
 
 export type BattleInput = {

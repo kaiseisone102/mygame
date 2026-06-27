@@ -21,7 +21,7 @@ export const MOVE_SPEED: number = 15 * NORM_SIZE;
 
 export const DEFAULT_PLAYER_LEVEL: number = 1;
 export const DEFAULT_PLAYER_EXP: number = 0;
-export const DEFAULT_PLAYER_GOLD: number = 0;
+export const DEFAULT_PLAYER_GOLD: number = 500000000;
 
 // 戦闘用ステータス
 export const DEFAULT_PLAYER_HP: number = 100;

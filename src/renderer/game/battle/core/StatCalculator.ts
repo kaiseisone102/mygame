@@ -12,6 +12,13 @@ export class StatCalculator {
     static calculate(battler: IBattler, statKey: keyof BaseStats): number {
         let value = battler.baseStats[statKey];
 
+        // 0. 装備による加算ボーナス(基礎値の直後・Trait の前)
+        //    Battler が equipBonus を持つ場合のみ加算する(敵は空オブジェクト)。
+        if ('equipBonus' in battler) {
+            const bonus = (battler as { equipBonus?: Partial<BaseStats> }).equipBonus;
+            value += bonus?.[statKey] ?? 0;
+        }
+
         // 1. Trait (特性/パッシブ) による補正
         // battler.traits は IBattler に定義されている必要があります
         if ('traits' in battler) {

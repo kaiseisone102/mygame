@@ -86,6 +86,9 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
         this.eventQueue = new BattleEventQueue(this.emitBattle);
         this.manager = this.initManager;
 
+        // 道具使用時に gameState の在庫を1つ消費する
+        this.manager.setItemConsumer((itemId) => this.gameState.consumeItem(itemId));
+
         this.enemyScreen = this.initEnemyScreen;
         this.backgroundScreen = this.initBackgroundScreen;
 
@@ -106,7 +109,10 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
         this.processing = false;
         this.resultProcessing = false;
 
-        this.manager.init({ turn: 1, allies: payload.allies, enemies: payload.enemies, currentActorId: 999, order: [], actionQueue: [], result: BattleResult.NULL, finished: false, mode: CommandMode.NULL, });
+        this.manager.init({
+            turn: 1, allies: payload.allies, enemies: payload.enemies, currentActorId: 999, order: [], actionQueue: [],
+            result: BattleResult.NULL, finished: false, mode: CommandMode.NULL,
+        });
 
         // guard: no enemy
         // if (payload.enemies.length === 0) {
@@ -186,6 +192,8 @@ export class BattleScene implements MainScreen<BattleScenePayload> {
                 const resultData = this.resultService.process(battleResult);
 
                 if (battleResult === BattleResult.WIN) {
+
+                    if (resultData.gold > 0) this.battleLog.addLog(`${resultData.gold} ゴールドを手に入れた！`);
 
                     await this.battleLog.playExpLogs(resultData.expLogs);
                     await delay(1000);

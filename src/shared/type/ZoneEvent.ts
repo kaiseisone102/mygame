@@ -17,7 +17,6 @@ export interface ZoneEventMap {
     ZONE_ENTER_ENEMY: ZoneEnterEvent;
     ZONE_ENTER_EVENT: ZoneEnterEvent;
     ZONE_ENTER_WARP: ZoneEnterEvent;
-    REQUEST_RANDOM_ENCOUNTER: TileStepContext;
 }
 
 export interface ZoneContext {

@@ -10,8 +10,13 @@ import { BattleEvent } from "../../../../shared/type/battle/event/BattleEvent";
 import { EventContext } from "../../../../shared/type/battle/event/EventContext";
 import { BattlerPort, IBattler } from "../../../../shared/type/battle/port/BattlerPort";
 import { StatusTickType } from "../../../../shared/type/battle/status/constants/statusConstant";
+import { StatusContext } from "../../../../shared/type/battle/status/context/statusContext";
 import { Trait } from "../../../../shared/type/battle/trait/Trait";
 import { ImageKey } from "../../../../shared/type/ImageKey";
+import { JobId } from "../../../../shared/type/job/JobId";
+import { EquipmentMap } from "../../../../shared/type/equipment/EquipSlot";
+import { EQUIP_TRAIT_TAG, getEquipmentTraitIds, sumEquipBonus } from "../../../../shared/master/battle/EquipmentPreset";
+import { getTraitById } from "../../../../shared/master/battle/TraitPresets";
 import { GrowthManager, LevelUpResult } from "./GrowthManager";
 import { StatCalculator } from "./StatCalculator";
 import { StatusManager } from "./StatusManager";
@@ -29,6 +34,9 @@ export interface BattlerParams {
     skillIds: SkillId[];
     traits: Trait[];
     aiType: AiType;
+    job?: JobId;              // 職(味方のみ。敵は未設定)
+    equipment?: EquipmentMap; // 着用装備(味方のみ)
+    goldReward?: number;   // 撃破時に得られるゴールド(敵のみ。味方は0)
     imageKey?: ImageKey;
 }
 
@@ -40,6 +48,9 @@ export class Battler implements BattlerPort, IBattler {
     private statusManager: StatusManager;
 
     private growthManager: GrowthManager;
+
+    // ぼうぎょ中か(被ダメージ半減)。自分のターン開始時に解除される。
+    private guarding = false;
 
     actorMasterId: number;
     instanceId: number;
@@ -53,12 +64,20 @@ export class Battler implements BattlerPort, IBattler {
 
     traits: Trait[]; // ← 個性
 
+    // --- 装備 ---
+    job?: JobId;
+    equipment: EquipmentMap = {};
+    equipBonus: Partial<BaseStats> = {}; // 装備の stats 合算(StatCalculator が参照)
+
     growthTable?: LevelGrowthTable;
     statModifier?: number;
 
     aiType?: AiType;
 
     imageKey?: ImageKey;
+
+    // 撃破時に得られるゴールド(敵のみ設定。味方は0)
+    goldReward: number = 0;
 
     constructor(params: BattlerParams) {
         this.actorMasterId = params.actorMasterId;
@@ -69,11 +88,23 @@ export class Battler implements BattlerPort, IBattler {
         this.initializeStats(params.baseStats ?? {});
 
         this.skillIds = params.skillIds ?? [];
-        this.traits = params.traits ?? [];
+
+        // --- 装備のセットアップ ---
+        this.job = params.job;
+        this.equipment = params.equipment ?? {};
+        this.equipBonus = sumEquipBonus(this.equipment);
+        // 装備由来の特性はタグを付けて追加する(戦闘後の永続化で除外し、累積を防ぐ)
+        const equipTraits = getEquipmentTraitIds(this.equipment).map(id => {
+            const base = getTraitById(id);
+            return { ...base, tags: [...(base.tags ?? []), EQUIP_TRAIT_TAG] };
+        });
+        this.traits = [...(params.traits ?? []), ...equipTraits];
+
         this.growthTable = params.growthTable;
         this.statModifier = params.statModifier ?? 1;
         this.aiType = params.aiType ?? AiType.AGGRESSIVE;
         this.imageKey = params.imageKey ?? undefined;
+        this.goldReward = params.goldReward ?? 0;
 
         this.statusManager = new StatusManager(this);
 
@@ -126,9 +157,21 @@ export class Battler implements BattlerPort, IBattler {
       ターン開始処理
     ===================== */
     onTurnStart(): SkillResult[] {
+        // 自分の番が来た = 前ターンの「ぼうぎょ」は解除
+        this.guarding = false;
         // 全てのロジックをManager側で実行
         const results = this.statusManager.processTurnTick(StatusTickType.TURN_START);
         return results;
+    }
+
+    /** ぼうぎょ中か(DamagePipeline が被ダメージ半減に使用) */
+    isGuarding(): boolean {
+        return this.guarding;
+    }
+
+    /** ぼうぎょ状態をセット(ぼうぎょコマンド実行時に true) */
+    setGuarding(value: boolean): void {
+        this.guarding = value;
     }
 
     onTurnEnd(): SkillResult[] {
@@ -142,13 +185,24 @@ export class Battler implements BattlerPort, IBattler {
     ===================== */
     canAct(): boolean {
         // statusEffects をループし、それぞれの statusId からマスタデータを参照する
-        const isBlocked = this.statusEffects.some(s => {
-            const preset = StatusPresets[s.statusId];
-            return preset.blocksAction === true; // blocksAction が true なら行動不可
-        });
+        for (const instance of this.statusEffects) {
+            const preset = StatusPresets[instance.statusId];
+            if (!preset) continue;
 
-        // 「行動不能な状態」が一つもなければ true
-        return !isBlocked;
+            // 完全行動不能(凍結・スタンなど)は無条件で行動不可
+            if (preset.blocksAction === true) return false;
+
+            // 確率・条件付きの行動判定。睡眠は常に false、麻痺・混乱は確率で false。
+            // onBeforeAction が false を返したら、このターンは動けない。
+            // ※ canAct() は 1ターンにつき1回だけ呼ばれる前提(乱数の二重消費を避ける)
+            if (preset.onBeforeAction) {
+                const ctx: StatusContext = { target: this, instance, preset };
+                if (preset.onBeforeAction(ctx) === false) return false;
+            }
+        }
+
+        // 行動を妨げる状態が一つもなければ true
+        return true;
     }
 
     getStatus(id: StatusId): StatusInstance | undefined {

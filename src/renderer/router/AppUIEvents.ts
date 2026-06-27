@@ -36,8 +36,12 @@ export type AppUIEvent =
     | { type: "SAVE_GAME" }
 
     // インベントリ
-    | { type: "SHOW_FIELD_COMMAND"}
+    | { type: "SHOW_FIELD_COMMAND" }
     | { type: "SELECT" }
+
+    // 所持金HUD
+    | { type: "ACCESS_CURRENT_GOLD" }
+    | { type: "REFRESH_GOLD" }
 
     // Overlay
     | UIOverlayEvent

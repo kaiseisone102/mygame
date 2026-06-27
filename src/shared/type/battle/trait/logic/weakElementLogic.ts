@@ -14,7 +14,9 @@ export function resistElementLogic(
 ): Partial<Trait> {
     return {
         onDamage: (ctx: DamageContext) => {
-            if (ctx.skill?.element === element) {
+            // 属性は effect レベル(テクニックの攻撃タイプ等)を優先し、無ければ skill 直下
+            const skillElement = ctx.element ?? ctx.skill?.element;
+            if (skillElement === element) {
                 return Math.floor(ctx.damage * rate);
             }
             return ctx.damage;

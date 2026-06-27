@@ -71,7 +71,7 @@
             "mp": 5
         },
         "targetSide": "ENEMY",
-        "targetType": "ALL_ENEMY",
+        "targetType": "ALL_ENEMIES",
         "effectScope": "ALL",
         "effects": [
             {
@@ -157,7 +157,7 @@
             "mp": 6
         },
         "targetSide": "ENEMY",
-        "targetType": "ALL_ENEMY",
+        "targetType": "ALL_ENEMIES",
         "effectScope": "ALL",
         "element": "IMPACT",
         "effects": [

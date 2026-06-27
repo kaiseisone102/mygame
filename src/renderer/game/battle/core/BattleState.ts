@@ -4,6 +4,7 @@ import { AiType } from "../../../../shared/master/battle/type/EnemyPreset ";
 import { BattlerSaveData } from "../../../../shared/data/BattlerSaveData";
 import { DEFAULT_PLAYER_BASE_STATS, DEFAULT_PLAYER_NAME } from "../../../../shared/data/playerConstants";
 import { getTraitById, TraitId, TraitPresets } from "../../../../shared/master/battle/TraitPresets";
+import { JobId } from "../../../../shared/type/job/JobId";
 import { MagicId, TechniqueId } from "../../../../shared/master/battle/type/SkillPreset";
 import { BattleAction, BattlerSide } from "../../../../shared/type/battle/BattleAction";
 import { BattleResult, CommandMode } from "../../../../shared/type/battle/TargetType";
@@ -108,6 +109,9 @@ export function createAllies(saveData?: BattlerSaveData[]): Battler[] {
 }
 
 export function createInitialParty(): BattlerSaveData[] {
+    // 開始時はプレイヤーの分身(勇者)1人だけ。
+    // アキバチョーテ(魔法使い)・ダブルベッド（２段）(僧侶)・はらまき(戦士)は
+    // ストーリー進行で GameState.joinAlly() により後から加入する。
     return [
         {
             actorMasterId: 1,
@@ -115,13 +119,12 @@ export function createInitialParty(): BattlerSaveData[] {
             name: DEFAULT_PLAYER_NAME,
             level: 1,
             exp: 0,
-            baseStats: DEFAULT_PLAYER_BASE_STATS,
+            // 共有 const を直接参照するとレベルアップ時に破壊されるためクローンする
+            baseStats: structuredClone(DEFAULT_PLAYER_BASE_STATS),
             skillIds: [
                 TechniqueId.DOUBLE_ATTACK,
                 TechniqueId.POWER_SLASH,
                 TechniqueId.WHIRL_WIND,
-
-
                 MagicId.HASTE,
                 MagicId.MERA,
                 MagicId.ATK_DOWN,
@@ -130,30 +133,9 @@ export function createInitialParty(): BattlerSaveData[] {
             ],
             traits: [TraitId.WEAK_FIRE],
             statusEffects: [],
-            aiType: AiType.AGGRESSIVE
-        },
-        {
-            actorMasterId: 2,
-            instanceId: 2,
-            name: DEFAULT_PLAYER_NAME,
-            level: 1,
-            exp: 0,
-            baseStats: DEFAULT_PLAYER_BASE_STATS,
-            skillIds: [
-                TechniqueId.DOUBLE_ATTACK,
-                TechniqueId.POWER_SLASH,
-                TechniqueId.WHIRL_WIND,
-
-
-                MagicId.HASTE,
-                MagicId.MERA,
-                MagicId.ATK_DOWN,
-                MagicId.HEAL_ALL,
-                MagicId.GIGADEIN
-            ],
-            traits: [TraitId.WEAK_FIRE],
-            statusEffects: [],
-            aiType: AiType.AGGRESSIVE
+            aiType: AiType.AGGRESSIVE,
+            job: JobId.BRAVER,
+            equipment: {},
         },
     ]
 }

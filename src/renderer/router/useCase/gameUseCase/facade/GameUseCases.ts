@@ -12,6 +12,7 @@ import { CollectItemUseCase } from "../interact/Item/CollectItemUseCase";
 import { SelectSlotFlowUseCase } from "../mainScreen/SelectSlotFlowUseCase";
 import { StartGameFlowUseCase } from "../mainScreen/StartGameFlowUseCase";
 import { StartGameUseCase } from "../mainScreen/StartGameUseCase";
+import { GoldHudUseCase } from "../overlay/GoldHudUseCase";
 import { OpenOptionsUseCase } from "../overlay/OpenOptionsUseCase";
 import { ShowFieldCommand } from "../overlay/ShowFieldCommand";
 import { SaveConfigUseCase } from "../save/SaveConfigUseCase";
@@ -35,6 +36,7 @@ type GameUseCasesDeps = {
     enterWorldMapUseCase: EnterWorldMapUseCase;
     changeWorldUseCase: ChangeWorldUseCase;
     enteredTownUseCase: EnteredTownUseCase;
+    goldHudUseCase: GoldHudUseCase;
     showFieldCommand: ShowFieldCommand;
     saveGameUseCase: SaveGameUseCase;
     saveConfigUseCase: SaveConfigUseCase;
@@ -72,6 +74,9 @@ export class GameUseCases {
     // マップ遷移共通処理
     public readonly changeWorldUseCase!: ChangeWorldUseCase;
     public readonly enteredTownUseCase!: EnteredTownUseCase;
+
+    // 所持金ハッド
+    public readonly goldHudUseCase!: GoldHudUseCase;
 
     // フィールドアクション
     public readonly showFieldCommand!: ShowFieldCommand;

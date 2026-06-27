@@ -1,7 +1,8 @@
 // src/renderer/router/ZoneEventBridge.ts
 
-import { eventBus } from "../../renderer/app";
 import { WorldEvent } from "../../renderer/router/WorldEvent";
+import { EventBus } from "./EventBus";
+import { ZoneEventMap } from "../../shared/type/ZoneEvent";
 
 // --------------------------------------------------
 // Zoneイベント → Worldイベント変換ブリッジ
@@ -12,10 +13,12 @@ import { WorldEvent } from "../../renderer/router/WorldEvent";
 // ・UI / 入力層と World ロジック層の直接依存を切る
 //
 // ポイント:
-// ・eventBus は「何が起きたか」を通知するだけ
+// ・eventBus は「何が起きたか」を通知するだけ(DI で受け取る)
 // ・このファイルが「どう解釈して World に伝えるか」を決める
 // --------------------------------------------------
 export function registerZoneEventBridge(
+    // 購読する Zone イベントバス(注入)
+    eventBus: EventBus<ZoneEventMap>,
     // World 側にイベントを流すためのコールバック
     emitWorld: (e: WorldEvent) => void
 ) {
@@ -56,25 +59,11 @@ export function registerZoneEventBridge(
     // --------------------------------------------------
     // 敵エリア侵入
     // --------------------------------------------------
-    // ・World に「戦闘開始要求」を通知
-    // ・同時にランダムエンカウント判定を要求する
     eventBus.on("ZONE_ENTER_ENEMY", (payload) => {
         emitWorld({
             type: "PLAYER_ENTERED_ZONE",
             zone: payload.zone,
             ctx: payload.ctx
-        });
-    });
-
-    // ランダムエンカウント要求
-    eventBus.on("REQUEST_RANDOM_ENCOUNTER", (payload) => {
-        emitWorld({
-            type: "PLAYER_MOVED",
-            ctx: {
-                mapId: payload.mapId,    // mapId
-                pos: payload.pos,        // WorldPosition
-                biomeId: payload.biomeId
-            }
         });
     });
 

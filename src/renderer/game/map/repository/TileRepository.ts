@@ -10,7 +10,6 @@ export class TileRepository {
     private static instance: Map<TileType, TileData> = new Map();
     private static isInitialized = false;
 
-    constructor(tileDataRaw: )
     /**
      * ゲーム開始時、またはアセットロード完了後に一度だけ呼ぶ
      */

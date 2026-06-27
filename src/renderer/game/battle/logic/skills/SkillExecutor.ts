@@ -2,12 +2,12 @@
 
 import { StatusCategory, StatusId, StatusPresets } from "../../../../../shared/master/battle/StatusPreset";
 import { getBuffPowerValue } from "../../../../../shared/master/battle/SkillRepository";
-import { SkillPreset } from "../../../../../shared/master/battle/type/SkillPreset";
+import { SkillPreset, TechniqueId } from "../../../../../shared/master/battle/type/SkillPreset";
 import { BattleEvent } from "../../../../../shared/type/battle/event/BattleEvent";
 import { SkillResult } from "../../../../../shared/type/battle/result/SkillResult";
 import { SkillEffectKindId } from "../../../../../shared/type/battle/skill/skillFormula";
 import { Battler } from "../../core/Battler";
-import { calcDamage } from "../calculator/calcDamage";
+import { runDamagePipeline } from "../damage/DamagePipeline";
 import { createStatus } from "../status/createStatus";
 import { TraitRunner } from "../traits/TraitRunner";
 
@@ -20,6 +20,11 @@ export class SkillExecutor {
         if (mpCost != null) {
             const cost = TraitRunner.applyMpCost(mpCost, skill, actor.traits);
             actor.baseStats.mp = Math.max(0, actor.baseStats.mp - cost);
+        }
+
+        // ぼうぎょコマンドは効果(effects)が空なので、ここで自分を防御状態にする
+        if (skill.id === TechniqueId.GUARD) {
+            actor.setGuarding(true);
         }
 
         for (const target of targets) {
@@ -35,31 +40,29 @@ export class SkillExecutor {
                             target
                         });
 
-                        const base = calcDamage(actor, target, effect);
-                        const final = TraitRunner.applyDamageTraits(
-                            { source: actor, target, skill, damage: base.damage },
-                            target.traits
-                        );
+                        // ダメージ計算はパイプラインに集約(基本式→特性→会心→ばらつき→整形)。
+                        // バフ/特性は基本式が最終値 getter を使うことで自動反映される。
+                        const dmg = runDamagePipeline(actor, target, skill, effect);
 
                         // メソッドを使用し、HP減少を適用
-                        target.addHp(-final.damage);
+                        target.addHp(-dmg.amount);
                         const killed = !target.alive;
 
                         target.emitEvent(BattleEvent.DAMAGE, {
                             source: actor,
                             target,
-                            value: final.damage
+                            value: dmg.amount
                         });
 
                         results.push({
                             kind: SkillEffectKindId.DAMAGE,
                             instanceId: actor.instanceId,
                             targetId: target.instanceId,
-                            value: final.damage,
+                            value: dmg.amount,
                             options: {
-                                isCritical: base.isCritical,
-                                isWeakness: final.isWeakness,
-                                isResist: final.isResist
+                                isCritical: dmg.isCritical,
+                                isWeakness: dmg.isWeakness,
+                                isResist: dmg.isResist
                             },
                             killed: killed,
                             success: true // ダメージが発生したなら成功
@@ -89,10 +92,11 @@ export class SkillExecutor {
                     case SkillEffectKindId.STATUS:
                         const chance = effect.chance ?? 1;
                         if (Math.random() >= chance) {
+                            // 抵抗された/外した。instanceId は「かけた本人」、statusId は付与しようとした状態
                             results.push({
                                 kind: SkillEffectKindId.STATUS,
-                                instanceId: actor.actorMasterId,
-                                statusId: skill.id,
+                                instanceId: actor.instanceId,
+                                statusId: effect.statusId,
                                 targetId: target.instanceId,
                                 success: false
                             });
@@ -102,7 +106,16 @@ export class SkillExecutor {
                         if (!effect.statusId) break;
 
                         const preset = StatusPresets[effect.statusId as StatusId];
-                        const attribute = preset.category === StatusCategory.ATTACK || StatusCategory.DEFENSE || StatusCategory.MAGIC || StatusCategory.SPEED || StatusCategory.AGGRO ? preset.category : undefined; // "attack", "defense" 等のステータスキー
+                        // バフ・デバフ系(ステータス補正)カテゴリのみ attribute を持つ。
+                        // 旧コードは `A || B || C` で常に truthy になり attribute が誤って入っていた。
+                        const buffCategories: StatusCategory[] = [
+                            StatusCategory.ATTACK,
+                            StatusCategory.DEFENSE,
+                            StatusCategory.MAGIC,
+                            StatusCategory.SPEED,
+                            StatusCategory.AGGRO,
+                        ];
+                        const attribute = buffCategories.includes(preset.category) ? preset.category : undefined; // "attack", "defense" 等のステータスキー
 
                         // --- 1. バフ・デバフ（数値変化）がある場合の前後値記録 ---
                         const buffValue = getBuffPowerValue(effect.value);

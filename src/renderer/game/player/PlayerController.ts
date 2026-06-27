@@ -1,10 +1,11 @@
 // src/renderer/game/player/PlayerController.ts
 
 import { TileEffectService } from "../../service/tile/TileEffectService ";
-import { eventBus } from "../../../renderer/app";
 import { InputAxis } from "../../../renderer/input/mapping/InputMapper";
 import { PlayerMoveResult, handlePlayerMove } from "../../../renderer/input/moveSystem/handlePlayerMove";
-import { ZoneBehaviors } from "../../../renderer/router/ZoneBehaviors";
+import { ZoneBehavior } from "../map/zone/type/ZoneBehavior";
+import { ZoneType } from "../../../shared/type/ZoneType";
+import { WorldEvent } from "../../../renderer/router/WorldEvent";
 import { P_HIT_SIZE } from "../../../shared/data/constants";
 import { GameState } from "../../../shared/data/gameState";
 import { DEFAULT_PLAYER_HP } from "../../../shared/data/playerConstants";
@@ -50,7 +51,9 @@ export class PlayerController {
         private walkContext: any,
         private gameState: GameState,
         private mapId: MapId,
-        private readonly zoneController: ZoneController
+        private readonly zoneController: ZoneController,
+        private emitWorld: (event: WorldEvent) => void,
+        private zoneBehaviors: Record<ZoneType, ZoneBehavior>,
     ) { }
 
     update(pos: WorldPxPosition, axes: InputAxis[], delta: number): PlayerUpdateResult {
@@ -112,10 +115,13 @@ export class PlayerController {
                 if (!tileType) throw new Error("tileType missing in PlayerController");
                 if (!biome) throw new Error("biome missing in PlayerController");
 
-                eventBus.emit("REQUEST_RANDOM_ENCOUNTER", {
-                    mapId: this.mapId,
-                    pos: structuredClone(pos),
-                    biomeId: biome
+                this.emitWorld({
+                    type: "PLAYER_MOVED",
+                    ctx: {
+                        mapId: this.mapId,
+                        pos: structuredClone(pos),
+                        biomeId: biome
+                    }
                 });
             }
         }
@@ -140,7 +146,7 @@ export class PlayerController {
             const left = !isInside && zone.isPlayerInside;
 
             // trigger map-event 
-            const behavior = ZoneBehaviors[zone.type];
+            const behavior = this.zoneBehaviors[zone.type];
             if (!behavior) continue;
 
             if (entered || left || isInside) {
@@ -244,7 +250,7 @@ export class PlayerController {
                 this.gameState.baseStats.hp = Math.min(this.gameState.baseStats.hp + 20, DEFAULT_PLAYER_HP);
                 break;
             case FieldItem.GOLD:
-                this.gameState.gold += 100;
+                this.gameState.addGold(100);
                 break;
         }
 

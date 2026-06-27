@@ -36,6 +36,7 @@ export class BattlerFactory {
             skillIds: template.skills ? toSkillId(template.skills) : [],
             traits: template.traits ? toTraits(template.traits) : [],
             aiType: template.aiType ? toAiType(template.aiType) : AiType.AGGRESSIVE,
+            goldReward: template.gold ?? 0,
             imageKey: template.imageKey ? toImageKey(template.imageKey) : undefined
         });
     }

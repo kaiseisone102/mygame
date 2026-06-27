@@ -16,6 +16,13 @@ export class RewardCalculator {
     }
 
     /**
+     * 敵の合計ゴールドを計算(撃破報酬)
+     */
+    calculateTotalGold(state: BattleState): number {
+        return state.enemies.reduce((sum, enemy) => sum + (enemy.goldReward ?? 0), 0);
+    }
+
+    /**
      * 生存している味方に経験値を均等に分配
      * (死亡者にも配る場合は filter を外すなど調整可能)
      */

@@ -10,12 +10,15 @@ import { WorldManager } from "../../../renderer/game/map/WorldManager";
 import { ZoneController } from "../../../renderer/game/map/zone/ZoneController";
 import { PlayerAnimator } from "../../../renderer/game/player/PlayerAnimator";
 import { PlayerController } from "../../../renderer/game/player/PlayerController";
+import { createZoneBehaviors } from "../../../renderer/router/ZoneBehaviors";
 import { applyTileDamage } from "../../../renderer/game/player/PlayerStatusSystem";
 import { WorldRenderer } from "../../../renderer/game/world/WorldRenderer";
 import { InputFrame } from "../../../renderer/input/frame/InputFrame";
 import { GameActionEvent, InputAxis, UIActionEvent } from "../../../renderer/input/mapping/InputMapper";
 import { AppUIEvent } from "../../../renderer/router/AppUIEvents";
 import { WorldEvent } from "../../../renderer/router/WorldEvent";
+import { EventBus } from "../../../renderer/router/EventBus";
+import { ZoneEventMap } from "../../../shared/type/ZoneEvent";
 import { TileEffectService } from "../../../renderer/service/tile/TileEffectService ";
 import { Camera } from "../../../shared/core/camera";
 import { World } from "../../../shared/core/world";
@@ -51,6 +54,7 @@ export abstract class BaseWorldScreenController implements MainScreenController 
 
     protected emitWorld!: (event: WorldEvent) => void;
     protected emitUI!: (event: AppUIEvent) => void;
+    protected eventBus!: EventBus<ZoneEventMap>;
 
     protected lastPlayerState: PlayerState = {
         type: PlayerMotionType.IDLE,
@@ -71,6 +75,7 @@ export abstract class BaseWorldScreenController implements MainScreenController 
 
         this.emitWorld = initCtx.emitWorld;
         this.emitUI = initCtx.emitUI;
+        this.eventBus = initCtx.eventBus;
 
         if (initCtx.assets) {
             this.playerAnimator = new PlayerAnimator(
@@ -228,7 +233,7 @@ export abstract class BaseWorldScreenController implements MainScreenController 
 
                 case "CONFIRM":
 
-                    this.emitUI?.({
+                    this.emitUI({
                         type: "REQUEST_INTERACT",
                         playerState: this.lastPlayerState,
                         playerPos: this.lastPlayerPos,
@@ -284,7 +289,9 @@ export abstract class BaseWorldScreenController implements MainScreenController 
             walkContext,
             this.gameState,
             currentMapId,
-            zoneController
+            zoneController,
+            this.emitWorld,
+            createZoneBehaviors(this.eventBus),
         );
 
         this.playerController.setZones(this.zones);

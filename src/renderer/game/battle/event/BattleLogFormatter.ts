@@ -1,6 +1,7 @@
 // src/renderer/game/battle/event/BattleLogFormatter.ts
 
 import { SkillResult } from "../../../../shared/type/battle/result/SkillResult";
+import { StatusId, StatusPresets } from "../../../../shared/master/battle/StatusPreset";
 import { SkillEffectKindId } from "../../../../shared/type/battle/skill/skillFormula";
 import { Battler } from "../core/Battler";
 
@@ -38,19 +39,26 @@ export class BattleLogFormatter {
                     logs.push(`${instanceId.name}が${target.name}のHPを${result.value}回復！`);
                 break;
 
-            case SkillEffectKindId.STATUS:
-                if (result.removed) {
-                    // 解除時のログ（辞書を使って「混乱」などに変換しても良い）
-                    const statusName = result.statusId;
+            case SkillEffectKindId.STATUS: {
+                const statusName = StatusPresets[result.statusId as StatusId]?.name ?? result.statusId;
+
+                if (result.success === false) {
+                    // 抵抗された/外した
+                    logs.push(`${target.name}には効かなかった！`);
+                } else if (result.removed) {
+                    // 解除時のログ
                     logs.push(`${target.name}の${statusName}が治った！`);
+                } else if (!result.value) {
+                    // 状態異常付与(睡眠・毒など)
+                    logs.push(`${instanceId.name}は${target.name}を${statusName}状態にした！`);
                 } else {
-                    if (!result.value) {
-                        logs.push(`${instanceId.name}が${target.name}を${result.statusId}状態にした！`);
-                    } else {
-                        logs.push(`${instanceId.name}が${target.name}の${result.statusId}を${(result.value * 100)}%上げた！(${result.preValue} -> ${result.postValue})`);
-                    }
+                    // バフ・デバフ: 正なら上げる、負なら下げる
+                    const pct = Math.round(Math.abs(result.value) * 100);
+                    const verb = result.value < 0 ? "下げた" : "上げた";
+                    logs.push(`${instanceId.name}は${target.name}の${statusName}を${pct}%${verb}！(${result.preValue} → ${result.postValue})`);
                 }
                 break;
+            }
 
             case SkillEffectKindId.ESCAPE:
 

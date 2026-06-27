@@ -35,6 +35,8 @@ export class BattleManager {
 
     private actionFactory: ActionFactory;
 
+    private onItemConsumed?: (itemId: string) => void;
+
     constructor(
         private battleLogFormatter: BattleLogFormatter,
         private skillRepository: SkillRepository,
@@ -52,6 +54,11 @@ export class BattleManager {
 
     setPort(battlePort: BattlePort) {
         this.battlePort = battlePort;
+    }
+
+    /** 道具使用時に在庫を1つ減らすコールバックを登録(gameState 側で消費する) */
+    setItemConsumer(consume: (itemId: string) => void) {
+        this.onItemConsumed = consume;
     }
 
     getBattlePort(): BattlePort {
@@ -144,6 +151,7 @@ export class BattleManager {
         }
 
         let action: BattleAction;
+        let usedItemId: string | undefined;
 
         switch (actor.side) {
             case BattlerSide.ALLY:
@@ -166,6 +174,8 @@ export class BattleManager {
                 });
                 const input: combatCommandInput = await this.battlePort.requestCommand(this.battleState.allies, this.battleState.enemies, skillItems);
 
+                usedItemId = input.itemId;
+
                 action = this.actionFactory.createAction(input, this.battleState, actor);
 
                 console.log("⚔Ally Action「", actor.name, "」=>", action)
@@ -186,6 +196,9 @@ export class BattleManager {
 
         // 実行
         const results = await this.executeAction(action);
+
+        // 道具を使ったなら在庫から1つ消費する
+        if (usedItemId) this.onItemConsumed?.(usedItemId);
 
         // special calls of combat-end
         this.processSpecialResults(results);
@@ -262,6 +275,13 @@ export class BattleManager {
 
         const skill = action.skill;
         if (!skill) throw new Error("BattleManager executeAction cant found action.skill");
+
+        // MP不足チェック: 足りなければスキル/魔法は不発。ログを出して行動を空振りさせる。
+        const mpCost = TraitRunner.applyMpCost(skill.cost?.mp ?? 0, skill, actor.traits);
+        if (actor.baseStats.mp < mpCost) {
+            this.battlePort.addBattleLog(`${actor.name}はMPが足りない！`);
+            return [];
+        }
 
         this.battlePort.addBattleLog(`${actor.name}は${skill.name}を使った！`);
 

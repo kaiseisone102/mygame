@@ -9,13 +9,15 @@ import { ScreenQueryService } from "../save/query/ScreenQueryService";
 import { ConfigRepository } from "../save/saveRepository";
 import { SlotViewModel } from "../screens/view/viewModel/SlotViewModel";
 import { WorldQueryPort } from "../../shared/port/WorldQueryPort";
+import { GameState } from "shared/data/gameState";
 
 export class WorldQueryBus implements WorldQueryPort {
     constructor(
         private tileQuery: TileQueryPort,
         private screenQuery: ScreenQueryService,
         private saveQuery: SaveQueryService,
-        private configRepo: ConfigRepository
+        private configRepo: ConfigRepository,
+        private gameState: GameState,
     ) { }
 
     // getPlayerStatus() {
@@ -41,12 +43,14 @@ export class WorldQueryBus implements WorldQueryPort {
     }
 
     // ===== Async =====
-    dispatchAsync(event: WorldQueryAsyncEvent): Promise<SlotViewModel | GameConfig> {
+    dispatchAsync(event: WorldQueryAsyncEvent): Promise<SlotViewModel | GameConfig | number> {
         switch (event.type) {
             case "GET_SLOT_VIEW":
                 return this.saveQuery.getSlotView(event.slotId);
             case "GET_CONFIG":
                 return this.configRepo.loadConfig();
+            case "GET_CURRENT_GOLD":
+                return this.gameState.getAsyncGold();
         }
     }
 }

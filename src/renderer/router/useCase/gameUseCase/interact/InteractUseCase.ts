@@ -9,6 +9,10 @@ import { SignData } from "../../../../../renderer/game/map/talkNPC/SignData";
 import { AppUIEvent } from "../../../../../renderer/router/AppUIEvents";
 import { WorldPxPosition } from "../../../../../shared/type/playerPosition/posType";
 import { PlayerState } from "../../../../../shared/type/PlayerState";
+import { WorldQueryAsyncEvent } from "shared/events/world/WorldQuerryEvent";
+import { SlotViewModel } from "renderer/screens/view/viewModel/SlotViewModel";
+import { GameConfig } from "shared/config/GameConfig";
+import { GoldHudUseCase } from "../overlay/GoldHudUseCase";
 
 type InteractUseCaseEvent = {
     playerState: PlayerState,
@@ -23,8 +27,10 @@ export class InteractUseCase {
     constructor(
         private emitWorld: (e: WorldEvent) => void,
         private emitUI: (e: AppUIEvent) => void,
+        private queryAsync: (event: WorldQueryAsyncEvent) => Promise<SlotViewModel | GameConfig | number>,
         private resolver: InteractionResolver,
         private service: InteractionService,
+        private goldHudUseCase: GoldHudUseCase,
     ) { }
 
     async execute(input: InteractUseCaseEvent) {
@@ -63,6 +69,7 @@ export class InteractUseCase {
                         if (!confirmed) return;
 
                         // はいの場合、ショップを開く
+                        this.goldHudUseCase.show(); // 所持金HUDをショップの下に敷く
                         const shopEvent = this.service.createShopEvent(target.npc.shopId);
                         await this.emitUI(shopEvent);
                     }

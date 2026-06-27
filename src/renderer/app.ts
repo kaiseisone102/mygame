@@ -87,10 +87,10 @@ const tileDB = createTileDatabase();
 const tileRenderer = new TileRenderer(tileDB);
 const tileEffectService = new TileEffectService(tileDB);
 
-// overlayScreen
-const overlayScreen = createOverlayScreens(masterData.skillRepository);
 // ゲーム用情報()
 const gameState = new GameState(0);
+// overlayScreen
+const overlayScreen = createOverlayScreens(masterData.skillRepository, gameState);
 // バトルログ変換クラス
 const battleLogFormatter = new BattleLogFormatter();
 // BattleManager を生成
@@ -103,7 +103,7 @@ const rewardCalculator = new RewardCalculator();
 // MainScreen
 const mainScreens = createMainScreens(gameState, masterData.allyGrowTable, tileEffectService, worldManager, battleManager, overlayScreen, rewardCalculator);
 
-export const eventBus = new EventBus<ZoneEventMap>();
+const eventBus = new EventBus<ZoneEventMap>();
 
 const root = document.getElementById("root")!;
 
@@ -119,7 +119,8 @@ const { screenManager, worldRouter, uiRouter, initCtx } = UIBootstrapper.setup({
     worldQueryBus: systems.worldQueryBus,
     playerAssets,
     tileRenderer,
-    config: config
+    config: config,
+    eventBus,
 });
 
 const bgmUseCase = new BgmUseCase();
@@ -154,7 +155,8 @@ const gameUseCases = createGameUseCases({
     interactionResolver,
     interactionService,
     emitWorld: (event) => worldRouter.dispatch(event),
-    emitUI: (event) => uiRouter.dispatch(event)
+    emitUI: (event) => uiRouter.dispatch(event),
+    queryAsync: initCtx.queryAsync,
 });
 
 worldRouter.setUseCases(gameUseCases);
@@ -162,7 +164,7 @@ uiRouter.setUseCases(gameUseCases);
 
 // スロットデータを preload 経由でロード
 // await screenManager.loadAllSlots();
-registerZoneEventBridge(initCtx.emitWorld);
+registerZoneEventBridge(eventBus, initCtx.emitWorld);
 
 // 起動シーケンス
 async function startGame() {

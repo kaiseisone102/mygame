@@ -15,6 +15,7 @@ export interface EnemyTemplateJson {
 
     level: number;
     exp: number;
+    gold: number;   // 撃破時に得られるゴールド
 
     baseStats: {
         hp: number;

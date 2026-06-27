@@ -50,8 +50,8 @@
             "id": "FOREST_KEEPER_02",
             "name": "GorillaF_B",
             "pos": {
-                "tx": 30,
-                "ty": 11
+                "tx": 18,
+                "ty": 18
             },
             "direction": "DOWN",
             "image": "PLAYER_STAND_LEFT",

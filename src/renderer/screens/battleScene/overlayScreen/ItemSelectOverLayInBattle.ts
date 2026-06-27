@@ -8,6 +8,8 @@ import { ScreenInitContext } from "../../interface/context/ScreenInitContext";
 import { OverlayScreen } from "../../interface/overlay/OverLayScreens";
 import { BattleState } from "../../../../renderer/game/battle/core/BattleState";
 import { OverlayScreenType } from "../../../../shared/type/screenType";
+import { GameState } from "../../../../shared/data/gameState";
+import { ItemPresetsById } from "../../../../shared/master/battle/ItemPreset";
 
 export type BattleItem = {
     id: string;
@@ -33,7 +35,7 @@ export class ItemSelectOverLayInBattle implements OverlayScreen {
 
     private ctx!: ScreenInitContext;
 
-    constructor() { }
+    constructor(private gameState: GameState) { }
 
     /**
      * 画面初期化
@@ -42,7 +44,7 @@ export class ItemSelectOverLayInBattle implements OverlayScreen {
         console.log("[ItemSelectOverLayInBattle] init");
 
         this.ctx = initCtx;
-        this.emitWorld = this.ctx.emitWorld
+        this.emitWorld = this.ctx.emitWorld;
         this.emitUI = this.ctx.emitUI;
 
         // 画面全体
@@ -54,21 +56,23 @@ export class ItemSelectOverLayInBattle implements OverlayScreen {
         this.target.className = "itemList";
         this.screen.appendChild(this.target);
 
-        // 仮の道具データ
-        this.items = [
-            { id: "healRoot", name: "healroot A", exist: true },
-            { id: "healRoot", name: "healroot B", exist: true },
-            { id: "healRoot", name: "healroot C", exist: false },
-        ];
-
-        this.buildItemList();
-        this.updateCommandTargetUI();
         this.hide();
     }
 
     show() {
+        // 開くたびに現在の所持品からリストを構築(消費が即座に反映される)
+        this.items = Object.entries(this.gameState.items)
+            .filter(([id, count]) => count > 0 && !!ItemPresetsById[id])
+            .map(([id, count]) => ({
+                id,
+                name: `${ItemPresetsById[id].name}  ×${count}`,
+                exist: true,
+            }));
+
+        this.buildItemList();
+        this.updateCommandTargetUI();
         this.screen.style.display = "block"; // DOM 表示
-        this.renderItems();                 // 道具リスト描画(アイコンとか？)
+        this.renderItems();
     }
 
     hide() {
@@ -89,6 +93,8 @@ export class ItemSelectOverLayInBattle implements OverlayScreen {
      * - DOWN / RIGHT : 次のスロット
      */
     handleUIAxes(axes: InputAxis[]): boolean {
+        // 道具が無いときはカーソル移動不可(0除算回避)
+        if (this.commandItems.length === 0) return true;
 
         for (const axis of axes) {
 
@@ -117,16 +123,24 @@ export class ItemSelectOverLayInBattle implements OverlayScreen {
 
     /**
      * UI Action 入力
-     * - CONFIRM : コマンド実行
+     * - CONFIRM : 道具使用
      * - CANCEL  : BattleBasicCommandOverlay へ
      */
     handleUIActions(events: UIActionEvent[]): boolean {
         for (const e of events) {
             switch (e.action) {
                 case "CONFIRM": {
-                    audioManager.playSE("assets/se/decide.mp3");
+                    // 道具が無いときは確定できない。キャンセル扱いで戻す
+                    if (this.commandItems.length === 0) {
+                        this.emitUI?.({ type: "POP_OVERLAY" });
+                        return true;
+                    }
 
                     const el = this.commandItems[this.selectedIndex];
+                    if (!el) return true;
+
+                    audioManager.playSE("assets/se/decide.mp3");
+
                     const itemId = String(el.dataset.itemId);
 
                     this.emitUI?.({
@@ -147,8 +161,18 @@ export class ItemSelectOverLayInBattle implements OverlayScreen {
     private buildItemList() {
         this.target.innerHTML = "";
         this.commandItems = [];
+        this.selectedIndex = 0;
 
         const existItems = this.items.filter(e => e.exist);
+
+        // 道具を持っていない場合のフォールバック表示
+        if (existItems.length === 0) {
+            const empty = document.createElement("p");
+            empty.textContent = "道具を持っていない";
+            empty.classList.add("empty");
+            this.target.appendChild(empty);
+            return;
+        }
 
         existItems.forEach(item => {
             const p = document.createElement("p");
@@ -158,8 +182,6 @@ export class ItemSelectOverLayInBattle implements OverlayScreen {
             this.target.appendChild(p);
             this.commandItems.push(p);
         });
-
-        this.selectedIndex = 0;
     }
 
 
@@ -174,7 +196,7 @@ export class ItemSelectOverLayInBattle implements OverlayScreen {
     }
 
     /**
-     * 使用可能な道具をセット
+     * 使用可能な道具を直接セット(テスト用途など)
      */
     setItems(items: BattleItem[]) {
         this.items = items;
@@ -182,8 +204,7 @@ export class ItemSelectOverLayInBattle implements OverlayScreen {
     }
 
     private renderItems() {
-        // DOM を作って敵を表示する処理
+        // DOM を作って道具を表示する処理
         console.log("Rendering items:", this.items);
-        // 例えば this.rootElement に表示
     }
 }

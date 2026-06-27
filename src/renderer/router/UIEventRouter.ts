@@ -51,6 +51,10 @@ export class UIEventRouter implements UIEventPort {
             // フィールドコマンド
             case "SHOW_FIELD_COMMAND": this.gameUseCases.showFieldCommand.execute(); break;
 
+            // 所持金ハッド
+            case "ACCESS_CURRENT_GOLD": this.gameUseCases.goldHudUseCase.getGold(); break;
+            case "REFRESH_GOLD": this.gameUseCases.goldHudUseCase.refresh(); break;
+
             case "SHOW_TRIGGER_MESSAGE":
                 this.screens.pushOverlay(OverlayScreenType.MESSAGE_LOG, { messages: [event.message] });
                 break;
@@ -106,12 +110,16 @@ export class UIEventRouter implements UIEventPort {
                 this.screens.pushOverlay(OverlayScreenType.SELECT_TARGET_OVERLAY, { skillId: event.payload.skillId, allies: event.payload.allies, enemies: event.payload.enemies, isTargetEnemy: event.payload.target.side === TargetSide.ENEMY ? true : false });
                 break;
 
-            case "BATTLE_ITEM_SELECTED":
-                const itemId = event.itemId;
-
-                const logOverlay = this.screens.getOverlayScreen(OverlayScreenType.BATTLE_LOG);
-                logOverlay?.addLog?.(`Player used item #${itemId}!`);
+            case "BATTLE_ITEM_SELECTED": {
+                // 道具選択を確定 => プレイヤー入力として戦闘ループへ。
+                // 対象は ActionFactory 側で道具の targetType に応じて自動解決する(targetId=-1)。
+                this.gameUseCases.battleInputUseCase.execute({
+                    skillId: TechniqueId.ATTACK, // 道具使用時は itemId が優先されるためダミー
+                    targetId: -1,
+                    itemId: event.itemId,
+                });
                 break;
+            }
 
             case "PLAYER_COMMAND_SELECTED": {
                 this.gameUseCases.battleInputUseCase.execute(event.input);

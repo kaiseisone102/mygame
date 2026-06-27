@@ -28,7 +28,9 @@ export class FieldCommandOverlay implements OverlayScreen<FieldMagicPayload[]> {
     private emitWorld!: (event: WorldEvent) => void;
     private emitUI!: (event: AppUIEvent) => void;
 
-    constructor(private skillRepo: SkillRepository) { }
+    constructor(
+        private skillRepo: SkillRepository,
+    ) { }
 
     init(root: HTMLElement, initCtx: ScreenInitContext): void {
         console.log("[FieldCommandOverlay] init");
@@ -89,6 +91,7 @@ export class FieldCommandOverlay implements OverlayScreen<FieldMagicPayload[]> {
 
                     switch (commandId) {
                         case FieldActionType.ITEM:
+                            this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.INVENTORY, payload: undefined });
                             break;
 
                         case FieldActionType.MAGIC:
@@ -125,6 +128,7 @@ export class FieldCommandOverlay implements OverlayScreen<FieldMagicPayload[]> {
                             break;
 
                         case FieldActionType.EQUIPMENT:
+                            this.emitUI({ type: "PUSH_OVERLAY", overlay: OverlayScreenType.EQUIPMENT, payload: undefined });
                             break;
 
                         case FieldActionType.SAVE:

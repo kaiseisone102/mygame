@@ -13,8 +13,9 @@ export interface SaveData {
     party: BattlerSaveData[]; // パーティ全員の状態を保存
 
     // 装備やアイテム
-    equipment: Record<string, boolean>;
+    equipment: Record<string, number>; // 未着用の装備在庫(装備ID → 所持数)
     items: Record<string, number>;
+    materials: Record<string, number>; // マテリアル(素材)在庫(マテリアルID → 所持数)
     currentMapId: MapId;
     where: PlayerPxPosition;
     eventFlags: { [mapId in MapId]?: Record<string, boolean> };

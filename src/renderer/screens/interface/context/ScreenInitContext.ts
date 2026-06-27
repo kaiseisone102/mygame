@@ -7,6 +7,8 @@ import { AppUIEvent } from "../../../../renderer/router/AppUIEvents";
 import { GameConfig } from "../../../../shared/config/GameConfig";
 import { GameState } from "../../../../shared/data/gameState";
 import { WorldEvent } from "../../../../renderer/router/WorldEvent";
+import { EventBus } from "../../../../renderer/router/EventBus";
+import { ZoneEventMap } from "../../../../shared/type/ZoneEvent";
 import { SlotViewModel } from "../../view/viewModel/SlotViewModel";
 import { WorldQueryAsyncEvent, WorldQuerySyncEvent } from "../../../../shared/events/world/WorldQuerryEvent";
 
@@ -23,6 +25,9 @@ export interface ScreenInitContext {
     emitWorld(event: WorldEvent): void;
     emitUI(event: AppUIEvent): void;
     emitBattle(event: AppUIEvent): void;
+
+    // Zone イベントバス(グローバル singleton をやめて DI で渡す)
+    eventBus: EventBus<ZoneEventMap>;
 
     // 同期クエリのみ
     querySync(event: WorldQuerySyncEvent): number | string | null;

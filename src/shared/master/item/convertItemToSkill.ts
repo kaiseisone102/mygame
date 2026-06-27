@@ -2,11 +2,11 @@
 
 import { EffectScope, SkillCategory } from "../../type/battle/skill/skillFormula";
 import { ItemPreset } from "../battle/ItemPreset";
-import { SkillOccasion, SkillPreset } from "../battle/type/SkillPreset";
+import { SkillId, SkillOccasion, SkillPreset } from "../battle/type/SkillPreset";
 
 export function convertItemToSkill(item: ItemPreset): SkillPreset {
     return {
-        id: item.id,
+        id: item.id as unknown as SkillId, // 道具IDは skillRepository を通さないため SkillId と衝突しない
         name: item.name,
         occation: SkillOccasion.ALWAYS,
         category: SkillCategory.ITEM,

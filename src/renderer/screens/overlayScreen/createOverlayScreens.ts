@@ -1,6 +1,7 @@
 // src/renderer/screens/overlayScreens/ItemScreens.ts
 
 import { SkillRepository } from "../../../shared/master/battle/SkillRepository";
+import { GameState } from "../../../shared/data/gameState";
 import { OverlayScreenType } from "../../../shared/type/screenType";
 import { AlliesStatusOverlay } from "../battleScene/overlayScreen/AlliesStatusOverlay";
 import { BattleBasicCommandOverlay } from "../battleScene/overlayScreen/BattleBasicCommandOverlay";
@@ -13,6 +14,7 @@ import { SkillSelectOverlay } from "../battleScene/overlayScreen/SkillSelectOver
 import { FieldCommandOverlay } from "./screen/FieldCommandOverlay";
 import { InputNameOverlay } from "./screen/InputNameOverlay";
 import { InventoryOverlay } from "./screen/InventoryOverlay";
+import { EquipmentOverlay } from "./screen/EquipmentOverlay";
 import { MessageLogOverlay } from "./screen/MessageLogOverlay";
 import { OptionsOverlay } from "./screen/OptionsOverlay";
 import { SandStormOverlay } from "./screen/SandStormOverlay";
@@ -20,8 +22,9 @@ import { ShopOverlay } from "./screen/ShopOverlay";
 import { SlotSelectOverlay } from "./screen/SlotSelectOverlay";
 import { TitleOverlay } from "./screen/TitleOverlay";
 import { YesNoOverlay } from "./screen/YesNoOverlay";
+import { GoldHud } from "./screen/GoldHud";
 
-export function createOverlayScreens(skillRepo: SkillRepository) {
+export function createOverlayScreens(skillRepo: SkillRepository, gameState: GameState) {
     return {
         [OverlayScreenType.OPTIONS]: new OptionsOverlay(),
         [OverlayScreenType.FIELD_COMMAND]: new FieldCommandOverlay(skillRepo),
@@ -30,16 +33,18 @@ export function createOverlayScreens(skillRepo: SkillRepository) {
         [OverlayScreenType.SLOT_SELECT]: new SlotSelectOverlay(),
         [OverlayScreenType.INPUT_NAME_OVERLAY]: new InputNameOverlay(),
         [OverlayScreenType.YES_NO_OVERLAY]: new YesNoOverlay(),
-        [OverlayScreenType.INVENTORY]: new InventoryOverlay(),
+        [OverlayScreenType.INVENTORY]: new InventoryOverlay(gameState),
+        [OverlayScreenType.EQUIPMENT]: new EquipmentOverlay(gameState),
         [OverlayScreenType.MESSAGE_LOG]: new MessageLogOverlay(),
         [OverlayScreenType.BATTLE_BASIC_COMMAND_OVERLAY]: new BattleBasicCommandOverlay(),
         [OverlayScreenType.SELECT_TARGET_OVERLAY]: new SelectTargetOverlay(),
         [OverlayScreenType.SKILL_SELECT_OVERLAY]: new SkillSelectOverlay(),
-        [OverlayScreenType.ITEM_SELECT_OVERLAY_IN_BATTLE]: new ItemSelectOverLayInBattle(),
+        [OverlayScreenType.ITEM_SELECT_OVERLAY_IN_BATTLE]: new ItemSelectOverLayInBattle(gameState),
         [OverlayScreenType.BATTLE_LOG]: new BattleLogOverlay(),
         [OverlayScreenType.ALLIES_STATUS_OVERLAY]: new AlliesStatusOverlay(),
         [OverlayScreenType.BATTLE_TURN_DISPLAY]: new BattleTurnDisplayOverlay(),
         [OverlayScreenType.LEVEL_UP_OVERLAY]: new LevelUpOverlay(),
-        [OverlayScreenType.SHOP]: new ShopOverlay(),
+        [OverlayScreenType.SHOP]: new ShopOverlay(gameState),
+        [OverlayScreenType.GoldHud]: new GoldHud(gameState)
     } as const;
 }

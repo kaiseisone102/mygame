@@ -40,6 +40,11 @@ export class WorldEventRouter {
                 this.gameUseCases.collectItemUseCase.execute(event.item);
                 break;
 
+            // 所持金の変動(買い物・拾得・報酬など)を gameState に反映する
+            case "CHANGE_GOLD":
+                this.gameState.addGold(event.amount);
+                break;
+
             case "ZONE_ENTERED_TOWN":
                 this.gameUseCases.enteredTownUseCase.execute(event);
                 break;

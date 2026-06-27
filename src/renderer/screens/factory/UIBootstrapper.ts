@@ -5,6 +5,8 @@ import { UIEventRouter } from "../../router/UIEventRouter";
 import { WorldEventRouter } from "../../router/WorldEventRouter";
 import { ScreenInitContext } from "../interface/context/ScreenInitContext";
 import { MainScreenType } from "../../../shared/type/screenType";
+import { EventBus } from "../../router/EventBus";
+import { ZoneEventMap } from "../../../shared/type/ZoneEvent";
 
 export class UIBootstrapper {
     /**
@@ -21,8 +23,9 @@ export class UIBootstrapper {
         playerAssets: any,
         tileRenderer: any,
         config: any,
+        eventBus: EventBus<ZoneEventMap>,
     }) {
-        const { root, mainScreens, overlayScreen, gameState, inputSystem, worldManager, worldQueryBus, playerAssets, tileRenderer, config } = params;
+        const { root, mainScreens, overlayScreen, gameState, inputSystem, worldManager, worldQueryBus, playerAssets, tileRenderer, config, eventBus } = params;
 
         // 1. ScreenManager の生成
         const screenManager = new ScreenManager(
@@ -51,6 +54,7 @@ export class UIBootstrapper {
             queryAsync: (event) => worldQueryBus.dispatchAsync(event),
             selectedSlotId: () => gameState.selectedSlotId,
             worldManager,
+            eventBus,
         };
 
         // 4. コンテキストの注入

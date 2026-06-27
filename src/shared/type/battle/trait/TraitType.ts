@@ -1,6 +1,7 @@
 // src/shared/type/battle/trait/TraitType.ts
 
 import { SkillPreset } from "../../../master/battle/type/SkillPreset";
+import { Element } from "../skill/skillFormula";
 import { TargetSpecifier } from "../BattleAction";
 import { BattlerPort } from "../port/BattlerPort";
 import { CommandActionType } from "../TargetType";
@@ -19,6 +20,7 @@ export type DamageContext = {
     source: BattlerPort;
     target: BattlerPort;
     skill?: SkillPreset;
+    element?: Element;   // 解決済みの属性(effect.element 優先)。属性耐性 Trait はこれを見る
     damage: number;
 };
 

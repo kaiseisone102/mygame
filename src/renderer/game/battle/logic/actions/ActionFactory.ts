@@ -1,6 +1,8 @@
 // src/renderer/game/battle/logic/actions/ActionFactory.ts
 
 import { SkillRepository } from "../../../../../shared/master/battle/SkillRepository";
+import { ItemPresetsById } from "../../../../../shared/master/battle/ItemPreset";
+import { convertItemToSkill } from "../../../../../shared/master/item/convertItemToSkill";
 import { BattleAction, StrangeAction, TargetSpecifier, BattlerSide, BattleInput, combatCommandInput } from "../../../../../shared/type/battle/BattleAction";
 import { CommandActionType, TargetType } from "../../../../../shared/type/battle/TargetType";
 import { MagicId, SkillPreset, TechniqueId } from "../../../../../shared/master/battle/type/SkillPreset";
@@ -14,18 +16,27 @@ export class ActionFactory {
      * UI入力(BattleInput)を、ロジック用のアクション(BattleAction)に変換
      */
     public createAction(input: combatCommandInput, state: BattleState, currentActor: Battler): BattleAction {
-        const skill = this.skillRepository.get(input.skillId);
-        if (!skill) throw new Error(`Skill not found: ${input.skillId}`);
+        // 道具使用時は道具→スキルに変換(skillRepository は通さない)。通常は習得スキルを引く。
+        const skill = input.itemId
+            ? this.resolveItemSkill(input.itemId)
+            : this.skillRepository.get(input.skillId);
+        if (!skill) throw new Error(`Skill/Item not found: ${input.itemId ?? input.skillId}`);
 
        return {
             actorMasterId: currentActor.actorMasterId,
             actorInstanceId: currentActor.instanceId,
             actorName: currentActor.name,
-            skillId: input.skillId,
+            skillId: skill.id,
             targetInstanceIds: [input.targetId],
             skill,
             target: this.buildTarget(input, skill, currentActor, state),
         };
+    }
+
+    /** itemId から実行用スキルを生成。未知のIDなら undefined */
+    private resolveItemSkill(itemId: string): SkillPreset | undefined {
+        const preset = ItemPresetsById[itemId];
+        return preset ? convertItemToSkill(preset) : undefined;
     }
 
     /**
@@ -54,12 +65,17 @@ export class ActionFactory {
         const isActorEnemy = currentActor.side === BattlerSide.ENEMY;
 
         switch (skill.targetType) {
-            case TargetType.SINGLE_ENEMY:
+            case TargetType.SINGLE_ENEMY: {
+                // 明示ターゲットが無ければ(道具など targetId<=0)最初の生存敵を自動選択
+                const enemyId = (input.targetId && input.targetId > 0)
+                    ? input.targetId
+                    : (state.enemies.find(e => e.alive)?.instanceId ?? input.targetId);
                 return {
                     type: TargetType.SINGLE_ENEMY,
                     actorInstanceId: currentActor.instanceId,
-                    enemyInstanceId: input.targetId,
+                    enemyInstanceId: enemyId,
                 };
+            }
 
             case TargetType.GROUP_ENEMY: {
                 // 敵が使った場合は ALL_ENEMIES の処理へ横流しする
@@ -86,18 +102,35 @@ export class ActionFactory {
             case TargetType.ALL_ENEMIES:
                 return { type: TargetType.ALL_ENEMIES, actorInstanceId: currentActor.instanceId };
 
-            case TargetType.SINGLE_ALLY:
+            case TargetType.SINGLE_ALLY: {
+                // 明示ターゲットがあればそれ、無ければ(道具など targetId<=0)最も負傷した生存中の味方を自動選択
+                let allyId = (input.targetId && input.targetId > 0) ? input.targetId : undefined;
+                if (allyId === undefined) {
+                    const wounded = state.allies
+                        .filter(a => a.alive)
+                        .sort((a, b) => (a.baseStats.hp / a.baseStats.maxHp) - (b.baseStats.hp / b.baseStats.maxHp))[0];
+                    allyId = wounded?.instanceId ?? currentActor.instanceId;
+                }
                 return {
                     type: TargetType.SINGLE_ALLY,
-                    actorInstanceId: input.targetId ?? currentActor.instanceId,
+                    actorInstanceId: allyId,
                 };
+            }
 
             case TargetType.ALL_ALLIES:
                 return { type: TargetType.ALL_ALLIES, actorInstanceId: currentActor.instanceId };
 
             case TargetType.SELF:
             case TargetType.SELF_AND_SINGLE_ALLY:
+                return {
+                    type: TargetType.SELF,
+                    actorInstanceId: currentActor.instanceId,
+                };
+
             default:
+                // 未知の targetType(データの表記揺れ等)。黙って SELF に落とすと
+                // 全体攻撃が自分に当たる等の事故になるため、警告を出してから SELF へ退避する。
+                console.warn(`[ActionFactory] 未知の targetType: "${skill.targetType}" を SELF にフォールバックしました`);
                 return {
                     type: TargetType.SELF,
                     actorInstanceId: currentActor.instanceId,

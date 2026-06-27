@@ -1,6 +1,7 @@
 {
     "SLIME": {
         "templateId": 101,
+        "gold": 3,
         "name": "SLIME",
         "side": "ENEMY",
         "level": 1,
@@ -29,6 +30,7 @@
     },
     "DRACKY": {
         "templateId": 102,
+        "gold": 6,
         "name": "DRACKY",
         "side": "ENEMY",
         "level": 1,
@@ -57,6 +59,7 @@
     },
     "GHOST": {
         "templateId": 103,
+        "gold": 12,
         "name": "GHOST",
         "side": "ENEMY",
         "level": 1,
@@ -85,6 +88,7 @@
     },
       "METAL_SLIME": {
         "templateId": 104,
+        "gold": 150,
         "name": "METAL_SLIME",
         "side": "ENEMY",
         "level": 1,
@@ -114,6 +118,7 @@
     },
      "KILLER_LICKANT": {
         "templateId": 105,
+        "gold": 35,
         "name": "KILLER_LICKANT",
         "side": "ENEMY",
         "level": 1,
@@ -141,6 +146,7 @@
     },
     "DRAGON": {
         "templateId": 106,
+        "gold": 60,
         "name": "DRAGON",
         "side": "ENEMY",
         "level": 1,

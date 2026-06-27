@@ -1,5 +1,8 @@
 // src/renderer/screens/router/useCase/facade/createGameUseCases.ts
 
+import { SlotViewModel } from "../../../../../renderer/screens/view/viewModel/SlotViewModel";
+import { GameConfig } from "../../../../../shared/config/GameConfig";
+import { WorldQueryAsyncEvent } from "../../../../../shared/events/world/WorldQuerryEvent";
 import { BattlerFactory } from "../../../../../renderer/game/battle/enemy/factory/createEnemy";
 import { EncounterRepository } from "../../../../../renderer/game/battle/enemy/repository/EncounterRepository";
 import { EnemyRepository } from "../../../../../renderer/game/battle/enemy/repository/EnemyRepository";
@@ -33,6 +36,7 @@ import { CollectItemUseCase } from "../interact/Item/CollectItemUseCase";
 import { SelectSlotFlowUseCase } from "../mainScreen/SelectSlotFlowUseCase";
 import { StartGameFlowUseCase } from "../mainScreen/StartGameFlowUseCase";
 import { StartGameUseCase } from "../mainScreen/StartGameUseCase";
+import { GoldHudUseCase } from "../overlay/GoldHudUseCase";
 import { OpenOptionsUseCase } from "../overlay/OpenOptionsUseCase";
 import { ShowFieldCommand } from "../overlay/ShowFieldCommand";
 import { SaveConfigUseCase } from "../save/SaveConfigUseCase";
@@ -65,7 +69,8 @@ export function createGameUseCases(deps: {
     interactionResolver: InteractionResolver,
     interactionService: InteractionService,
     emitWorld: (e: WorldEvent) => Promise<void>,
-    emitUI: (e: AppUIEvent) => Promise<void>
+    emitUI: (e: AppUIEvent) => Promise<void>,
+    queryAsync: (event: WorldQueryAsyncEvent) => Promise<SlotViewModel | GameConfig | number>
 }): GameUseCases {
 
     // バトルWorld
@@ -85,6 +90,9 @@ export function createGameUseCases(deps: {
     // ゲームスタート
     const startGameUseCase = new StartGameUseCase(deps.saveManager, changeWorldUseCase, deps.gameState);
 
+    // UIHUD
+    const goldHudUseCase = new GoldHudUseCase(deps.gameState, deps.emitUI, deps.screens);
+
     // Overlay
     const openOptionsUseCase = new OpenOptionsUseCase();
 
@@ -97,7 +105,7 @@ export function createGameUseCases(deps: {
     const enteredTownUseCase = new EnteredTownUseCase(changeWorldUseCase);
 
     // フィールドアクション
-    const showFieldCommand = new ShowFieldCommand(deps.gameState, deps.emitUI);
+    const showFieldCommand = new ShowFieldCommand(deps.gameState, deps.emitUI, goldHudUseCase);
 
     // 保存
     const saveGameUseCase = new SaveGameUseCase(deps.saveManager);
@@ -110,7 +118,7 @@ export function createGameUseCases(deps: {
     const addBattleLogUseCase = new AddBattleLogUseCase(deps.screens);
 
     // インタラクト処理
-    const interactUseCase = new InteractUseCase(deps.emitWorld, deps.emitUI, deps.interactionResolver, deps.interactionService);
+    const interactUseCase = new InteractUseCase(deps.emitWorld, deps.emitUI, deps.queryAsync, deps.interactionResolver, deps.interactionService, goldHudUseCase);
     const collectItemUseCase = new CollectItemUseCase(deps.gameState, deps.screens);
 
     return new GameUseCases({
@@ -121,6 +129,7 @@ export function createGameUseCases(deps: {
         changeMainScreenUseCase,
         changeWorldUseCase,
         startGameUseCase,
+        goldHudUseCase,
         openOptionsUseCase,
         bgmUseCase: deps.bgmUseCase,
         enterForestTempleUseCase,

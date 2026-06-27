@@ -16,6 +16,8 @@ export type WorldEvent =
     | { type: "ENTER_GAME_START_FLOW" }
     | { type: "INIT_GAME_SCREEN_FINISHED" }
     | { type: "ITEM_COLLECTED", item: ItemData }
+    // 所持金の変動(正で増加・負で減少)。状態(gameState.gold)はここで一元的に変える
+    | { type: "CHANGE_GOLD"; amount: number }
     | BattleEventWorld
     | EnterZoneEvent
 

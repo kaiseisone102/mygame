@@ -24,6 +24,7 @@ export const OverlayScreenType = {
     INPUT_NAME_OVERLAY: "INPUT_NAME_OVERLAY",
     YES_NO_OVERLAY: "YES_NO_OVERLAY",
     INVENTORY: "INVENTORY",
+    EQUIPMENT: "EQUIPMENT",
     MESSAGE_LOG: "MESSAGE_LOG",
     BATTLE_BASIC_COMMAND_OVERLAY: "BATTLE_BASIC_COMMAND_OVERLAY",
     SELECT_TARGET_OVERLAY: "SELECT_TARGET_OVERLAY",
@@ -33,6 +34,7 @@ export const OverlayScreenType = {
     ALLIES_STATUS_OVERLAY: "ALLIES_STATUS_OVERLAY",
     BATTLE_TURN_DISPLAY: "BATTLE_TURN_DISPLAY",
     LEVEL_UP_OVERLAY: "LEVEL_UP_OVERLAY",
-    SHOP: "SHOP"
+    SHOP: "SHOP",
+    GoldHud: "GoldHud",
 } as const;
 export type OverlayScreenType = typeof OverlayScreenType[keyof typeof OverlayScreenType];

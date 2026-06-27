@@ -1,5 +1,6 @@
 // src/renderer/screens/interface/overlay/OverlayPayloadMap.ts
 
+import { GoldHudPayload } from "../../overlayScreen/screen/GoldHud";
 import { AlliesStatusPayload } from "../../../../renderer/screens/battleScene/overlayScreen/AlliesStatusOverlay";
 import { BasicCommandPayload } from "../../../../renderer/screens/battleScene/overlayScreen/BattleBasicCommandOverlay";
 import { BattleTurnPayload } from "../../../../renderer/screens/battleScene/overlayScreen/BattleTurnDisplayOverlay";
@@ -28,10 +29,12 @@ export type OverlayPayloadMap = {
     [OverlayScreenType.INPUT_NAME_OVERLAY]: InputNamePayload;
     [OverlayScreenType.ITEM_SELECT_OVERLAY_IN_BATTLE]: undefined;
     [OverlayScreenType.INVENTORY]: undefined;
+    [OverlayScreenType.EQUIPMENT]: undefined;
     [OverlayScreenType.ALLIES_STATUS_OVERLAY]: AlliesStatusPayload;
     [OverlayScreenType.BATTLE_TURN_DISPLAY]: BattleTurnPayload;
     [OverlayScreenType.LEVEL_UP_OVERLAY]: LevelUpPayload[];
     [OverlayScreenType.SHOP]: ShopPayload;
+    [OverlayScreenType.GoldHud]: GoldHudPayload;
 };
 
 // export type OverlayInstanceMap = {
